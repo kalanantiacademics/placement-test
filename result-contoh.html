@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalananti - Hasil Placement Test</title>
+    <!-- Fonts: Orbitron for headings, Space Grotesk for body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --k-blue: #265E9B;
+            --k-blue-d: #1A4576;
+            --k-blue-l: #4d8ccf;
+            --k-yellow: #F9C013;
+            --k-green: #339D9D;
+            --bg: #e8f2ff;
+            --bg2: #dbeeff;
+            --sky: #cfe5ff;
+            --nebula1: rgba(38, 94, 155, 0.10);
+            --nebula2: rgba(249, 192, 19, 0.10);
+            --card: rgba(255, 255, 255, 0.92);
+            --card-b: rgba(180, 215, 255, 0.85);
+            --text: #1a4576;
+            --muted: #4d7daf;
+            
+            /* Chart specific variables */
+            --chart-bg-light: #f5f9ff;
+            --chart-grid-line: #cddcf0;
+            --chart-line-color: #3b82f6; /* Modern bright blue */
+            --chart-fill-color: rgba(59, 130, 246, 0.15);
+            --chart-point-bg: #fff;
+            --chart-point-border: #3b82f6;
+            --chart-point-active: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, var(--nebula1), transparent 36%),
+                radial-gradient(circle at 88% 12%, var(--nebula2), transparent 32%),
+                radial-gradient(circle at 50% 105%, rgba(51, 157, 157, 0.14), transparent 34%),
+                linear-gradient(160deg, var(--bg) 0%, var(--bg2) 50%, var(--sky) 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background star pattern */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -20;
+            opacity: 0.12;
+            background-image:
+                radial-gradient(circle at 14% 24%, rgba(255, 255, 255, 0.9) 0 1px, transparent 1.6px),
+                radial-gradient(circle at 78% 68%, rgba(255, 255, 255, 0.75) 0 1px, transparent 1.5px),
+                radial-gradient(circle at 56% 38%, rgba(255, 255, 255, 0.60) 0 1px, transparent 1.4px),
+                radial-gradient(circle at 30% 82%, rgba(255, 255, 255, 0.50) 0 1px, transparent 1.3px),
+                radial-gradient(circle at 90% 45%, rgba(255, 255, 255, 0.55) 0 1px, transparent 1.4px);
+            background-size: 250px 250px, 320px 320px, 210px 210px, 290px 290px, 180px 180px;
+            animation: starDrift 200s linear infinite;
+        }
+
+        @keyframes starDrift { to { transform: translate3d(-120px, 70px, 0); } }
+
+        .edge-layer { position: fixed; inset: 0; pointer-events: none; z-index: -10; overflow: hidden; }
+        .edge-planet { position: absolute; pointer-events: none; opacity: 0.55; }
+        .edge-left { left: 0; } .edge-right { right: 0; }
+        .char-float { position: absolute; pointer-events: none; opacity: 0.5; filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.15)); }
+
+        @keyframes floatY { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-18px) rotate(2deg); } }
+        @keyframes floatY2 { 0%, 100% { transform: translateY(0) rotate(2deg); } 50% { transform: translateY(-14px) rotate(-2deg); } }
+        @keyframes twinkle { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } }
+        .animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
+
+        .glass-panel {
+            background: var(--card);
+            border: 1.5px solid var(--card-b);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            padding: 40px 36px;
+            width: 90%;
+            max-width: 1000px;
+            box-shadow: 0 24px 64px -16px rgba(38, 94, 155, 0.18), 0 0 0 4px rgba(255, 255, 255, 0.6);
+            position: relative;
+            z-index: 10;
+        }
+
+        .rc-header { text-align: center; margin-bottom: 30px; }
+        
+        .rc-badge-status { 
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 999px; font-weight: 800; font-size: 0.85rem; 
+            letter-spacing: 0.05em; text-transform: uppercase; 
+            background: #eef8f5; color: var(--k-green); border: 1.5px solid rgba(51,157,157,0.3); margin-bottom: 20px; 
+        }
+        
+        .rc-badge-status.lv3 { 
+            background: #fff3dd; color: #8a4d00; border-color: #fcd34d; 
+        }
+
+        .student-name-title {
+            font-family: 'Orbitron', sans-serif; font-size: clamp(1.6rem, 4vw, 2.2rem);
+            color: var(--k-blue-d); margin-bottom: 24px; line-height: 1.2; font-weight: 800;
+        }
+
+        .recommendation-box {
+            display: flex; align-items: stretch; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+        }
+
+        .rec-item {
+            background: rgba(255,255,255,0.7); border: 2px solid rgba(38, 94, 155, 0.15);
+            border-radius: 1.5rem; padding: 20px 30px; flex: 1; min-width: 250px; max-width: 350px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .rec-item.primary {
+            background: linear-gradient(145deg, #fffbeb, #fefce8); border-color: var(--k-yellow);
+            box-shadow: 0 10px 25px -5px rgba(249, 192, 19, 0.2); transform: scale(1.02);
+        }
+
+        .rec-label {
+            font-size: 0.85rem; color: var(--muted); font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.05em; margin-bottom: 8px;
+        }
+
+        .rec-value { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--k-blue); }
+        .rec-item.primary .rec-value { color: #78350f; font-size: 1.6rem; }
+
+        .main-narrative {
+            font-size: 1.05rem; line-height: 1.6; color: var(--text); max-width: 760px; margin: 0 auto;
+            font-weight: 500; background: rgba(38, 94, 155, 0.04); padding: 24px; border-radius: 1rem;
+            border-left: 4px solid var(--k-blue); text-align: left;
+        }
+
+        .rc-section {
+            background: rgba(255, 255, 255, 0.8); border-radius: 1.5rem; padding: 32px;
+            border: 1.5px solid var(--card-b); margin-bottom: 24px;
+            box-shadow: 0 10px 30px -10px rgba(38, 94, 155, 0.08);
+        }
+
+        .section-header {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px;
+            border-bottom: 2px solid rgba(38, 94, 155, 0.1);
+        }
+
+        .section-icon {
+            width: 40px; height: 40px; background: var(--k-blue); color: white; border-radius: 12px;
+            display: grid; place-items: center; font-size: 1.2rem;
+        }
+
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; color: var(--k-blue-d); font-weight: 800; margin: 0; }
+
+        .rc-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        
+        .profile-container { display: flex; flex-direction: column; gap: 30px; }
+        
+        .radar-box {
+            background: #fff; border-radius: 1.5rem; padding: 40px 20px; border: 1.5px solid var(--card-b);
+            display: flex; justify-content: center; align-items: center; 
+            box-shadow: 0 8px 24px -10px rgba(38,94,155,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Subtle background gradient for chart area */
+        .radar-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--chart-bg-light) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        /* SVG Chart specific classes for animation */
+        .chart-svg {
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 8px 12px rgba(59, 130, 246, 0.15));
+            max-width: 500px; /* Slightly larger max width for 4 points */
+        }
+        
+        .chart-point-active {
+            animation: pulse-point 2s infinite;
+        }
+
+        @keyframes pulse-point {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+
+        .rc-pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+
+        .rc-pillar-card {
+            background: #fff; border: 1.5px solid rgba(38, 94, 155, 0.15); border-radius: 1.2rem;
+            padding: 20px; transition: transform 0.2s;
+        }
+
+        .rc-pillar-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(38, 94, 155, 0.08); }
+
+        .rc-pillar-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .rc-pillar-name { font-weight: 800; font-size: 1.1rem; color: var(--k-blue-d); display: flex; align-items: center; gap: 8px; }
+        .rc-band { padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        
+        .band-best { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .band-good { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .band-growing { background: #fefce8; color: #a16207; border: 1px solid #fde047; }
+        .band-needs { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        .rc-pillar-desc { font-size: 0.95rem; line-height: 1.5; color: var(--muted); }
+        .rc-pillar-desc b { color: var(--text); }
+
+        .info-box { background: #fff; border-radius: 1.5rem; padding: 24px; border: 1.5px solid var(--card-b); height: 100%; }
+        .info-box.bg-yellow { background: linear-gradient(to bottom right, #fffdf6, #fffbeb); border-color: #fde68a; }
+        .info-box h3 { font-size: 1.1rem; color: var(--k-blue); margin-bottom: 12px; font-weight: 800; }
+        .info-box p { font-size: 0.95rem; line-height: 1.6; margin-bottom: 12px; }
+        .info-box ul { padding-left: 20px; font-size: 0.95rem; line-height: 1.6; color: var(--text); font-weight: 600; }
+        .info-box li { margin-bottom: 8px; }
+
+        .roadmap-container {
+            display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+            padding: 24px; background: #fff; border-radius: 1.5rem; border: 1.5px solid var(--card-b);
+        }
+
+        .roadmap-step { display: flex; align-items: center; gap: 12px; }
+        .step-bubble {
+            background: #f1f5f9; border: 2px solid #cbd5e1; color: #64748b; padding: 12px 24px;
+            border-radius: 999px; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+
+        .step-bubble.active {
+            background: #fffbeb; border-color: var(--k-yellow); color: #92400e;
+            transform: scale(1.05); box-shadow: 0 4px 12px rgba(249, 192, 19, 0.2);
+        }
+        .step-bubble.active::before { content: '📍'; font-size: 1.2rem; }
+        .step-arrow { color: #94a3b8; font-size: 1.2rem; }
+
+        .interest-banner {
+            background: linear-gradient(135deg, #f0fdf4, #ccfbf1); border: 1px solid #86efac;
+            border-radius: 1.5rem; padding: 24px; display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px;
+        }
+        .interest-icon {
+            font-size: 2.2rem; background: #fff; width: 60px; height: 60px; display: grid;
+            place-items: center; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex-shrink: 0;
+        }
+
+        .footer-card {
+            background: rgba(255,255,255,0.9); border-radius: 1.5rem; padding: 24px;
+            border: 1.5px dashed rgba(38,94,155,0.3); display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 20px;
+        }
+        
+        .meta-info { font-size: 0.85rem; color: var(--muted); max-width: 450px; line-height: 1.5; }
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        
+        .btn {
+            font-family: 'Orbitron', sans-serif; font-weight: 800; padding: 14px 24px;
+            border-radius: 1.2rem; cursor: pointer; border: none; transition: all 0.2s;
+            font-size: 0.9rem; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(180deg, #F9C013 0%, #E5AB00 100%); color: #5A3F00;
+            box-shadow: 0 6px 0 #B28400, 0 14px 26px -8px rgba(249, 192, 19, 0.45);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #B28400, 0 18px 32px -8px rgba(249, 192, 19, 0.5); }
+        .btn-primary:active { transform: translateY(6px); box-shadow: none; }
+
+        .btn-secondary {
+            background: white; color: var(--k-blue-d); border: 2px solid rgba(38, 94, 155, 0.2); border-bottom-width: 4px;
+        }
+        .btn-secondary:hover { background: #f8fbff; border-color: var(--k-blue); }
+        .btn-secondary:active { transform: translateY(2px); border-bottom-width: 2px; }
+
+        @media(max-width: 820px) {
+            .rc-grid-2 { grid-template-columns: 1fr; }
+            .glass-panel { padding: 28px 20px; width: 95%; }
+            .student-name-title { font-size: 1.6rem; }
+            .rec-item { min-width: 100%; max-width: 100%; }
+            .roadmap-container { flex-direction: column; align-items: stretch; }
+            .step-arrow { transform: rotate(90deg); text-align: center; }
+            .footer-card { flex-direction: column; align-items: stretch; text-align: center; }
+            .meta-info { max-width: 100%; }
+            .btn-group { flex-direction: column; }
+            .btn { justify-content: center; }
+            .radar-box { padding: 20px 10px; }
+        }
+    </style>
+</head>
+<body class="kids-mode">
+
+    <div class="edge-layer" aria-hidden="true">
+        <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/e77f536b-e591-4ba8-b5b8-f5b2a3d3b33b.png" class="edge-planet edge-left" style="top:6%; width:min(22vw,170px);" alt="">
+        <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/c08a7aed-567f-4e37-988c-1423a5b92643.png" class="edge-planet edge-left" style="top:65%; width:min(28vw,220px); transform:translateX(-30%);" alt="">
+        <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/5f93f855-0466-47b3-ba85-bbaabbad7a2e.png" class="edge-planet edge-right" style="top:20%; width:min(26vw,210px); transform:translateX(30%);" alt="">
+        <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/434fc5cb-e490-4e40-a921-d4519aa8a8a4.png" class="edge-planet edge-right" style="bottom:5%; width:min(30vw,250px);" alt="">
+        <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/61f06160-989d-402e-be1b-eb1891afa86b.png" class="char-float" style="left:8%; top:20%; width:90px; animation:floatY 7s ease-in-out infinite;" alt="">
+        <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/904cb9e9-ecd1-4731-a1ef-fa6a0bd50527.png" class="char-float" style="right:11%; top:52%; width:100px; animation:floatY2 8s ease-in-out infinite 1.5s;" alt="">
+        <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/9b916b05-86ed-4509-aef6-e640606f3542.png" class="char-float" style="left:14%; bottom:8%; width:95px; animation:floatY 6s ease-in-out infinite 0.8s;" alt="">
+    </div>
+
+    <!-- Background Twinkling Stars -->
+    <div style="position:fixed; top:26%; left:36%; width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.9); pointer-events:none; z-index:-1;" class="animate-twinkle"></div>
+    <div style="position:fixed; top:60%; right:30%; width:8px; height:8px; border-radius:50%; background:#fde68a; pointer-events:none; z-index:-1; animation-delay:1.3s;" class="animate-twinkle"></div>
+    <div style="position:fixed; top:14%; right:44%; width:6px; height:6px; border-radius:50%; background:#bfdbfe; pointer-events:none; z-index:-1; animation-delay:0.7s;" class="animate-twinkle"></div>
+
+    <script>
+        const escapeHtml = (str) => String(str).replace(/[&<>"']/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[match]);
+        
+        // Mock data
+        const name = "Ahmad Syahid";
+        const assigned = "Roblox Studio";
+        const level = "BASIC — Lv2";
+        const candidate = true;
+        const mainCopy = `Hasil assessment menunjukkan bahwa ${name} telah memiliki dasar yang cukup baik dalam Logika dan mampu menerapkannya pada tantangan praktis. Spasial masih dapat dikembangkan agar ${name} semakin mandiri ketika menghadapi proyek yang lebih kompleks.<br><br>Di level ini, ${name} tidak hanya mengenal fungsi dasar, tetapi mulai menggabungkan logika, kreativitas, dan proses pemecahan masalah untuk menghasilkan proyek yang dapat dijelaskan dan dikembangkan kembali.`;
+        
+        // Using sample scores, adjust these to see the chart shape change
+        const scores = { logic: 4.5, creativity: 3.2, spatial: 4.8, digital: 3.9 };
+        
+        const bLog = { class: "band-best", label: "Kekuatan Utama" };
+        const bCre = { class: "band-good", label: "Berkembang Baik" };
+        const bSpa = { class: "band-best", label: "Kekuatan Utama" };
+        const bDig = { class: "band-growing", label: "Sedang Bertumbuh" };
+
+        const getPillarCopy = (pillar) => {
+            if(pillar==='logic') return `<b>Ahmad Syahid mampu mengenali pola, urutan, atau hubungan sebab-akibat dengan baik.</b> Kemampuan ini menjadi fondasi untuk menyusun instruksi, memecahkan masalah, dan melakukan debugging.`;
+            if(pillar==='creativity') return `<b>Ahmad Syahid mampu menggunakan pilihan visual dan ide untuk membentuk sebuah hasil.</b> Kemampuan ini dapat dikembangkan menjadi keterampilan merancang cerita, animasi, permainan.`;
+            if(pillar==='spatial') return `<b>Ahmad Syahid mampu memahami posisi, arah, perpindahan, atau hubungan antarobjek dengan baik.</b> Kemampuan ini mendukung pembuatan animasi, permainan, dan lingkungan digital.`;
+            if(pillar==='digital') return `<b>Ahmad Syahid sedang membangun kenyamanan dan kemandirian menggunakan perangkat serta antarmuka digital.</b> Pembelajaran terarah akan melatih kebiasaan mencoba dan menavigasi.`;
+        };
+
+        const whyLearnNow = `Ahmad Syahid sudah siap bergerak dari aktivitas pengenalan menuju pembuatan proyek yang lebih terstruktur. Pembelajaran pada level ini membantu anak mengubah kemampuan yang sudah terlihat menjadi kebiasaan berpikir: merencanakan, mencoba, mengevaluasi hasil, dan memperbaiki proyek.`;
+        const getModuleValue = () => `Mengembangkan penalaran spasial, logika sistem, desain lingkungan 3D, pengujian, dan pemecahan masalah dalam proyek.`;
+        const prioritiesHtml = `<ul><li>Menggabungkan beberapa instruksi menjadi satu alur.</li><li>Merencanakan proyek sebelum mulai membuat.</li><li>Menguji hasil dan melakukan debugging.</li></ul>`;
+        
+        const learningPath = { name: "Game Creator Path", modules: ["Scratch", "Roblox Studio", "Python"] };
+        const interestStatement = `Ahmad Syahid ingin membuat game dan dunia 3D. Karena itu, perjalanan belajarnya diarahkan melalui <strong>Game Creator Path</strong>. Berdasarkan hasil placement, Roblox Studio menjadi modul yang sebaiknya dipelajari sekarang.`;
+        const state = { submissionId: "pt-12345-abcde" };
+
+        /**
+         * Generates an SVG radar chart with curved lines and polygonal grid background.
+         * Modeled after modern, clean UI styles.
+         * 
+         * @param {number} top - Value for top point (Logic)
+         * @param {number} right - Value for right point (Creativity)
+         * @param {number} bottom - Value for bottom point (Spatial)
+         * @param {number} left - Value for left point (Digital)
+         */
+        function getCurvedRadarChart(top, right, bottom, left) {
+            // Chart dimensions
+            const width = 600;
+            const height = 500;
+            const cx = width / 2;
+            const cy = height / 2;
+            const radius = 160; // Max radius for data points
+            const gridRadius = 180; // slightly larger for the outermost grid ring
+            const maxScore = 5; // Assuming scores are out of 5
+
+            // Calculate coordinates for grid polygons
+            // Using 4 points (diamond shape base)
+            const numPoints = 4;
+            const angles = [
+                -Math.PI / 2, // Top
+                0,            // Right
+                Math.PI / 2,  // Bottom
+                Math.PI       // Left
+            ];
+
+            // Helper to generate a polygon string for background grids
+            const getGridPolygon = (r) => {
+                const points = angles.map(angle => {
+                    return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+                });
+                return points.join(' ');
+            };
+
+            // Generate grid levels (concentric polygons)
+            let gridsHtml = '';
+            const gridLevels = 5;
+            for (let i = gridLevels; i > 0; i--) {
+                const r = gridRadius * (i / gridLevels);
+                // Style inner grids slightly different than the outermost
+                const strokeColor = i === gridLevels ? "var(--chart-line-color)" : "var(--chart-grid-line)";
+                const strokeWidth = i === gridLevels ? "1.5" : "1";
+                const fill = i % 2 === 0 ? "rgba(255,255,255,0.4)" : "rgba(240, 247, 255, 0.4)";
+                const opacity = i === gridLevels ? "0.2" : "0.5";
+                
+                gridsHtml += `<polygon points="${getGridPolygon(r)}" fill="${fill}" stroke="${strokeColor}" stroke-opacity="${opacity}" stroke-width="${strokeWidth}" />`;
+            }
+
+            // Generate axis lines connecting opposite corners
+            const axesHtml = `
+                <line x1="${cx}" y1="${cy - gridRadius}" x2="${cx}" y2="${cy + gridRadius}" stroke="var(--chart-grid-line)" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="${cx - gridRadius}" y1="${cy}" x2="${cx + gridRadius}" y2="${cy}" stroke="var(--chart-grid-line)" stroke-width="1" stroke-dasharray="4,4"/>
+            `;
+
+            // Calculate exact data point coordinates based on scores
+            const ptTop = { x: cx, y: cy - radius * (top / maxScore) };
+            const ptRight = { x: cx + radius * (right / maxScore), y: cy };
+            const ptBottom = { x: cx, y: cy + radius * (bottom / maxScore) };
+            const ptLeft = { x: cx - radius * (left / maxScore), y: cy };
+
+            // Create curved path using cubic bezier curves
+            // The control points are calculated to create smooth rounded corners at each data point
+            const tension = 0.35; // Adjust this for more/less curve (0 is straight lines)
+            
+            // Function to calculate control points for a smoother curve
+            const cp = (p1, p2, p3, t) => {
+                const d01 = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+                const d12 = Math.sqrt(Math.pow(p3.x - p2.x, 2) + Math.pow(p3.y - p2.y, 2));
+                const fa = t * d01 / (d01 + d12);
+                const fb = t * d12 / (d01 + d12);
+                return {
+                    cp1x: p2.x - fa * (p3.x - p1.x),
+                    cp1y: p2.y - fa * (p3.y - p1.y),
+                    cp2x: p2.x + fb * (p3.x - p1.x),
+                    cp2y: p2.y + fb * (p3.y - p1.y)
+                };
+            };
+
+            // To close the loop smoothly, we need to consider the points wrapping around
+            const points = [ptLeft, ptTop, ptRight, ptBottom, ptLeft, ptTop]; 
+            
+            let pathData = `M ${ptTop.x},${ptTop.y} `;
+            
+            // Calculate segments Top->Right, Right->Bottom, Bottom->Left, Left->Top
+            for(let i = 1; i < 5; i++) {
+                const p0 = points[i-1];
+                const p1 = points[i];
+                const p2 = points[i+1];
+                const p3 = points[i+2] || points[2]; // handle last point wrap
+
+                // We calculate control points relative to p1 and p2
+                const ctrl1 = cp(p0, p1, p2, tension);
+                const ctrl2 = cp(p1, p2, p3, tension);
+                
+                pathData += `C ${ctrl1.cp2x},${ctrl1.cp2y} ${ctrl2.cp1x},${ctrl2.cp1y} ${p2.x},${p2.y} `;
+            }
+
+            // The Path (Filled and Stroked)
+            const dataPathHtml = `
+                <path d="${pathData}" 
+                      fill="var(--chart-fill-color)" 
+                      stroke="var(--chart-line-color)" 
+                      stroke-width="2.5" 
+                      stroke-linejoin="round"
+                      style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.2));" />
+            `;
+
+            // Data Points (Circles)
+            // Determine max value to highlight it
+            const maxVal = Math.max(top, right, bottom, left);
+            
+            const createPoint = (x, y, val, label) => {
+                const isMax = val === maxVal;
+                const r = isMax ? 6 : 5;
+                const fill = isMax ? "var(--chart-point-active)" : "var(--chart-point-bg)";
+                const stroke = isMax ? "#fff" : "var(--chart-line-color)";
+                const strokeW = isMax ? "2" : "2";
+                
+                // Add tooltip-like label near max point
+                let tooltipHtml = '';
+                if (isMax) {
+                    // Position tooltip based on quadrant to avoid overlap
+                    const tooltipY = y < cy ? y - 15 : y + 15;
+                    tooltipHtml = `
+                        <!-- Outer pulse effect for highest score -->
+                        <circle cx="${x}" cy="${y}" r="12" fill="none" stroke="var(--chart-point-active)" stroke-width="1.5" opacity="0.5" class="chart-point-active" />
+                    `;
+                }
+
+                return `
+                    ${tooltipHtml}
+                    <circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}" style="transition: all 0.3s;" />
+                `;
+            };
+
+            const pointsHtml = `
+                ${createPoint(ptTop.x, ptTop.y, top, 'Logika')}
+                ${createPoint(ptRight.x, ptRight.y, right, 'Kreativitas')}
+                ${createPoint(ptBottom.x, ptBottom.y, bottom, 'Spasial')}
+                ${createPoint(ptLeft.x, ptLeft.y, left, 'Digital')}
+            `;
+
+            // Labels positioning
+            const labelOffset = 35;
+            
+            return `
+            <svg class="chart-svg" width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <!-- Optional: add gradients here if needed -->
+                    <linearGradient id="score-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#3b82f6" />
+                        <stop offset="100%" stop-color="#8b5cf6" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Background Grid -->
+                <g class="chart-grid">
+                    ${gridsHtml}
+                    ${axesHtml}
+                </g>
+
+                <!-- Data Shape -->
+                <g class="chart-data">
+                    ${dataPathHtml}
+                </g>
+
+                <!-- Data Points -->
+                <g class="chart-points">
+                    ${pointsHtml}
+                </g>
+
+                <!-- Labels -->
+                <g class="chart-labels" font-family="'Orbitron', sans-serif" font-weight="700" font-size="14" fill="#334155" letter-spacing="0.5">
+                    <text x="${cx}" y="${cy - gridRadius - labelOffset + 10}" text-anchor="middle">LOGIKA</text>
+                    <text x="${cx + gridRadius + labelOffset - 10}" y="${cy + 5}" text-anchor="start">KREATIVITAS</text>
+                    <text x="${cx}" y="${cy + gridRadius + labelOffset}" text-anchor="middle">SPASIAL</text>
+                    <text x="${cx - gridRadius - labelOffset + 10}" y="${cy + 5}" text-anchor="end">DIGITAL</text>
+                </g>
+                
+                <!-- Sub-labels (Scores) -->
+                <g class="chart-sublabels" font-family="'Space Grotesk', sans-serif" font-weight="600" font-size="12" fill="#64748b">
+                    <text x="${cx}" y="${cy - gridRadius - labelOffset + 25}" text-anchor="middle">${top.toFixed(1)}/5.0</text>
+                    <text x="${cx + gridRadius + labelOffset - 10}" y="${cy + 20}" text-anchor="start">${right.toFixed(1)}/5.0</text>
+                    <text x="${cx}" y="${cy + gridRadius + labelOffset + 15}" text-anchor="middle">${bottom.toFixed(1)}/5.0</text>
+                    <text x="${cx - gridRadius - labelOffset + 10}" y="${cy + 20}" text-anchor="end">${left.toFixed(1)}/5.0</text>
+                </g>
+            </svg>
+            `;
+        }
+    </script>
+
+    <div class="glass-panel" id="app">
+        
+        <!-- HEADER & MAIN RECOMMENDATION -->
+        <div class="rc-header">
+            <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo" style="height: 48px; margin-bottom: 24px;">
+            <br>
+            <div class="rc-badge-status ${candidate ? 'lv3' : ''}">
+                <i class="fa-solid ${candidate ? 'fa-star' : 'fa-check-circle'}"></i>
+                <script>document.write(candidate ? 'Status: Kandidat EMERGING — Lv3' : 'Status: Placement Test Selesai');</script>
+            </div>
+
+            <h1 class="student-name-title">Profil Potensi & Rekomendasi Belajar<br><span style="color: var(--k-yellow);"><script>document.write(name);</script></span></h1>
+            
+            <div class="recommendation-box">
+                <div class="rec-item">
+                    <span class="rec-label">Level Rekomendasi</span>
+                    <span class="rec-value"><script>document.write(escapeHtml(candidate ? 'BASIC — Lv2*' : level));</script></span>
+                </div>
+                <div class="rec-item primary">
+                    <span class="rec-label">Modul Paling Cocok</span>
+                    <span class="rec-value"><i class="fa-solid fa-cube" style="font-size: 1.2rem; margin-right: 8px;"></i><script>document.write(escapeHtml(assigned));</script></span>
+                </div>
+            </div>
+
+            <div class="main-narrative">
+                <p><strong>Kenapa rekomendasi ini diberikan?</strong></p>
+                <p style="margin-top: 8px; font-size: 1rem;"><script>document.write(mainCopy);</script></p>
+            </div>
+        </div>
+
+        <div class="rc-section">
+            <div class="section-header">
+                <div class="section-icon"><i class="fa-solid fa-chart-radar"></i></div>
+                <h2 class="section-title">Detail Profil Kemampuan</h2>
+            </div>
+            
+            <div class="profile-container">
+                <!-- UPDATED RADAR CHART CONTAINER -->
+                <div class="radar-box">
+                    <script>
+                        // Call the updated curved chart function
+                        document.write(getCurvedRadarChart(scores.logic, scores.creativity, scores.spatial, scores.digital));
+                    </script>
+                </div>
+                
+                <div class="rc-pillars-grid">
+                    <div class="rc-pillar-card">
+                        <div class="rc-pillar-head">
+                            <span class="rc-pillar-name"><i class="fa-solid fa-brain" style="color:#f59e0b;"></i> Logika</span>
+                            <span class="rc-band band-best">Kekuatan Utama</span>
+                        </div>
+                        <div class="rc-pillar-desc"><script>document.write(getPillarCopy('logic'));</script></div>
+                    </div>
+                    <div class="rc-pillar-card">
+                        <div class="rc-pillar-head">
+                            <span class="rc-pillar-name"><i class="fa-solid fa-palette" style="color:#ec4899;"></i> Kreativitas</span>
+                            <span class="rc-band band-good">Berkembang Baik</span>
+                        </div>
+                        <div class="rc-pillar-desc"><script>document.write(getPillarCopy('creativity'));</script></div>
+                    </div>
+                    <div class="rc-pillar-card">
+                        <div class="rc-pillar-head">
+                            <span class="rc-pillar-name"><i class="fa-solid fa-cubes" style="color:#10b981;"></i> Spasial</span>
+                            <span class="rc-band band-best">Kekuatan Utama</span>
+                        </div>
+                        <div class="rc-pillar-desc"><script>document.write(getPillarCopy('spatial'));</script></div>
+                    </div>
+                    <div class="rc-pillar-card">
+                        <div class="rc-pillar-head">
+                            <span class="rc-pillar-name"><i class="fa-solid fa-laptop-code" style="color:#3b82f6;"></i> Literasi Digital</span>
+                            <span class="rc-band band-growing">Sedang Bertumbuh</span>
+                        </div>
+                        <div class="rc-pillar-desc"><script>document.write(getPillarCopy('digital'));</script></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rc-grid-2">
+            <div class="info-box">
+                <h3>Mengapa mulai dari level ini?</h3>
+                <p><script>document.write(whyLearnNow);</script></p>
+                <div style="background: rgba(38,94,155,0.05); padding: 16px; border-radius: 12px; margin-top: 16px;">
+                    <strong style="color: var(--k-blue-d); font-size: 0.9rem;">Melalui <script>document.write(assigned);</script>, anak akan berlatih:</strong>
+                    <p style="margin-top: 6px; font-size: 0.9rem; margin-bottom: 0;"><script>document.write(getModuleValue());</script></p>
+                </div>
+            </div>
+            <div class="info-box bg-yellow">
+                <h3>Fokus Perkembangan Awal</h3>
+                <script>document.write(prioritiesHtml);</script>
+            </div>
+        </div>
+
+        <div class="rc-section" style="margin-top: 24px;">
+            <div class="section-header">
+                <div class="section-icon" style="background: var(--k-green);"><i class="fa-solid fa-map-location-dot"></i></div>
+                <h2 class="section-title">Peta Perjalanan Belajar</h2>
+            </div>
+            
+            <div class="interest-banner">
+                <div class="interest-icon">🎯</div>
+                <div>
+                    <h3 style="color: #166534; font-weight: 800; margin-bottom: 8px;">Arah Belajar Berdasarkan Minat</h3>
+                    <p style="color: #14532d; font-size: 0.95rem; line-height: 1.5;"><script>document.write(interestStatement);</script></p>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; margin-bottom: 16px; color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 800;">Alur Pembelajaran: <span style="color: var(--k-blue);"><script>document.write(learningPath.name);</script></span></h3>
+            
+            <div class="roadmap-container">
+                <script>
+                    const html = learningPath.modules.map((mod, index) => {
+                        const isActive = mod === assigned;
+                        let step = `<div class="roadmap-step">
+                            <div class="step-bubble ${isActive ? 'active' : ''}">${index + 1}. ${mod}</div>
+                        </div>`;
+                        if (index < learningPath.modules.length - 1) {
+                            step += `<div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>`;
+                        }
+                        return step;
+                    }).join('');
+                    document.write(html);
+                </script>
+            </div>
+        </div>
+
+        <div class="footer-card">
+            <div class="meta-info">
+                <strong style="color: var(--k-blue-d);">Informasi Asesmen</strong><br>
+                Submission ID: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569;"><script>document.write(state.submissionId);</script></code><br>
+                <script>
+                    if(candidate) document.write("Penempatan BASIC — Lv2 sudah berlaku; portfolio hanya diperlukan jika ingin dipertimbangkan untuk masuk kelas Akselerasi (Lv3).");
+                    else document.write("Rekomendasi modul dan level di atas merupakan hasil placement otomatis dan sudah final.");
+                </script>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="downloadReport"><i class="fa-solid fa-download"></i> Simpan Hasil</button>
+                <script>
+                    if(candidate) {
+                        document.write('<button class="btn btn-primary" id="goPortfolio"><i class="fa-solid fa-upload"></i> Kirim Portfolio (Opsional)</button>');
+                    } else {
+                        document.write('<button class="btn btn-primary" id="restart"><i class="fa-solid fa-check"></i> Selesai</button>');
+                    }
+                </script>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
