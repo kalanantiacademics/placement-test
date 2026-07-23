@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kalananti Kids — Stage 1 Complete</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#e8f2ff}
+    #assessment{display:block;width:100%;height:100%;border:0;background:#e8f2ff}
+    .transition{
+      position:fixed;inset:0;z-index:10;
+      display:grid;place-items:center;
+      padding:24px;
+      color:#1a4576;
+      font:700 16px/1.5 system-ui,sans-serif;
+      text-align:center;
+      background:
+        radial-gradient(circle at 12% 12%,rgba(38,94,155,.12),transparent 34%),
+        radial-gradient(circle at 88% 14%,rgba(249,192,19,.13),transparent 30%),
+        linear-gradient(155deg,#edf7ff,#dceeff 55%,#cfe5ff);
+      opacity:0;visibility:hidden;transition:.25s;
+    }
+    .transition.show{opacity:1;visibility:visible}
+    .transition-card{
+      width:min(520px,100%);
+      padding:36px 28px;
+      border:2px solid #c4ddf5;
+      border-radius:30px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 24px 64px -16px rgba(38,94,155,.22),0 0 0 5px rgba(255,255,255,.55);
+    }
+    .transition-icon{font-size:54px;margin-bottom:12px}
+    .transition h1{
+      margin:0 0 9px;
+      color:#1a4576;
+      font:800 clamp(1.3rem,4vw,1.9rem)/1.25 'Trebuchet MS',system-ui,sans-serif;
+    }
+    .transition p{margin:0;color:#4d7daf}
+    .transition-bar{
+      width:220px;max-width:80%;height:9px;margin:22px auto 0;
+      overflow:hidden;border-radius:99px;background:#d8e9fa;
+    }
+    .transition-bar::after{
+      content:"";display:block;width:45%;height:100%;
+      border-radius:inherit;background:linear-gradient(90deg,#265e9b,#339d9d,#f9c013);
+      animation:loading 1s ease-in-out infinite alternate;
+    }
+    @keyframes loading{to{transform:translateX(125%)}}
+    .result-shell{min-height:100%;overflow:auto;padding:28px 18px;font-family:'Space Grotesk',system-ui,sans-serif;color:#1a4576}
+    .result-panel{width:min(980px,100%);margin:auto;padding:34px;border:1.5px solid rgba(180,215,255,.9);border-radius:32px;background:rgba(255,255,255,.94);box-shadow:0 24px 64px -16px rgba(38,94,155,.22),0 0 0 5px rgba(255,255,255,.55)}
+    .result-panel h1,.result-panel h2{font-family:'Orbitron',system-ui,sans-serif}
+    .result-panel h1{text-align:center;margin:0 0 8px}.result-sub{text-align:center;color:#4d7daf;font-weight:700;margin:0 0 26px}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.result-card{padding:20px;border:1px solid #c8ddf2;border-radius:18px;background:#f7fbff}
+    .result-card.primary{background:#fff7d6;border-color:#f1d36b}.result-card h2{font-size:1rem;margin:0 0 9px}.result-card strong.big{display:block;font-size:1.55rem;color:#173f6b}
+    .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.score-pill{padding:14px 10px;border-radius:15px;background:#eaf4ff;text-align:center;font-weight:800}.score-pill strong{display:block;font-size:1.35rem}
+    .result-note{padding:13px 15px;border-radius:13px;background:#eef7ff;color:#315b83;font-weight:700;margin-top:12px}
+    .restart-btn{width:100%;margin-top:20px;padding:15px;border:0;border-radius:15px;background:#f9c013;color:#604700;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #b58600}
+    @media(max-width:680px){.result-grid,.score-grid{grid-template-columns:1fr 1fr}.result-panel{padding:24px 18px}.result-shell{padding:18px 10px}}
+  </style>
+</head>
+<body>
+  <iframe id="assessment" src="./kids.html?stage1-complete=1" title="Kalananti Kids Stage 1A"></iframe>
+
+  <div class="transition" id="transition" aria-live="polite">
+    <div class="transition-card">
+      <div class="transition-icon">🚀</div>
+      <h1>Stage 1A selesai!</h1>
+      <p>Sekarang kita lanjut ke Stage 1B Mission Labs.</p>
+      <div class="transition-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    const frame = document.getElementById('assessment');
+    const transition = document.getElementById('transition');
+    let activePart = '1A';
+    let observer = null;
+    let switching = false;
+    const COMBINED_STORAGE_KEY = 'kalananti-kids-stage1-complete-v1';
+    let combinedState = {
+      assessmentVersion:'kids-stage1-complete-v1',
+      submissionId:(crypto.randomUUID?.()||`kids-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+      stage1A:null,
+      stage1B:null,
+      result:null,
+      startedAt:new Date().toISOString()
+    };
+    localStorage.setItem(COMBINED_STORAGE_KEY,JSON.stringify(combinedState));
+
+    function persistCombinedState(){
+      localStorage.setItem(COMBINED_STORAGE_KEY,JSON.stringify(combinedState));
+    }
+
+    function calculatePlacement(stage1A,stage1B){
+      const pillars=['logic','creativity','spatial','digital'];
+      const combinedPillars={};
+      pillars.forEach(pillar=>{
+        const foundation=(stage1A.scores?.[pillar]||0)/5;
+        const validator=(stage1B.scores?.[pillar]||0)/5;
+        combinedPillars[pillar]=Number((foundation*.55+validator*.45).toFixed(4));
+      });
+      const weights={
+        'Scratch Jr':{logic:.35,creativity:.30,spatial:0,digital:.35},
+        'Scratch':{logic:.35,creativity:.30,spatial:.10,digital:.25},
+        'Roblox Studio':{logic:.30,creativity:0,spatial:.45,digital:.25},
+        'Python':{logic:.55,creativity:0,spatial:.10,digital:.35}
+      };
+      const readinessScores=Object.fromEntries(Object.entries(weights).map(([module,map])=>[
+        module,Math.round(Object.entries(map).reduce((sum,[pillar,weight])=>sum+combinedPillars[pillar]*weight,0)*100)
+      ]));
+      const age=Number(stage1A.student?.exactAge||10);
+      const s = stage1A.scores || {};
+      const validator = stage1B.scores || {};
+      
+      let assignedModule = 'Scratch';
+      let potentialModule = 'Scratch';
+      let fallbackReason = '';
+      
+      if (age <= 7) {
+          assignedModule = 'Scratch Jr';
+          if (s.logic === 5 && s.creativity === 5 && s.digital === 5 && validator.logic === 5 && validator.creativity === 5 && validator.digital === 5) {
+              assignedModule = 'Scratch';
+          } else {
+              fallbackReason = 'Belum memenuhi kriteria nilai sempurna (100%) untuk lompat ke Scratch.';
+          }
+      } else if (age >= 8 && age <= 11) {
+          assignedModule = 'Scratch';
+          potentialModule = 'Roblox Studio';
+          if (s.logic === 5 && s.creativity === 5 && s.spatial === 5 && s.digital === 5 &&
+              validator.logic === 5 && validator.creativity === 5 && validator.spatial === 5 && validator.digital === 5) {
+              assignedModule = 'Roblox Studio';
+          } else {
+              fallbackReason = 'Belum memenuhi kriteria nilai sempurna (100%) untuk lompat ke Roblox Studio.';
+          }
+      } else if (age >= 12 && age <= 15) {
+          assignedModule = 'Scratch';
+          potentialModule = 'Python';
+          if (s.logic === 5 && validator.logic === 5) {
+              assignedModule = 'Python';
+          } else if (s.spatial === 5 && s.digital >= 4 && validator.spatial === 5) {
+              assignedModule = 'Roblox Studio';
+              potentialModule = 'Roblox Studio';
+          } else {
+              fallbackReason = 'Kriteria nilai Logika/Spasial belum cukup kuat untuk lompat ke Python atau Roblox Studio.';
+          }
+      } else {
+          assignedModule = 'Python';
+          potentialModule = 'Python';
+          if (s.spatial === 5 && validator.spatial === 5) {
+              assignedModule = 'Roblox Studio';
+              potentialModule = 'Roblox Studio';
+          }
+      }
+      const reviewFlags=[];
+      const sorted=Object.values(readinessScores).sort((a,b)=>b-a);
+      if(sorted[0]-sorted[1]<=5)reviewFlags.push('ambiguous_readiness_profile');
+      if(fallbackReason)reviewFlags.push('age_policy_fallback');
+      return {
+        combinedPillarScores:combinedPillars,
+        readinessScores,assignedModule,potentialModule,fallbackReason,reviewFlags,
+        stage2AssessmentId:`stage2-${assignedModule.toLowerCase().replace(/\\s+/g,'-')}-v1`,
+        stage1APerfect:stage1A.perfectScore===true,
+        stage1BPerfect:stage1B.perfectScore===true,
+        stage3EligibilityPrerequisites:{
+          stage1APerfect:stage1A.perfectScore===true,
+          stage1BPerfect:stage1B.perfectScore===true,
+          requiresStage2UpwardPath:true,
+          requiresHighestDifficultyFirstTry:true,
+          requiresPortfolioReview:true
+        },
+        completedAt:new Date().toISOString()
+      };
+    }
+
+    function renderCombinedResult(){
+      const result=combinedState.result;
+      const student=combinedState.stage1A?.student||{};
+      const labels={logic:'🧠 Logika',creativity:'🎨 Kreativitas',spatial:'🧊 Spasial',digital:'💻 Digital'};
+      document.body.innerHTML=`
+        <main class="result-shell">
+          <section class="result-panel">
+            <h1>Misi Stage 1 Selesai! 🎉</h1>
+            <p class="result-sub">Hasil Stage 1A dan Stage 1B sudah digabung untuk ${student.name||'siswa'}.</p>
+            <div class="result-grid">
+              <article class="result-card primary"><h2>Assigned Module</h2><strong class="big">${result.assignedModule}</strong><p>Modul yang sesuai untuk dipelajari sekarang.</p></article>
+              <article class="result-card"><h2>Potential Module</h2><strong class="big">${result.potentialModule}</strong><p>Potensi jalur jangka panjang berdasarkan profil kemampuan.</p></article>
+              <article class="result-card"><h2>Assessment Berikutnya</h2><strong>${result.stage2AssessmentId}</strong><p>Stage 2 hanya akan membuka assessment Assigned Module.</p></article>
+              <article class="result-card"><h2>Status Exceptional Candidate</h2><strong>${result.stage1APerfect&&result.stage1BPerfect?'Prasyarat Stage 1 terpenuhi':'Belum memenuhi prasyarat Stage 1'}</strong><p>Lv3 tetap memerlukan Stage 2 dan review portfolio.</p></article>
+            </div>
+            <div class="score-grid">${Object.entries(result.combinedPillarScores).map(([pillar,score])=>`<div class="score-pill">${labels[pillar]}<strong>${Math.round(score*100)}</strong><span>/100</span></div>`).join('')}</div>
+            ${result.fallbackReason?`<div class="result-note"><strong>Alasan fallback:</strong> ${result.fallbackReason}</div>`:''}
+            ${result.reviewFlags.length?`<div class="result-note"><strong>Academic review:</strong> ${result.reviewFlags.join(', ')}</div>`:''}
+            <button class="restart-btn" onclick="location.reload()">Ulangi Stage 1</button>
+          </section>
+        </main>`;
+    }
+
+    function applyUnifiedTheme(doc) {
+      if (!doc || doc.getElementById('stage1-complete-theme')) return;
+      const style = doc.createElement('style');
+      style.id = 'stage1-complete-theme';
+      style.textContent = `
+        :root{
+          --k-blue:#265E9B;--k-blue-d:#1A4576;--k-yellow:#F9C013;
+          --k-green:#339D9D;--bg:#e8f2ff;--bg2:#dbeeff;--sky:#cfe5ff;
+        }
+        body{
+          display:flex!important;
+          flex-direction:column!important;
+          align-items:center!important;
+          justify-content:center!important;
+          min-height:100vh!important;
+          padding:28px 24px!important;
+          background:
+            radial-gradient(circle at 10% 10%,rgba(38,94,155,.10),transparent 36%),
+            radial-gradient(circle at 88% 12%,rgba(249,192,19,.10),transparent 32%),
+            radial-gradient(circle at 50% 105%,rgba(51,157,157,.14),transparent 34%),
+            linear-gradient(160deg,#e8f2ff 0%,#dbeeff 50%,#cfe5ff 100%)!important;
+          background-attachment:fixed!important;
+        }
+        .stage1-shared-decor{
+          position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+        }
+        .stage1-shared-decor span{position:absolute;filter:drop-shadow(0 12px 20px rgba(38,94,155,.16))}
+        .stage1-shared-decor .planet-a{left:-32px;top:14%;font-size:105px;opacity:.58}
+        .stage1-shared-decor .planet-b{right:1.5%;top:18%;font-size:66px;opacity:.55}
+        .stage1-shared-decor .planet-c{right:-35px;bottom:9%;font-size:120px;opacity:.42}
+        .stage1-shared-decor .kid-a{left:10%;top:18%;font-size:54px;opacity:.48}
+        .stage1-shared-decor .kid-b{left:14%;bottom:10%;font-size:58px;opacity:.45}
+        .glass-panel{
+          position:relative!important;
+          z-index:2!important;
+          width:100%!important;
+          max-width:1180px!important;
+          margin:auto 0!important;
+          padding:30px 34px!important;
+          background:rgba(255,255,255,.92)!important;
+          border:1.5px solid rgba(180,215,255,.85)!important;
+          border-radius:2rem!important;
+          box-shadow:0 24px 64px -16px rgba(38,94,155,.18),0 0 0 4px rgba(255,255,255,.6)!important;
+        }
+        .progress-fill,.fill{background:linear-gradient(90deg,#265E9B,#339D9D)!important}
+        .btn-main,.submit{
+          background:linear-gradient(180deg,#F9C013,#E5AB00)!important;
+          color:#5A3F00!important;
+        }
+        @media(max-width:819px){
+          body{display:block!important;padding:24px 16px!important}
+          .glass-panel{padding:28px 20px!important;margin:0!important}
+          .stage1-shared-decor{opacity:.55}
+          .review-toolbar{align-items:stretch!important;flex-direction:column!important}
+          .review-toolbar>div{flex-wrap:wrap!important}
+          .age-switch{width:100%!important}
+          .age-switch button{flex:1!important}
+          .kids-task-pane .mcq-options{grid-template-columns:1fr!important}
+          .kids-task-pane .mcq-option{min-height:76px!important}
+        }
+      `;
+      doc.head.appendChild(style);
+
+      if (activePart === '1B') {
+        if (!doc.querySelector('.stage1-shared-decor')) {
+          doc.body.insertAdjacentHTML('afterbegin',`
+            <div class="stage1-shared-decor" aria-hidden="true">
+              <span class="planet-a">🪐</span>
+              <span class="planet-b">🪐</span>
+              <span class="planet-c">🌕</span>
+              <span class="kid-a">🧑‍🚀</span>
+              <span class="kid-b">🧑‍💻</span>
+            </div>`);
+        }
+        const reviewTitle = doc.querySelector('.review-title');
+        if (reviewTitle) {
+          reviewTitle.innerHTML = 'Stage 1B — Mission Labs<small>Lanjutan langsung dari 20 tantangan Stage 1A</small>';
+        }
+        doc.querySelectorAll('.source-ref,.legend,.dev-note').forEach(el => el.style.display = 'none');
+      }
+    }
+
+    function switchToNewStage1B() {
+      if (switching || activePart === '1B') return;
+      switching = true;
+      transition.classList.add('show');
+      setTimeout(() => {
+        activePart = '1B';
+        frame.title = 'Kalananti Kids Stage 1B';
+        const stage1BUrl = new URL('./kids-1b-codex.html', window.location.href);
+        stage1BUrl.searchParams.set('source', 'kids-1b-codex');
+        stage1BUrl.searchParams.set('v', Date.now().toString());
+        frame.src = stage1BUrl.href;
+      }, 750);
+    }
+
+    function watchStage1A(doc) {
+      if (observer) observer.disconnect();
+      if (!doc || !doc.body || activePart !== '1A') return;
+
+      const check = () => {
+        const progressText = [...doc.querySelectorAll('.progress-text')].map(el => el.textContent).join(' ');
+        const practicalLabAppeared =
+          doc.querySelector('.s1b-v3-workspace') ||
+          progressText.includes('Practical Readiness') ||
+          progressText.includes('Penguat');
+        if (practicalLabAppeared) switchToNewStage1B();
+      };
+
+      observer = new MutationObserver(check);
+      observer.observe(doc.body,{childList:true,subtree:true,characterData:true});
+      check();
+    }
+
+    window.addEventListener('message',(event) => {
+      if (!event.data) return;
+      if (event.data.type === 'kalananti-stage1a-complete') {
+        combinedState.stage1A=event.data.payload;
+        persistCombinedState();
+        switchToNewStage1B();
+      } else if (event.data.type === 'kalananti-stage1b-ready') {
+        frame.contentWindow.postMessage({
+          type:'kalananti-stage1b-init',
+          payload:combinedState.stage1A
+        },'*');
+      } else if (event.data.type === 'kalananti-stage1b-progress') {
+        combinedState.stage1B=event.data.payload;
+        persistCombinedState();
+      } else if (event.data.type === 'kalananti-stage1b-complete') {
+        combinedState.stage1B=event.data.payload;
+        combinedState.result=calculatePlacement(combinedState.stage1A,event.data.payload);
+        persistCombinedState();
+        localStorage.setItem('kalananti-kids-stage1-last-result-v1',JSON.stringify(combinedState));
+        renderCombinedResult();
+      }
+    });
+
+    frame.addEventListener('load',() => {
+      try {
+        const doc = frame.contentDocument;
+        applyUnifiedTheme(doc);
+        if (activePart === '1A') watchStage1A(doc);
+      } catch (error) {
+        // file:// memberi setiap iframe origin terpisah. Perpindahan tetap
+        // berjalan melalui postMessage dari kids.html.
+      }
+
+      if (activePart === '1B') {
+        setTimeout(() => {
+          try { applyUnifiedTheme(frame.contentDocument); } catch (error) {}
+          transition.classList.remove('show');
+          switching = false;
+        },350);
+      }
+    });
+  </script>
+</body>
+</html>
