@@ -2,7 +2,6 @@
 
 <html lang="id">
   <head>
-    <script src="device-guard.js"></script>
     <script data-placement-session-client>
 (function placementSessionBootstrap(global) {
   'use strict';
@@ -416,6 +415,7 @@
     const style = sourceDocument.createElement('style');
     style.dataset.placementPdfExportStyle = 'true';
     style.textContent = `${isKidsReport ? '' : collectPrintCss(sourceDocument)}
+      #pt-loader, .pt-loader,
       .placement-pdf-exporting .rc-footer-actions,
       .placement-pdf-exporting .teen-report-actions,
       .placement-pdf-exporting .kids-report-actions,
@@ -445,6 +445,21 @@
         margin-top: 0 !important;
         margin-bottom: 10px !important;
         padding-top: 0 !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation > div:last-child {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation strong {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        padding-right: 12px !important;
+        font-size: 0.86rem !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation span {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
       }
       .placement-pdf-exporting .teen-section,
       .placement-pdf-exporting .rc-section {
@@ -615,7 +630,7 @@
       .placement-pdf-exporting .kids-profile-chart {
         width: 320px !important;
         max-width: 320px !important;
-        height: 185px !important;
+        height: 240px !important;
         margin: 0 auto 4px !important;
       }
       .placement-pdf-exporting .rc-profile-chart svg,
@@ -919,14 +934,12 @@
       .placement-pdf-exporting .kids-print-continuation strong {
         color: #ffffff !important;
         font-family: 'Orbitron', 'Space Grotesk', sans-serif !important;
-        font-size: 0.96rem !important;
       }
       .placement-pdf-exporting .kids-print-continuation span {
         color: #d9eaff !important;
         font-size: 0.68rem !important;
       }
-      .placement-pdf-exporting .kids-two-col,
-      .placement-pdf-exporting .teen-two-col {
+      .placement-pdf-exporting .kids-two-col {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
         gap: 10px !important;
@@ -1018,8 +1031,6 @@
         line-height: 1.25 !important;
       }`;
     sourceDocument.head.appendChild(style);
-    sourceDocument.documentElement.classList.add('placement-pdf-exporting');
-    sourceDocument.body.classList.add('placement-pdf-exporting');
     return style;
   }
 
@@ -1087,8 +1098,8 @@
 
         const rect = container.getBoundingClientRect();
         const dpr = chartWindow.devicePixelRatio || 2;
-        const width = Math.max(Math.round(rect.width || 320), 320);
-        const height = Math.max(Math.round(rect.height || 185), 185);
+        const width = Math.max(Math.round(rect.width || 320), 1);
+        const height = Math.max(Math.round(rect.height || 240), 1);
 
         const canvas = reportElement.ownerDocument.createElement('canvas');
         canvas.width = width * dpr;
@@ -1103,12 +1114,10 @@
         ctx.drawImage(img, 0, 0, width, height);
 
         chartWindow.URL.revokeObjectURL(url);
-        svg.style.display = 'none';
-        container.appendChild(canvas);
+        svg.replaceWith(canvas);
 
         restoredItems.push(() => {
-          canvas.remove();
-          svg.style.display = '';
+          if (canvas.isConnected) canvas.replaceWith(svg);
         });
       } catch (e) {
         console.warn('SVG rasterization failed, retaining live vector chart.', e);
@@ -1142,24 +1151,34 @@
     const filename = String(options.filename || 'Laporan Placement Test Kalananti.pdf');
     const promise = (async () => {
       const html2Pdf = await loadHtml2Pdf(reportDocument);
-      const exportStyle = installPdfExportStyle(reportDocument, report);
+
+      const offscreenContainer = reportDocument.createElement('div');
+      offscreenContainer.className = 'placement-pdf-sandbox placement-pdf-exporting';
+      offscreenContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;z-index:-9999;background:#e8f2ff;overflow:visible;display:block!important;';
+
+      const reportClone = report.cloneNode(true);
+      reportClone.classList.add('placement-pdf-exporting');
+      offscreenContainer.appendChild(reportClone);
+      reportDocument.body.appendChild(offscreenContainer);
+
+      const exportStyle = installPdfExportStyle(reportDocument, reportClone);
       let restoreCharts = () => {};
       try {
         if (reportDocument.fonts?.ready) {
           await settleWithin(reportDocument.fonts.ready, 5000);
         }
-        await waitForReportAssets(report);
+        await waitForReportAssets(reportClone);
         await nextPaint(reportWindow);
-        restoreCharts = await rasterizeProfileCharts(report);
+        restoreCharts = await rasterizeProfileCharts(reportClone);
         await nextPaint(reportWindow);
-        const isKidsReport = report.classList.contains('kids-report');
-        const isTeensReport = report.classList.contains('teen-report');
+        const isKidsReport = reportClone.classList.contains('kids-report');
+        const isTeensReport = reportClone.classList.contains('teen-report');
         const isJuniorReport = (
-          report.classList.contains('placement-report') && !isKidsReport
+          reportClone.classList.contains('placement-report') && !isKidsReport
         );
         const isFullBleedReport = isKidsReport || isTeensReport || isJuniorReport;
         const captureWindowWidth = Math.max(
-          794,
+          960,
           Number(reportWindow.innerWidth) || 0,
           Number(reportDocument.documentElement?.scrollWidth) || 0,
           Number(reportDocument.body?.scrollWidth) || 0
@@ -1190,7 +1209,7 @@
             before: ['.rc-print-continuation', '.teen-print-continuation', '.kids-print-continuation'],
             avoid: ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid', '.kids-report-head', '.kids-pillar', '.kids-track-step', '.kids-section', '.kids-two-col']
           }
-        }).from(report);
+        }).from(reportClone);
         const generatedBlob = await worker.toPdf().outputPdf('blob');
         if (!(generatedBlob instanceof reportWindow.Blob) || generatedBlob.size < 1000) {
           throw new Error('invalid_generated_pdf');
@@ -1205,9 +1224,7 @@
       } finally {
         restoreCharts();
         exportStyle.remove();
-        report.classList.remove('placement-pdf-exporting');
-        reportDocument.documentElement.classList.remove('placement-pdf-exporting');
-        reportDocument.body.classList.remove('placement-pdf-exporting');
+        offscreenContainer.remove();
       }
     })();
 
@@ -1297,7 +1314,8 @@
 <script data-placement-sync-config>
 window.PlacementSync?.configure();
 </script>
-<script>
+<script src="device-guard.js"></script>
+    <script>
       const PLACEMENT_BUILD_VERSION = "placement-resume-2026-07-24-v1";
 
       function resetPlacementForFreshBuild() {
@@ -1344,6 +1362,7 @@ window.PlacementSync?.configure();
         try {
           const appContainer = document.getElementById("app") || document.body;
           if (!appContainer) return;
+          document.body.classList.add("stage-frame-active");
           const isolatedStageHtml = stageHtml.replace(
             "</head>",
             `<style>
@@ -3135,12 +3154,25 @@ window.PlacementSync?.configure();
         min-height: 100vh !important;
         padding: 24px 16px !important;
       }
+      body.stage-frame-active:not(.placement-pdf-exporting) {
+        justify-content: flex-start !important;
+        padding: 0 !important;
+      }
+      body.stage-frame-active > .space-decor {
+        display: none !important;
+      }
       body > .topbar {
         position: sticky !important;
         top: 0 !important;
         left: 0 !important;
         width: 100% !important;
         flex: 0 0 auto !important;
+      }
+      body > #app {
+        width: 100% !important;
+        max-width: none !important;
+        align-self: stretch !important;
+        flex: 1 0 auto !important;
       }
       body > #app.glass-panel {
         width: min(1180px, calc(100% - 32px)) !important;
@@ -13661,6 +13693,7 @@ window.PlacementSync?.configure();
             : "Usia 9–15 tahun";
         }
         function shell(content) {
+          document.body.classList.remove("stage-frame-active");
           document.body.style.overflow = "auto";
           document.body.style.overflowY = "auto";
           document.documentElement.style.overflow = "auto";
@@ -14175,13 +14208,9 @@ window.PlacementSync?.configure();
             prioritiesHtml = `<ul><li>Menggabungkan beberapa instruksi menjadi satu alur.</li><li>Merencanakan proyek sebelum mulai membuat.</li><li>Menguji hasil dan melakukan debugging.</li></ul>`;
           }
 
-          let mainCopy = `${esc(name)} direkomendasikan memulai ${esc(assigned)} pada ${esc(level)}.<br><br>`;
+          let mainCopy = `${esc(name)} direkomendasikan memulai ${esc(assigned)} pada ${esc(level)}. Kekuatan utama terlihat pada ${esc(strongestName)}, dengan ${esc(devName)} sebagai fokus pengembangan berikutnya.`;
           if (candidate) {
-            mainCopy = `${esc(name)} menunjukkan performa yang sangat kuat dan konsisten pada rangkaian assessment. ${esc(name)} berhasil menyelesaikan tantangan tingkat lanjut dengan bukti kuat pada ${esc(strongestName)}.<br><br>Penempatan yang telah dikonfirmasi saat ini adalah BASIC — Lv2. Berdasarkan hasil tersebut, ${esc(name)} terpilih sebagai kandidat untuk EMERGING — Lv3. Status kandidat belum berarti bahwa Lv3 telah diberikan. Academic Team perlu meninjau portfolio untuk memastikan bahwa ${esc(name)} dapat menerapkan kemampuan tersebut secara mandiri dalam sebuah proyek, bukan hanya pada aktivitas placement test.`;
-          } else if (level === "FOUNDATIONAL — Lv1") {
-            mainCopy += `Hasil assessment menunjukkan bahwa ${esc(name)} sudah mulai mengenali ${esc(strongestName)}. Agar kemampuan tersebut berkembang lebih stabil, ${esc(devName)} masih perlu dilatih melalui aktivitas yang bertahap dan terarah.<br><br>Di level ini, ${esc(name)} akan membangun fondasi melalui aktivitas khusus modul. Tujuannya bukan mengulang hal yang sudah bisa dilakukan, tetapi membantu ${esc(name)} memahami proses, mencoba dengan lebih mandiri, dan memiliki dasar yang kuat sebelum masuk ke tantangan yang lebih kompleks.`;
-          } else {
-            mainCopy += `Hasil assessment menunjukkan bahwa ${esc(name)} telah memiliki dasar yang cukup baik dalam ${esc(strongestName)} dan mampu menerapkannya pada tantangan praktis. ${esc(devName)} masih dapat dikembangkan agar ${esc(name)} semakin mandiri ketika menghadapi proyek yang lebih kompleks.<br><br>Di level ini, ${esc(name)} tidak hanya mengenal fungsi dasar, tetapi mulai menggabungkan logika, kreativitas, dan proses pemecahan masalah untuk menghasilkan proyek yang dapat dijelaskan dan dikembangkan kembali.`;
+            mainCopy = `${esc(name)} menunjukkan performa yang sangat kuat pada assessment Kids. Penempatan saat ini adalah BASIC — Lv2, dan terpilih sebagai kandidat EMERGING — Lv3.`;
           }
 
           const badgeStatus = candidate
@@ -14208,39 +14237,42 @@ window.PlacementSync?.configure();
             .report-space-art svg{position:absolute;inset:0;width:100%;height:100%}
             .report-art-planet{position:absolute;left:-42px;bottom:-58px;width:135px;height:auto;object-fit:contain;opacity:.92;filter:drop-shadow(0 12px 20px rgba(5,24,49,.28))}
             .report-art-character{position:absolute;right:10px;top:16px;width:76px;height:auto;object-fit:contain;filter:drop-shadow(0 14px 22px rgba(5,24,49,.34))}
-            .kids-report-head h1,.kids-report-head h1 span{max-width:960px;color:#fff;text-shadow:0 2px 9px rgba(4,26,55,.28)}
-            .kids-report-head .report-student-name{display:block;max-width:100%;margin:.12em auto 0;overflow-wrap:anywhere;word-break:break-word;line-height:1.06}
-            .report-name-long .report-student-name{font-size:.78em;letter-spacing:-.01em}
-            .report-name-xlong .report-student-name{font-size:.64em;line-height:1.02;letter-spacing:-.02em}
-            .report-name-xxlong .report-student-name{font-size:.52em;line-height:1;letter-spacing:-.025em}
+            .kids-report{font-family:'Space Grotesk','Inter',sans-serif;max-width:860px;margin:20px auto 40px;background:#ffffff;border-radius:24px;padding:28px;box-shadow:0 20px 60px rgba(26,69,118,.12),0 4px 16px rgba(0,0,0,.04);border:1.5px solid rgba(180,215,255,.85);box-sizing:border-box}
+            .kids-report h1,.kids-report h2{font-family:'Orbitron',sans-serif}
+            .kids-report-head{text-align:center;margin-bottom:24px;position:relative;isolation:isolate;overflow:hidden;padding:32px 24px;border:1.5px solid rgba(255,255,255,.36);border-radius:1.5rem;background:#173f73;color:#fff;box-shadow:0 20px 48px -24px rgba(16,52,92,.65)}
+            .kids-report-head>*:not(.report-space-art){position:relative;z-index:2}
+            .report-space-art{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}.report-space-art svg{position:absolute;inset:0;width:100%;height:100%}
+            .report-art-planet{position:absolute;left:-42px;bottom:-58px;width:135px;opacity:.92;filter:drop-shadow(0 12px 20px rgba(5,24,49,.28))}.report-art-character{position:absolute;right:10px;top:16px;width:76px;filter:drop-shadow(0 14px 22px rgba(5,24,49,.34))}
+            .kids-report-head h1{max-width:960px;color:#fff;text-shadow:0 2px 9px rgba(4,26,55,.28)}
             .kids-report-head .subtitle{color:#eaf4ff}
             .kids-report-brand{display:flex;width:100%;align-items:center;justify-content:space-between;margin-bottom:20px;}
             .kids-report-brand img{margin:0!important;padding:9px 13px;border-radius:14px;background:rgba(255,255,255,.94);box-shadow:0 10px 24px rgba(4,26,55,.2)}
             .kids-report-meta{font-size:.85rem;color:#eaf4ff;text-align:right;font-weight:700;line-height:1.4;}
+            .kids-report-status{display:inline-block;padding:8px 16px;border-radius:999px;background:#eef8f5;color:#287d73;border:1px solid #a3d9d3;font-weight:900;font-size:.82rem;letter-spacing:.04em}
             .kids-report-placement{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:20px 0}
-            .kids-report-placement span{padding:12px 22px;border-radius:15px;font-family:'Inter',sans-serif;font-size:1.15rem;font-weight:850}
+            .kids-report-placement span{padding:12px 22px;border-radius:15px;font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:850}
             .kids-module{background:#eaf4ff;color:#265e9b;border:2px solid #bfdbfe}
             .kids-level{background:linear-gradient(135deg,#f9c013,#e5ab00);color:#5a3f00}
-            .kids-section{padding:24px;margin-bottom:18px;border:1.5px solid rgba(38,94,155,.18);border-radius:20px;background:rgba(255,255,255,.9)}
-            .kids-section h2{padding-bottom:9px;border-bottom:2px solid rgba(38,94,155,.1);color:#17324f;text-align:center;}
+            .kids-section{padding:24px;margin-bottom:18px;border:1.5px solid rgba(38,94,155,.16);border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 4px 16px rgba(38,94,155,.04)}
+            .kids-section h2{padding-bottom:10px;border-bottom:2px solid rgba(38,94,155,.1);color:#17324f;text-align:center;font-size:1.25rem;font-weight:800;}
             .kids-profile-layout{display:flex;flex-direction:column;align-items:center;gap:24px}
             .kids-pillar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;width:100%}
-            .kids-pillar{padding:18px;border:1px solid #c8ddf2;border-radius:16px;background:#fff}
+            .kids-pillar{padding:18px;border:1.5px solid #d4e4f5;border-radius:16px;background:#fff;box-shadow:0 4px 14px rgba(38,94,155,.05)}
             .kids-pillar-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-            .kids-band{padding:5px 9px;border-radius:8px;font-size:.72rem;font-weight:900}
+            .kids-band{padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:900}
             .kids-two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
             .kids-priority li{margin-bottom:9px;line-height:1.5}
             .kids-path-name{display:table;text-align:center;margin:2px auto 18px;padding:12px 22px;border:2px solid #f0b400;border-radius:16px;background:#fff7d6;box-shadow:0 8px 22px rgba(240,180,0,.2);font-family:'Orbitron',sans-serif;font-size:clamp(1.2rem,3vw,1.8rem);font-weight:900;color:#265e9b}
             .kids-current-module{display:flex;width:max-content;max-width:100%;align-items:center;gap:9px;margin:0 auto 18px;padding:9px 15px;border:2px solid #f0b400;border-radius:999px;background:#fff9d8;color:#704f00;font-size:.88rem;font-weight:850;box-shadow:0 7px 18px rgba(240,180,0,.16)}
             .kids-current-module strong{color:#17324f}
             .kids-track{display:flex;align-items:center;justify-content:center;gap:14px;overflow-x:auto;padding:8px 4px 18px}
-            .kids-track-step{position:relative;flex:1 0 190px;max-width:310px;min-height:112px;display:flex;align-items:center;justify-content:center;padding:20px 18px;border:3px solid #7f96ad;border-radius:999px;background:#fff;color:#17324f;text-align:center;font-family:'Inter',sans-serif;font-size:1.06rem;font-weight:850}
+            .kids-track-step{position:relative;flex:1 0 190px;max-width:310px;min-height:112px;display:flex;align-items:center;justify-content:center;padding:20px 18px;border:3px solid #7f96ad;border-radius:999px;background:#fff;color:#17324f;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:1.06rem;font-weight:850}
             .kids-track-step.is-assigned{transform:translateY(-4px) scale(1.035);border-color:#f0a800;background:linear-gradient(135deg,#ffe45c,#f9c013);color:#4b3500;box-shadow:0 12px 28px rgba(240,168,0,.34),0 0 0 6px rgba(249,192,19,.13)}
             .kids-track-step.is-assigned::after{content:'✓';position:absolute;top:-11px;right:18px;display:grid;width:30px;height:30px;place-items:center;border:3px solid #fff;border-radius:50%;background:#22a06b;color:#fff;font-size:.9rem;box-shadow:0 5px 12px rgba(34,160,107,.25)}
             .kids-track-arrow{flex:0 0 auto;color:#7f96ad;font-size:2rem;font-weight:900}
             .kids-report-actions{display:grid;grid-template-columns:1fr;gap:14px;margin-top:22px}
             .kids-report-note{margin-top:15px;font-size:0.85rem;color:#475569;border-top:1px dashed #cbd5e1;padding-top:12px;}
-            .kids-print-continuation{display:none}
+            .kids-print-continuation{display:block}
             @media(max-width:720px){.kids-profile-layout,.kids-pillar-grid,.kids-two-col{grid-template-columns:1fr}.kids-track{justify-content:flex-start}.kids-track-step{flex-basis:175px}.kids-track-arrow{font-size:1.5rem}}
         </style>
 
@@ -14269,7 +14301,8 @@ window.PlacementSync?.configure();
                 <span class="kids-report-meta">PLACEMENT REPORT - KIDS 8–15<br>${reportDate} · USIA ${exactAge} TAHUN</span>
             </div>
             <span class="kids-report-status">${candidate ? 'KANDIDAT REVIEW EMERGING — Lv3' : level === 'FOUNDATIONAL — Lv1' ? 'STATUS: DIREKOMENDASIKAN UNTUK MEMBANGUN FONDASI' : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK'}</span>
-            <h1 style="font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 16px 0 8px;">Profil Potensi dan Rekomendasi Belajar<br><span class="report-student-name" style="color:#f9c013;">${esc(name)}</span></h1>
+            <h1 style="font-size: clamp(1.4rem, 3.2vw, 2.1rem); font-family: 'Orbitron', sans-serif; margin: 16px 0 6px; font-weight: 800; text-shadow: 0 2px 8px rgba(4,26,55,0.3);">Profil Potensi dan Rekomendasi Belajar</h1>
+            <div class="report-student-name" style="display:inline-block; max-width:100%; margin: 2px auto 14px; padding: 4px 18px; border-radius: 999px; background: rgba(249, 192, 19, 0.18); border: 1.5px solid rgba(249, 192, 19, 0.5); color: #f9c013; font-family: 'Orbitron', sans-serif; font-size: clamp(0.95rem, 2.2vw, 1.35rem); font-weight: 800; text-shadow: 0 2px 8px rgba(4,26,55,0.3); word-break: break-word;">${esc(name)}</div>
             <div class="kids-report-placement"><span class="kids-module">${esc(assigned)}</span><span class="kids-level">${esc(candidate ? "BASIC — Lv2" : level)}</span></div>
             <p class="subtitle" style="max-width:800px; margin:0 auto; line-height:1.6;">${mainCopy}</p>
           </header>
@@ -14281,19 +14314,19 @@ window.PlacementSync?.configure();
                       ${getRadarChart(scores.logic, scores.creativity, scores.spatial, scores.digital)}
                   </div>
                   <div class="kids-pillar-grid">
-                    <article class="kids-pillar" style="background:#eff6ff; border-color:#bfdbfe;">
+                    <article class="kids-pillar">
                       <div class="kids-pillar-head"><strong>Logika</strong><span class="kids-band ${bLog.class}" style="background:#bfdbfe; color:#1e40af;">${bLog.label}</span></div>
                       <p style="margin:0; font-size:0.92rem; color:#1e293b;">${getPillarCopy("logic", bLog, esc(name), esc(assigned))}</p>
                     </article>
-                    <article class="kids-pillar" style="background:#fffbeb; border-color:#fde68a;">
+                    <article class="kids-pillar">
                       <div class="kids-pillar-head"><strong>Kreativitas</strong><span class="kids-band ${bCre.class}" style="background:#fde68a; color:#92400e;">${bCre.label}</span></div>
                       <p style="margin:0; font-size:0.92rem; color:#1e293b;">${getPillarCopy("creativity", bCre, esc(name), esc(assigned))}</p>
                     </article>
-                    <article class="kids-pillar" style="background:#eff6ff; border-color:#bfdbfe;">
+                    <article class="kids-pillar">
                       <div class="kids-pillar-head"><strong>Spasial</strong><span class="kids-band ${bSpa.class}" style="background:#bfdbfe; color:#1e40af;">${bSpa.label}</span></div>
                       <p style="margin:0; font-size:0.92rem; color:#1e293b;">${getPillarCopy("spatial", bSpa, esc(name), esc(assigned))}</p>
                     </article>
-                    <article class="kids-pillar" style="background:#fdf2f8; border-color:#fbcfe8;">
+                    <article class="kids-pillar">
                       <div class="kids-pillar-head"><strong>Literasi Digital</strong><span class="kids-band ${bDig.class}" style="background:#fbcfe8; color:#9d174d;">${bDig.label}</span></div>
                       <p style="margin:0; font-size:0.92rem; color:#1e293b;">${getPillarCopy("digital", bDig, esc(name), esc(assigned))}</p>
                     </article>
@@ -14301,7 +14334,7 @@ window.PlacementSync?.configure();
               </div>
           </section>
 
-          <div class="kids-print-continuation" style="margin: 24px 0 16px;">
+          <div class="kids-print-continuation" style="margin: 28px 0 20px 0;">
               <div class="report-continuation-art" aria-hidden="true">
                 <svg viewBox="0 0 1000 120" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                   <defs>
@@ -14313,27 +14346,27 @@ window.PlacementSync?.configure();
                 </svg>
                 <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/904cb9e9-ecd1-4731-a1ef-fa6a0bd50527.png" alt="" style="position:absolute; right:10px; top:10px; height:80px;">
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:#173f73; color:#fff; border-radius:12px;">
-                <strong style="font-size:1.1rem;">Rekomendasi & Learning Path ${esc(name)}</strong>
-                <span style="font-size:0.85rem; opacity:0.85;">PLACEMENT REPORT - HALAMAN 2</span>
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 22px; background:linear-gradient(135deg, #102d56 0%, #173f73 60%, #2d8fb5 100%); color:#fff; border-radius:16px; box-shadow:0 10px 24px rgba(16, 52, 92, 0.15); border: 1.5px solid rgba(255,255,255,0.25);">
+                <strong style="font-family: 'Orbitron', sans-serif; font-size:1.1rem; letter-spacing: 0.02em;">Rekomendasi &amp; Learning Path ${esc(name)}</strong>
+                <span style="font-family: 'Space Grotesk', sans-serif; font-size:0.82rem; font-weight:800; opacity:0.9; background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:999px;">HALAMAN 2</span>
               </div>
           </div>
 
           <div class="kids-two-col">
               <section class="kids-section" style="background:#eff6ff">
-                <h2 style="font-size:1.3rem;">Mengapa mulai dari level ini?</h2>
+                <h2 style="font-size:1.25rem;">Mengapa mulai dari level ini?</h2>
                 <p style="line-height:1.6; color:#334155;">${whyLearnNow}</p>
                 <p style="margin-top:15px; font-weight:800; color:#17324f;">Melalui ${esc(assigned)}, ${esc(name)} akan berlatih:</p>
                 <p style="line-height:1.6; color:#334155;">${getModuleValue(assigned)}</p>
               </section>
               <section class="kids-section" style="background:#fff8e1">
-                <h2 style="font-size:1.3rem;">Fokus Perkembangan Awal</h2>
+                <h2 style="font-size:1.25rem;">Fokus Perkembangan Awal</h2>
                 <div class="kids-priority" style="line-height:1.6; color:#334155;">${prioritiesHtml}</div>
               </section>
           </div>
 
           <section class="kids-section">
-            <h2 style="font-size:1.3rem;">Learning Path ${esc(name)}</h2>
+            <h2 style="font-size:1.25rem;">Learning Path ${esc(name)}</h2>
             <div class="kids-path-name">${esc(learningPath.name)}</div>
             <div class="kids-current-module">
               <span aria-hidden="true">✦</span>
@@ -14350,7 +14383,7 @@ window.PlacementSync?.configure();
           </section>
 
           <section class="kids-section" style="background:#eef8f5">
-            <h2 style="font-size:1.3rem;">Arah Belajar Berdasarkan Minat</h2>
+            <h2 style="font-size:1.25rem;">Arah Belajar Berdasarkan Minat</h2>
             <p style="line-height:1.6; color:#334155;">${interestStatement}</p>
             <p class="kids-report-note">Hasil placement ini digunakan sebagai rekomendasi titik mulai belajar. Perkembangan siswa tetap dipantau melalui proses belajar, proyek, dan umpan balik mentor.</p>
           </section>

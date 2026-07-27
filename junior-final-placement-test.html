@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <script src="device-guard.js"></script>
   <script data-placement-session-client>
 (function placementSessionBootstrap(global) {
   'use strict';
@@ -150,8 +149,8 @@
   if (requestedSession) activate(requestedSession);
 })(window);
 
-  </script>
-  <script data-placement-sync-client>
+</script>
+<script data-placement-sync-client>
 (function placementSyncBootstrap(global) {
   'use strict';
 
@@ -415,6 +414,7 @@
     const style = sourceDocument.createElement('style');
     style.dataset.placementPdfExportStyle = 'true';
     style.textContent = `${isKidsReport ? '' : collectPrintCss(sourceDocument)}
+      #pt-loader, .pt-loader,
       .placement-pdf-exporting .rc-footer-actions,
       .placement-pdf-exporting .teen-report-actions,
       .placement-pdf-exporting .kids-report-actions,
@@ -444,6 +444,21 @@
         margin-top: 0 !important;
         margin-bottom: 10px !important;
         padding-top: 0 !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation > div:last-child {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation strong {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        padding-right: 12px !important;
+        font-size: 0.86rem !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation span {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
       }
       .placement-pdf-exporting .teen-section,
       .placement-pdf-exporting .rc-section {
@@ -614,7 +629,7 @@
       .placement-pdf-exporting .kids-profile-chart {
         width: 320px !important;
         max-width: 320px !important;
-        height: 185px !important;
+        height: 240px !important;
         margin: 0 auto 4px !important;
       }
       .placement-pdf-exporting .rc-profile-chart svg,
@@ -918,14 +933,12 @@
       .placement-pdf-exporting .kids-print-continuation strong {
         color: #ffffff !important;
         font-family: 'Orbitron', 'Space Grotesk', sans-serif !important;
-        font-size: 0.96rem !important;
       }
       .placement-pdf-exporting .kids-print-continuation span {
         color: #d9eaff !important;
         font-size: 0.68rem !important;
       }
-      .placement-pdf-exporting .kids-two-col,
-      .placement-pdf-exporting .teen-two-col {
+      .placement-pdf-exporting .kids-two-col {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
         gap: 10px !important;
@@ -1017,8 +1030,6 @@
         line-height: 1.25 !important;
       }`;
     sourceDocument.head.appendChild(style);
-    sourceDocument.documentElement.classList.add('placement-pdf-exporting');
-    sourceDocument.body.classList.add('placement-pdf-exporting');
     return style;
   }
 
@@ -1086,8 +1097,8 @@
 
         const rect = container.getBoundingClientRect();
         const dpr = chartWindow.devicePixelRatio || 2;
-        const width = Math.max(Math.round(rect.width || 320), 320);
-        const height = Math.max(Math.round(rect.height || 185), 185);
+        const width = Math.max(Math.round(rect.width || 320), 1);
+        const height = Math.max(Math.round(rect.height || 240), 1);
 
         const canvas = reportElement.ownerDocument.createElement('canvas');
         canvas.width = width * dpr;
@@ -1102,12 +1113,10 @@
         ctx.drawImage(img, 0, 0, width, height);
 
         chartWindow.URL.revokeObjectURL(url);
-        svg.style.display = 'none';
-        container.appendChild(canvas);
+        svg.replaceWith(canvas);
 
         restoredItems.push(() => {
-          canvas.remove();
-          svg.style.display = '';
+          if (canvas.isConnected) canvas.replaceWith(svg);
         });
       } catch (e) {
         console.warn('SVG rasterization failed, retaining live vector chart.', e);
@@ -1141,24 +1150,34 @@
     const filename = String(options.filename || 'Laporan Placement Test Kalananti.pdf');
     const promise = (async () => {
       const html2Pdf = await loadHtml2Pdf(reportDocument);
-      const exportStyle = installPdfExportStyle(reportDocument, report);
+
+      const offscreenContainer = reportDocument.createElement('div');
+      offscreenContainer.className = 'placement-pdf-sandbox placement-pdf-exporting';
+      offscreenContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;z-index:-9999;background:#e8f2ff;overflow:visible;display:block!important;';
+
+      const reportClone = report.cloneNode(true);
+      reportClone.classList.add('placement-pdf-exporting');
+      offscreenContainer.appendChild(reportClone);
+      reportDocument.body.appendChild(offscreenContainer);
+
+      const exportStyle = installPdfExportStyle(reportDocument, reportClone);
       let restoreCharts = () => {};
       try {
         if (reportDocument.fonts?.ready) {
           await settleWithin(reportDocument.fonts.ready, 5000);
         }
-        await waitForReportAssets(report);
+        await waitForReportAssets(reportClone);
         await nextPaint(reportWindow);
-        restoreCharts = await rasterizeProfileCharts(report);
+        restoreCharts = await rasterizeProfileCharts(reportClone);
         await nextPaint(reportWindow);
-        const isKidsReport = report.classList.contains('kids-report');
-        const isTeensReport = report.classList.contains('teen-report');
+        const isKidsReport = reportClone.classList.contains('kids-report');
+        const isTeensReport = reportClone.classList.contains('teen-report');
         const isJuniorReport = (
-          report.classList.contains('placement-report') && !isKidsReport
+          reportClone.classList.contains('placement-report') && !isKidsReport
         );
         const isFullBleedReport = isKidsReport || isTeensReport || isJuniorReport;
         const captureWindowWidth = Math.max(
-          794,
+          960,
           Number(reportWindow.innerWidth) || 0,
           Number(reportDocument.documentElement?.scrollWidth) || 0,
           Number(reportDocument.body?.scrollWidth) || 0
@@ -1189,7 +1208,7 @@
             before: ['.rc-print-continuation', '.teen-print-continuation', '.kids-print-continuation'],
             avoid: ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid', '.kids-report-head', '.kids-pillar', '.kids-track-step', '.kids-section', '.kids-two-col']
           }
-        }).from(report);
+        }).from(reportClone);
         const generatedBlob = await worker.toPdf().outputPdf('blob');
         if (!(generatedBlob instanceof reportWindow.Blob) || generatedBlob.size < 1000) {
           throw new Error('invalid_generated_pdf');
@@ -1204,9 +1223,7 @@
       } finally {
         restoreCharts();
         exportStyle.remove();
-        report.classList.remove('placement-pdf-exporting');
-        reportDocument.documentElement.classList.remove('placement-pdf-exporting');
-        reportDocument.body.classList.remove('placement-pdf-exporting');
+        offscreenContainer.remove();
       }
     })();
 
@@ -1292,7 +1309,11 @@
   clearCompletedSessionIfDue();
 })(window);
 
-  </script>
+</script>
+<script data-placement-sync-config>
+window.PlacementSync?.configure();
+</script>
+<script src="device-guard.js"></script>
   <script>
     window.PlacementSync?.configure();
   </script>
@@ -1775,13 +1796,9 @@
         prioritiesHtml = `<ul><li>Menggabungkan beberapa instruksi menjadi satu alur.</li><li>Merencanakan proyek sebelum mulai membuat.</li><li>Menguji hasil dan melakukan debugging.</li></ul>`;
       }
 
-      let mainCopy = `${esc(name)} direkomendasikan memulai ${esc(assigned)} pada ${esc(level)}.<br><br>`;
+      let mainCopy = `${esc(name)} direkomendasikan memulai ${esc(assigned)} pada ${esc(level)}. Kekuatan utama terlihat pada ${esc(strongestName)}, dengan ${esc(devName)} sebagai fokus pengembangan berikutnya.`;
       if (candidate) {
-        mainCopy = `${esc(name)} menunjukkan performa yang sangat kuat dan konsisten pada rangkaian assessment. ${esc(name)} berhasil menyelesaikan tantangan tingkat lanjut dengan bukti kuat pada ${esc(strongestName)}.<br><br>Penempatan yang telah dikonfirmasi saat ini adalah BASIC — Lv2. Berdasarkan hasil tersebut, ${esc(name)} terpilih sebagai kandidat untuk EMERGING — Lv3. Status kandidat belum berarti bahwa Lv3 telah diberikan. Academic Team perlu meninjau portfolio untuk memastikan bahwa ${esc(name)} dapat menerapkan kemampuan tersebut secara mandiri dalam sebuah proyek, bukan hanya pada aktivitas placement test.`;
-      } else if (level === 'FOUNDATIONAL — Lv1') {
-        mainCopy += `Hasil assessment menunjukkan bahwa ${esc(name)} sudah mulai mengenali ${esc(strongestName)}. Agar kemampuan tersebut berkembang lebih stabil, ${esc(devName)} masih perlu dilatih melalui aktivitas yang bertahap dan terarah.<br><br>Di level ini, ${esc(name)} akan membangun fondasi melalui aktivitas khusus modul. Tujuannya bukan mengulang hal yang sudah bisa dilakukan, tetapi membantu ${esc(name)} memahami proses, mencoba dengan lebih mandiri, dan memiliki dasar yang kuat sebelum masuk ke tantangan yang lebih kompleks.`;
-      } else {
-        mainCopy += `Hasil assessment menunjukkan bahwa ${esc(name)} telah memiliki dasar yang cukup baik dalam ${esc(strongestName)} dan mampu menerapkannya pada tantangan praktis. ${esc(devName)} masih dapat dikembangkan agar ${esc(name)} semakin mandiri ketika menghadapi proyek yang lebih kompleks.<br><br>Di level ini, ${esc(name)} tidak hanya mengenal fungsi dasar, tetapi mulai menggabungkan logika, kreativitas, dan proses pemecahan masalah untuk menghasilkan proyek yang dapat dijelaskan dan dikembangkan kembali.`;
+        mainCopy = `${esc(name)} menunjukkan performa yang sangat kuat pada assessment Junior. Penempatan saat ini adalah BASIC — Lv2, dan terpilih sebagai kandidat EMERGING — Lv3.`;
       }
 
       const pathTarget = confirmedInterest !== 'Belum ditentukan' ? confirmedInterest : potential;
@@ -1818,7 +1835,8 @@
               <span class="kids-report-meta">PLACEMENT REPORT - JUNIOR 5–7<br>${reportDate} · USIA ${exactAge} TAHUN</span>
             </div>
             <span class="kids-report-status">${candidate ? 'KANDIDAT REVIEW EMERGING — Lv3' : level === 'FOUNDATIONAL — Lv1' ? 'STATUS: DIREKOMENDASIKAN UNTUK MEMBANGUN FONDASI' : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK'}</span>
-            <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin:16px 0 8px">Profil Potensi dan Rekomendasi Belajar<br><span class="report-student-name" style="color:#f9c013">${esc(name)}</span></h1>
+            <h1 style="font-size: clamp(1.4rem, 3.2vw, 2.1rem); font-family: 'Orbitron', sans-serif; margin: 16px 0 6px; font-weight: 800; text-shadow: 0 2px 8px rgba(4,26,55,0.3);">Profil Potensi dan Rekomendasi Belajar</h1>
+            <div class="report-student-name" style="display:inline-block; max-width:100%; margin: 2px auto 14px; padding: 4px 18px; border-radius: 999px; background: rgba(249, 192, 19, 0.18); border: 1.5px solid rgba(249, 192, 19, 0.5); color: #f9c013; font-family: 'Orbitron', sans-serif; font-size: clamp(0.95rem, 2.2vw, 1.35rem); font-weight: 800; text-shadow: 0 2px 8px rgba(4,26,55,0.3); word-break: break-word;">${esc(name)}</div>
             <div class="kids-report-placement">
               <span class="kids-module">${esc(assigned)}</span>
               <span class="kids-level">${esc(candidate ? 'BASIC — Lv2' : level)}</span>
@@ -1833,19 +1851,19 @@
                 ${getRadarChart(scores.logic, scores.creativity, scores.spatial, scores.digital)}
               </div>
               <div class="kids-pillar-grid">
-                <article class="kids-pillar" style="background:#eff6ff;border-color:#bfdbfe">
+                <article class="kids-pillar">
                   <div class="kids-pillar-head"><strong>Logika</strong><span class="kids-band ${bLog.class}" style="background:#bfdbfe;color:#1e40af">${bLog.label}</span></div>
                   <p style="margin:0;font-size:.92rem;color:#1e293b">${getPillarCopy('logic', bLog, esc(name), esc(assigned))}</p>
                 </article>
-                <article class="kids-pillar" style="background:#fffbeb;border-color:#fde68a">
+                <article class="kids-pillar">
                   <div class="kids-pillar-head"><strong>Kreativitas</strong><span class="kids-band ${bCre.class}" style="background:#fde68a;color:#92400e">${bCre.label}</span></div>
                   <p style="margin:0;font-size:.92rem;color:#1e293b">${getPillarCopy('creativity', bCre, esc(name), esc(assigned))}</p>
                 </article>
-                <article class="kids-pillar" style="background:#eff6ff;border-color:#bfdbfe">
+                <article class="kids-pillar">
                   <div class="kids-pillar-head"><strong>Spasial</strong><span class="kids-band ${bSpa.class}" style="background:#bfdbfe;color:#1e40af">${bSpa.label}</span></div>
                   <p style="margin:0;font-size:.92rem;color:#1e293b">${getPillarCopy('spatial', bSpa, esc(name), esc(assigned))}</p>
                 </article>
-                <article class="kids-pillar" style="background:#fdf2f8;border-color:#fbcfe8">
+                <article class="kids-pillar">
                   <div class="kids-pillar-head"><strong>Literasi Digital</strong><span class="kids-band ${bDig.class}" style="background:#fbcfe8;color:#9d174d">${bDig.label}</span></div>
                   <p style="margin:0;font-size:.92rem;color:#1e293b">${getPillarCopy('digital', bDig, esc(name), esc(assigned))}</p>
                 </article>
@@ -1853,7 +1871,7 @@
             </div>
           </section>
 
-          <div class="kids-print-continuation" style="margin:24px 0 16px">
+          <div class="kids-print-continuation" style="margin:28px 0 20px 0">
             <div class="report-continuation-art" aria-hidden="true">
               <svg viewBox="0 0 1000 120" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1865,27 +1883,27 @@
               </svg>
               <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/904cb9e9-ecd1-4731-a1ef-fa6a0bd50527.png" alt="" style="position:absolute;right:10px;top:10px;height:80px">
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#173f73;color:#fff;border-radius:12px">
-              <strong style="font-size:1.1rem">Rekomendasi &amp; Learning Path ${esc(name)}</strong>
-              <span style="font-size:.85rem;opacity:.85">PLACEMENT REPORT - HALAMAN 2</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:linear-gradient(135deg, #102d56 0%, #173f73 60%, #2d8fb5 100%);color:#fff;border-radius:16px;box-shadow:0 10px 24px rgba(16, 52, 92, 0.15);border:1.5px solid rgba(255,255,255,0.25)">
+              <strong style="font-family:'Orbitron',sans-serif;font-size:1.1rem;letter-spacing:0.02em">Rekomendasi &amp; Learning Path ${esc(name)}</strong>
+              <span style="font-family:'Space Grotesk',sans-serif;font-size:0.82rem;font-weight:800;opacity:0.9;background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:999px">HALAMAN 2</span>
             </div>
           </div>
 
           <div class="kids-two-col">
             <section class="kids-section" style="background:#eff6ff">
-              <h2 style="font-size:1.3rem">Mengapa mulai dari level ini?</h2>
+              <h2 style="font-size:1.25rem">Mengapa mulai dari level ini?</h2>
               <p style="line-height:1.6;color:#334155">${whyLearnNow}</p>
               <p style="margin-top:15px;font-weight:800;color:#17324f">Melalui ${esc(assigned)}, ${esc(name)} akan berlatih:</p>
               <p style="line-height:1.6;color:#334155">${getModuleValue(assigned)}</p>
             </section>
             <section class="kids-section" style="background:#fff8e1">
-              <h2 style="font-size:1.3rem">Fokus Perkembangan Awal</h2>
+              <h2 style="font-size:1.25rem">Fokus Perkembangan Awal</h2>
               <div class="kids-priority" style="line-height:1.6;color:#334155">${prioritiesHtml}</div>
             </section>
           </div>
 
           <section class="kids-section">
-            <h2 style="font-size:1.3rem">Learning Path ${esc(name)}</h2>
+            <h2 style="font-size:1.25rem">Learning Path ${esc(name)}</h2>
             <div class="kids-path-name">${esc(learningPath.name)}</div>
             <div class="kids-current-module">
               <span aria-hidden="true">✦</span>

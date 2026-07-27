@@ -1263,11 +1263,11 @@ The Stage 3 interest result is stored as **Interest Confirmation**. It is suppor
 
 The final report selects one official Learning Path from the Stage 3 Interest Confirmation. The same official naming is used across audiences, while module order may follow the explicit audience rules below.
 
-| Interest Confirmation | Official path ID        | Official path name                 | Junior, 5–7                           | Kids, 8–15              | Teens, 16–18                               |
-| --------------------- | ----------------------- | ---------------------------------- | -------------------------------------- | ------------------------ | ------------------------------------------- |
+| Interest Confirmation | Official path ID        | Official path name                 | Junior, 5–7                           | Kids, 8–15                            | Teens, 16–18                               |
+| --------------------- | ----------------------- | ---------------------------------- | -------------------------------------- | -------------------------------------- | ------------------------------------------- |
 | Scratch               | `interactive_creator` | **Interactive Creator Path** | Scratch Jr → Scratch                  | Scratch Jr → Scratch → Roblox Studio | Scratch → Roblox Studio →**Python** |
-| Roblox Studio         | `game_creator`        | **Game Creator Path**        | Scratch Jr → Scratch → Roblox Studio | Scratch → Roblox Studio | Roblox Studio →**Python**            |
-| Python                | `app_creator`         | **App Creator Path**         | Scratch Jr → Scratch → Python        | Scratch → Python        | Scratch →**Python**                  |
+| Roblox Studio         | `game_creator`        | **Game Creator Path**        | Scratch Jr → Scratch → Roblox Studio | Scratch → Roblox Studio               | Roblox Studio →**Python**            |
+| Python                | `app_creator`         | **App Creator Path**         | Scratch Jr → Scratch → Python        | Scratch → Python                      | Scratch →**Python**                  |
 
 Selection rules:
 
@@ -1648,9 +1648,275 @@ When the test is completely finished, the frontend sends a `finalize` action.
 
 - **What it does:** The `finalize_()` function is triggered.
 - **Storage Action:**
-  1. It generates a PDF report based on the results and saves it to the designated Google Drive folder.
-  2. It attempts to email the parent.
-  3. Finally, it updates the **`Sessions`** sheet one last time, changing `session_status` to `'completed'`, and attaching the Google Drive PDF URL and email delivery status to the row.
+  1. The browser renders the approved visual report and converts that report DOM into an A4 PDF attachment.
+  2. `Code.gs` validates the browser-generated PDF attachment and saves the exact attachment to the designated Google Drive folder.
+  3. It attempts to email the parent with that same PDF attachment.
+  4. Finally, it updates the **`Sessions`** sheet one last time, changing `session_status` to `'completed'`, and attaching the Google Drive PDF URL and email delivery status to the row.
+
+`Code.gs` is not the active visual report renderer. The active visual PDF must come from the browser through `payload.pdfAttachment`. The legacy `buildPdfHtml_()` helper may still exist in the backend source, but it is not the source of truth for the approved Junior, Kids, or Teens report layout.
+
+### 20.4 Final Report Rendering and PDF Ownership
+
+The final report has three separate responsibilities:
+
+1. **Audience HTML file**
+   - Calculates the report content from the placement state.
+   - Builds the visible report DOM, narrative, radar chart, placement module, level, and Learning Path.
+   - Owns audience-specific report CSS and HTML structure.
+2. **Shared browser PDF client (`placement-sync.js`)**
+   - Finds the rendered report DOM.
+   - Clones it into an off-screen A4 export sandbox.
+   - Waits for fonts and image assets.
+   - Rasterizes profile charts when required.
+   - Converts the report to a PDF using `html2pdf.js`, `html2canvas`, and `jsPDF`.
+   - Sends the generated PDF as Base64 through `finalizeWithReport()`.
+3. **Apps Script backend (`Code.gs`)**
+   - Validates the finalization identity and registered session.
+   - Validates the MIME type, Base64 size, and `%PDF-` file signature.
+   - Stores the exact browser-generated PDF in Google Drive.
+   - Sends the exact same PDF as the parent email attachment.
+   - Updates finalization, PDF, and email status in the `Sessions` sheet.
+
+Therefore:
+
+- Report copy, sections, colors, spacing, chart placement, and audience-specific layout must be fixed in the audience render function.
+- A4 capture width, page breaks, clipping, image quality, missing assets, chart rasterization, and PDF-only layout must be fixed in `placement-sync.js`.
+- Drive storage, attachment validation, email delivery, or final session status must be fixed in `Code.gs`.
+
+### 20.5 Active Final Report Function Map
+
+The function name is the stable search anchor. Line numbers below are a snapshot of the active files on **27 July 2026** and may move after editing.
+
+| Audience | Active file | Final report renderer | Current template landmark | Report selector |
+| --- | --- | --- | --- | --- |
+| Junior, 5–7 | `junior-final-placement-test.html` | `wireStage3()` | Function starts near line 1547; `const appContent` starts near line 1817; `appEl.innerHTML = appContent` installs the report | `.placement-report` |
+| Kids, 8–15 | `kids-final-placement-test.html` | `finalResult()` | Function starts near line 14071; `shell(...)` starts near line 14228; `<article class="placement-report kids-report...">` starts near line 14281 | `.placement-report` |
+| Teens, 16–18 | `teens.html` | `renderTeensResultReport(container)` | Function starts near line 8319; `container.innerHTML` starts near line 8417; `<article class="teen-report...">` starts near line 8447 | `.teen-report` |
+
+Important distinctions:
+
+- Junior does not currently have a function named `renderJuniorReport()`. The final report is assembled inside `wireStage3()`.
+- Kids contains several embedded functions named `renderResult()`, but they render intermediate stage results. The final placement report is owned by `finalResult()`.
+- Teens also contains an intermediate `renderResult(container)`. The final placement report is owned by `renderTeensResultReport(container)`.
+- Junior's `.placement-report` lives inside the Stage 3 iframe document. PDF code must use the actual report element and its `ownerDocument`; searching only the outer parent document can cause `placement_report_not_found`.
+
+### 20.6 Shared Browser PDF Functions
+
+The shared source of truth is `placement-sync.js`.
+
+| Function | Current location snapshot | Responsibility |
+| --- | --- | --- |
+| `createReportPdf(options)` | `placement-sync.js`, near line 976 | Finds or accepts the report element, clones it into the PDF sandbox, waits for fonts/assets, rasterizes charts, applies export CSS, and returns `{ blob, filename }` |
+| `downloadReportPdf(options)` | `placement-sync.js`, near line 1082 | Creates a temporary `blob:` URL and downloads the generated browser PDF |
+| `finalizeWithReport(payload, options)` | `placement-sync.js`, near line 1095 | Generates the same visual PDF, converts it to Base64, adds `payload.pdfAttachment`, and queues the `finalize` operation |
+
+Generated or injected copies of these functions also exist inside the active final HTML artifacts:
+
+| File | `createReportPdf` | `downloadReportPdf` | `finalizeWithReport` |
+| --- | --- | --- | --- |
+| `junior-final-placement-test.html` | near line 1129 | near line 1235 | near line 1248 |
+| `kids-final-placement-test.html` | near line 1130 | near line 1236 | near line 1249 |
+| `teens.html` | near line 1129 | near line 1235 | near line 1248 |
+
+Do not independently hand-edit all embedded copies for a shared PDF behavior change. Update `placement-sync.js`, then use the verified injection/rebuild path for the affected final artifacts and check that only one active sync client/config block remains.
+
+The active PDF capture settings include:
+
+- A4 portrait output.
+- Full-bleed report margin where applicable.
+- `html2canvas` scale `2`.
+- JPEG quality `0.96`.
+- A minimum capture width large enough for desktop report layout.
+- CSS/legacy page-break handling.
+- Explicit page-break-before selectors for report continuation headers.
+- Avoid rules for report headers, sections, pillar cards, Learning Path nodes, and two-column sections.
+
+### 20.7 Data Used to Build the Teens Final Report
+
+The Teens visual report is rendered from browser state, not reconstructed by `Code.gs`.
+
+Student identity:
+
+- `name`
+- `exactAge`
+- `parentEmail` / `emailOrtu`
+
+Stage 1 and pillar profile:
+
+- `scores.logic`
+- `scores.creativity`
+- `scores.spatial`
+- `scores.digital`
+- `stage1AdvancedPillarScores`
+
+Placement recommendation:
+
+- `recommendedModule`
+- `potentialModule`
+
+Stage 2:
+
+- `stage2Result.assignedModule`
+- `stage2Result.level`
+- `stage2Result.masteryHighest`
+- `stage2Result.challengeCount`
+- `stage2Result.submissionCount`
+- `stage2Result.lv3Candidate`
+- `stage2Result.trail`
+
+Stage 3:
+
+- `stage3Answers`
+- `stage3Answers[8]` as the explicit final module/interest confirmation
+- `stage3Reason`
+
+The Teens renderer derives:
+
+- four pillar ratios and presentation bands;
+- strongest and development-focus pillars;
+- assigned module and assigned level;
+- Lv3 candidate status;
+- confirmed interest;
+- official Learning Path ID, name, modules, and source;
+- report narrative, radar chart, and report date.
+
+The same general boundary applies to Junior and Kids: their audience renderer owns all report calculations and visible copy, while `Code.gs` receives the completed visual PDF plus a concise result summary.
+
+### 20.8 Finalize API Contract
+
+Before finalization, the session must already be registered through `index.html` using the same `submissionId` and `syncToken`. Opening an audience file directly without a registered session is not sufficient for a production finalization.
+
+Effective finalization envelope:
+
+```js
+{
+  operationId: "...",
+  action: "finalize",
+  submissionId: "pt_...",
+  syncToken: "...",
+  revision: 1234567890,
+  payload: {
+    parentEmail: "orangtua@email.com",
+    result: {
+      assignedModule: "Python",
+      potentialModule: "Python",
+      assignedLevel: "BASIC — Lv2",
+      lv3Candidate: false,
+      learningPathName: "App Creator Path",
+      learningPathModules: ["Scratch", "Python"]
+    },
+    completedAt: "2026-07-27T10:00:00.000Z",
+    pdfAttachment: {
+      filename: "Laporan Placement Test - Nama Siswa.pdf",
+      mimeType: "application/pdf",
+      base64: "JVBERi0x..."
+    }
+  }
+}
+```
+
+Required for successful backend finalization:
+
+- `operationId`
+- `action: "finalize"`
+- `submissionId`
+- matching `syncToken`
+- a previously registered session
+- `parentEmail`, unless it already exists in the registered `Sessions` row
+- non-empty `pdfAttachment.base64`
+- `pdfAttachment.mimeType` exactly `application/pdf`
+- decoded PDF bytes beginning with `%PDF-`
+
+The `result` object is not what draws the visual PDF. It supports the email summary and backend fallbacks. For accurate email content it should include:
+
+- `assignedModule`
+- `potentialModule`
+- `assignedLevel`
+- `lv3Candidate`
+- `learningPathName`
+- `learningPathModules`
+
+Backend ownership:
+
+| Complaint | Backend function to inspect |
+| --- | --- |
+| Session is rejected or token is invalid | `validateOperation_()` and `requireAuthorizedSession_()` |
+| Parent email is missing | `finalize_()` and the registered `Sessions.parent_email` value |
+| Visual PDF attachment is missing | `finalize_()` |
+| MIME, Base64, size, or PDF signature is rejected | `pdfBlobFromAttachment_()` |
+| PDF filename or Drive duplication is wrong | `createResultPdf_()` |
+| Email HTML summary is wrong | `buildEmailBody_()` |
+| Drive URL, email status, or final session status is wrong | `finalize_()` |
+
+### 20.9 Safe PDF Preview Without New Source Files or Production Dev Mode
+
+Layout iteration must not require a student to complete every placement question manually. It must also not require adding a permanent preview file or adding a visible dev mode to an active audience file.
+
+Approved preview workflow:
+
+1. Open the active audience file in an isolated temporary/incognito browser context.
+2. Inject a representative placement state at runtime.
+3. Temporarily replace `PlacementSync.finalizeWithReport()` and `PlacementSync.finalize()` with preview-only no-op handlers.
+4. Temporarily prevent completion helpers from mutating the real placement registration/session.
+5. Call the real audience render function:
+   - Junior: `wireStage3()` using the staged iframe state.
+   - Kids: `finalResult()`.
+   - Teens: `render()` with `state.currentStage = 4`, which calls `renderTeensResultReport(container)`.
+6. Call the real `PlacementSync.createReportPdf()` using the active report selector or explicit Junior iframe element.
+7. Save only the generated preview artifact under a temporary directory such as `/private/tmp/placement-pdf-preview/`.
+8. Return a clickable temporary PDF link for visual review.
+
+Safety requirements:
+
+- No Apps Script request.
+- No Google Sheet write.
+- No Google Drive upload.
+- No parent email.
+- No permanent repository preview file.
+- No permanent dev-mode control in a production audience file.
+- No reuse of a real active student's registration/session.
+
+A browser `blob:` URL is valid only for the lifetime of its browser tab and is not shareable. To provide a clickable artifact outside the tab, save the generated blob as a temporary PDF under `/private/tmp`. A persistent Google Drive URL requires an upload/backend action and is not part of this safe preview workflow.
+
+### 20.10 Complaint-to-Code Troubleshooting Map
+
+Use this table before making any report change:
+
+| User complaint | First location to inspect | Typical owner |
+| --- | --- | --- |
+| Text, section order, module, level, Learning Path, or narrative is wrong for Junior | `junior-final-placement-test.html` → `wireStage3()` → `appContent` | Junior report renderer |
+| Text, section order, module, level, Learning Path, or narrative is wrong for Kids | `kids-final-placement-test.html` → `finalResult()` → `shell(...)` | Kids report renderer |
+| Text, section order, module, level, Learning Path, or narrative is wrong for Teens | `teens.html` → `renderTeensResultReport(container)` → `container.innerHTML` | Teens report renderer |
+| Report looks correct on screen but clips, shrinks, or breaks badly in PDF | `placement-sync.js` → `createReportPdf()` and `installPdfExportStyle()` | Shared browser PDF client |
+| Page 2 starts in the wrong place | `placement-sync.js` page-break rules plus `.rc-print-continuation`, `.kids-print-continuation`, or `.teen-print-continuation` in the audience template | Shared PDF client and audience template |
+| Radar chart is missing or blank in PDF | `placement-sync.js` → `rasterizeProfileCharts()` and the audience `getRadarChart()` | Shared PDF client and audience renderer |
+| Logo, illustration, or font is missing | `waitForReportAssets()`, font readiness, CORS settings, and the asset URL in the audience renderer | Shared PDF client and audience template |
+| Downloaded PDF differs from the emailed attachment | `finalizeWithReport()` payload, `Code.gs` → `pdfBlobFromAttachment_()`, and actual received email attachment | Browser-to-backend boundary |
+| `placement_report_not_found` occurs for Junior | `wireStage3()` and explicit `reportPdfOptions.element` / `document` for the Stage 3 iframe | Junior wrapper and shared PDF client |
+| PDF is created but email fails | `Code.gs` → `finalize_()` and `MailApp.sendEmail()` error/status | Apps Script backend |
+| Email content is wrong but attachment is correct | `Code.gs` → `buildEmailBody_()` | Apps Script email template |
+| Drive file name, duplicate behavior, or URL is wrong | `Code.gs` → `createResultPdf_()` | Apps Script storage |
+
+Acceptance gate:
+
+- Source syntax or injection checks alone are not enough.
+- Render the active audience report with representative data.
+- Generate the real UI PDF.
+- Inspect the PDF pages visually.
+- For email parity changes, compare the UI-generated/downloaded PDF with the actual received email attachment before declaring success.
+
+### 20.11 Junior Generation Warning
+
+Junior has a generated/assembled architecture, but this checkout currently contains legacy/ignored generator copies whose report template may not match the newest tracked `junior-final-placement-test.html`.
+
+Rules:
+
+- Treat the active tracked `junior-final-placement-test.html` as the current runtime artifact.
+- Search for `wireStage3()` and `const appContent` to locate the current report implementation.
+- Do not run a legacy assembler blindly, because it can overwrite the newer active report template.
+- Before restoring a generator-based workflow, synchronize the generator's `wireStage3Impl()` template with the active tracked Junior report.
+- After synchronization, rebuild and compare generated outputs before accepting them.
+- Always browser-test the regenerated Junior wrapper, including the Stage 3 iframe report and PDF creation using the explicit report element.
 
 ---
 
@@ -1677,23 +1943,27 @@ The Branch Dashboard Portal provides Branch Managers (BM) and SA Kids at each Ka
 The backend handles both `doGet` (for quick branch list retrieval) and `doPost` (for authentication and branch-filtered data access).
 
 #### A. Fetch Branch List (`GET /doGet?action=get_branches`)
+
 - **Parameters:** `action=get_branches`
 - **Output:** `{ ok: true, branches: ["Online", "Branch A", ...] }`
 
 #### B. Request Access (`POST /doPost` with `action: 'request_dashboard_access'`)
+
 - **Payload:** `{ action: 'request_dashboard_access', branch, name, email, role }`
 - **Behavior:** Appends user credentials to Column B (BM) or Column C (SA Kids) in `DROPDOWNS` if not already registered, and logs entry in `AccessRequests`. Enforces a 5-minute review window for newly registered users.
 
 #### C. Branch Login (`POST /doPost` with `action: 'login_dashboard'`)
+
 - **Payload:** `{ action: 'login_dashboard', branch, email }`
 - **Behavior:** Validates email against `DROPDOWNS` for the specified branch. Creates a unique session token in `DashboardSessions` (valid for 24 hours).
 - **Output:** `{ ok: true, authenticated: true, token, branch, userEmail, role }`
 
 #### D. Fetch Branch Results (`POST /doPost` or `GET /doGet` with `action: 'get_branch_results'`)
+
 - **Payload:** `{ action: 'get_branch_results', token }`
 - **Behavior:** Validates `token` against `DashboardSessions`. Reads `Sessions` tab and returns ONLY records matching the authorized branch.
 
 #### E. Logout (`POST /doPost` with `action: 'logout_dashboard'`)
+
 - **Payload:** `{ action: 'logout_dashboard', token }`
 - **Behavior:** Invalidates and deletes the session token from `DashboardSessions`.
-

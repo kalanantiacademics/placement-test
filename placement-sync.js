@@ -261,6 +261,7 @@
     const style = sourceDocument.createElement('style');
     style.dataset.placementPdfExportStyle = 'true';
     style.textContent = `${isKidsReport ? '' : collectPrintCss(sourceDocument)}
+      #pt-loader, .pt-loader,
       .placement-pdf-exporting .rc-footer-actions,
       .placement-pdf-exporting .teen-report-actions,
       .placement-pdf-exporting .kids-report-actions,
@@ -290,6 +291,21 @@
         margin-top: 0 !important;
         margin-bottom: 10px !important;
         padding-top: 0 !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation > div:last-child {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation strong {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        padding-right: 12px !important;
+        font-size: 0.86rem !important;
+      }
+      .placement-pdf-exporting .teen-print-continuation span {
+        flex: 0 0 auto !important;
+        white-space: nowrap !important;
       }
       .placement-pdf-exporting .teen-section,
       .placement-pdf-exporting .rc-section {
@@ -460,7 +476,7 @@
       .placement-pdf-exporting .kids-profile-chart {
         width: 320px !important;
         max-width: 320px !important;
-        height: 185px !important;
+        height: 240px !important;
         margin: 0 auto 4px !important;
       }
       .placement-pdf-exporting .rc-profile-chart svg,
@@ -764,6 +780,7 @@
       .placement-pdf-exporting .kids-print-continuation strong {
         color: #ffffff !important;
         font-family: 'Orbitron', 'Space Grotesk', sans-serif !important;
+      }
       .placement-pdf-exporting .kids-print-continuation span {
         color: #d9eaff !important;
         font-size: 0.68rem !important;
@@ -860,8 +877,6 @@
         line-height: 1.25 !important;
       }`;
     sourceDocument.head.appendChild(style);
-    sourceDocument.documentElement.classList.add('placement-pdf-exporting');
-    sourceDocument.body.classList.add('placement-pdf-exporting');
     return style;
   }
 
@@ -929,8 +944,8 @@
 
         const rect = container.getBoundingClientRect();
         const dpr = chartWindow.devicePixelRatio || 2;
-        const width = Math.max(Math.round(rect.width || 320), 320);
-        const height = Math.max(Math.round(rect.height || 185), 185);
+        const width = Math.max(Math.round(rect.width || 320), 1);
+        const height = Math.max(Math.round(rect.height || 240), 1);
 
         const canvas = reportElement.ownerDocument.createElement('canvas');
         canvas.width = width * dpr;
@@ -945,12 +960,10 @@
         ctx.drawImage(img, 0, 0, width, height);
 
         chartWindow.URL.revokeObjectURL(url);
-        svg.style.display = 'none';
-        container.appendChild(canvas);
+        svg.replaceWith(canvas);
 
         restoredItems.push(() => {
-          canvas.remove();
-          svg.style.display = '';
+          if (canvas.isConnected) canvas.replaceWith(svg);
         });
       } catch (e) {
         console.warn('SVG rasterization failed, retaining live vector chart.', e);
@@ -984,24 +997,34 @@
     const filename = String(options.filename || 'Laporan Placement Test Kalananti.pdf');
     const promise = (async () => {
       const html2Pdf = await loadHtml2Pdf(reportDocument);
-      const exportStyle = installPdfExportStyle(reportDocument, report);
+
+      const offscreenContainer = reportDocument.createElement('div');
+      offscreenContainer.className = 'placement-pdf-sandbox placement-pdf-exporting';
+      offscreenContainer.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;z-index:-9999;background:#e8f2ff;overflow:visible;display:block!important;';
+
+      const reportClone = report.cloneNode(true);
+      reportClone.classList.add('placement-pdf-exporting');
+      offscreenContainer.appendChild(reportClone);
+      reportDocument.body.appendChild(offscreenContainer);
+
+      const exportStyle = installPdfExportStyle(reportDocument, reportClone);
       let restoreCharts = () => {};
       try {
         if (reportDocument.fonts?.ready) {
           await settleWithin(reportDocument.fonts.ready, 5000);
         }
-        await waitForReportAssets(report);
+        await waitForReportAssets(reportClone);
         await nextPaint(reportWindow);
-        restoreCharts = await rasterizeProfileCharts(report);
+        restoreCharts = await rasterizeProfileCharts(reportClone);
         await nextPaint(reportWindow);
-        const isKidsReport = report.classList.contains('kids-report');
-        const isTeensReport = report.classList.contains('teen-report');
+        const isKidsReport = reportClone.classList.contains('kids-report');
+        const isTeensReport = reportClone.classList.contains('teen-report');
         const isJuniorReport = (
-          report.classList.contains('placement-report') && !isKidsReport
+          reportClone.classList.contains('placement-report') && !isKidsReport
         );
         const isFullBleedReport = isKidsReport || isTeensReport || isJuniorReport;
         const captureWindowWidth = Math.max(
-          794,
+          960,
           Number(reportWindow.innerWidth) || 0,
           Number(reportDocument.documentElement?.scrollWidth) || 0,
           Number(reportDocument.body?.scrollWidth) || 0
@@ -1032,7 +1055,7 @@
             before: ['.rc-print-continuation', '.teen-print-continuation', '.kids-print-continuation'],
             avoid: ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid', '.kids-report-head', '.kids-pillar', '.kids-track-step', '.kids-section', '.kids-two-col']
           }
-        }).from(report);
+        }).from(reportClone);
         const generatedBlob = await worker.toPdf().outputPdf('blob');
         if (!(generatedBlob instanceof reportWindow.Blob) || generatedBlob.size < 1000) {
           throw new Error('invalid_generated_pdf');
@@ -1047,9 +1070,7 @@
       } finally {
         restoreCharts();
         exportStyle.remove();
-        report.classList.remove('placement-pdf-exporting');
-        reportDocument.documentElement.classList.remove('placement-pdf-exporting');
-        reportDocument.body.classList.remove('placement-pdf-exporting');
+        offscreenContainer.remove();
       }
     })();
 
