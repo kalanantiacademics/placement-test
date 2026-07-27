@@ -764,8 +764,6 @@
       .placement-pdf-exporting .kids-print-continuation strong {
         color: #ffffff !important;
         font-family: 'Orbitron', 'Space Grotesk', sans-serif !important;
-        font-size: 0.96rem !important;
-      }
       .placement-pdf-exporting .kids-print-continuation span {
         color: #d9eaff !important;
         font-size: 0.68rem !important;
@@ -775,44 +773,74 @@
         grid-template-columns: 1fr 1fr !important;
         gap: 10px !important;
       }
-      .placement-pdf-exporting .kids-two-col .kids-section {
-        margin-bottom: 10px !important;
-        padding: 10px 12px !important;
+      .placement-pdf-exporting .kids-two-col .kids-section,
+      .placement-pdf-exporting .teen-two-col .teen-section {
+        margin-bottom: 8px !important;
+        padding: 8px 10px !important;
       }
       .placement-pdf-exporting .kids-two-col p,
-      .placement-pdf-exporting .kids-two-col li {
-        font-size: 0.76rem !important;
-        line-height: 1.38 !important;
+      .placement-pdf-exporting .kids-two-col li,
+      .placement-pdf-exporting .teen-two-col p,
+      .placement-pdf-exporting .teen-two-col li {
+        font-size: 0.72rem !important;
+        line-height: 1.32 !important;
       }
-      .placement-pdf-exporting .kids-path-name {
-        margin: 2px auto 8px !important;
-        padding: 6px 14px !important;
-        border-radius: 11px !important;
-        font-size: 1.05rem !important;
+      .placement-pdf-exporting .kids-path-name,
+      .placement-pdf-exporting .teen-path-name {
+        margin: 2px auto 6px !important;
+        padding: 4px 12px !important;
+        border-radius: 10px !important;
+        font-size: 0.92rem !important;
       }
-      .placement-pdf-exporting .kids-current-module {
-        margin: 0 auto 10px !important;
-        padding: 5px 10px !important;
-        font-size: 0.76rem !important;
+      .placement-pdf-exporting .kids-current-module,
+      .placement-pdf-exporting .teen-current-module {
+        margin: 0 auto 6px !important;
+        padding: 3px 10px !important;
+        font-size: 0.72rem !important;
       }
-      .placement-pdf-exporting .kids-track {
+      .placement-pdf-exporting .kids-track,
+      .placement-pdf-exporting .teen-track {
         justify-content: center !important;
         overflow: visible !important;
-        gap: 8px !important;
-        padding: 4px 0 8px !important;
+        gap: 6px !important;
+        padding: 2px 0 4px !important;
       }
-      .placement-pdf-exporting .kids-track-step {
+      .placement-pdf-exporting .kids-track-step,
+      .placement-pdf-exporting .teen-track-step {
         flex: 1 1 0 !important;
         min-width: 0 !important;
-        min-height: 70px !important;
-        padding: 8px 10px !important;
+        min-height: 52px !important;
+        padding: 6px 8px !important;
         border-radius: 999px !important;
-        font-size: 0.78rem !important;
+        font-size: 0.74rem !important;
         break-inside: avoid !important;
         page-break-inside: avoid !important;
       }
-      .placement-pdf-exporting .kids-track-step.is-assigned {
+      .placement-pdf-exporting .kids-track-step.is-assigned,
+      .placement-pdf-exporting .teen-track-step.is-assigned {
         background: #f9c013 !important;
+      }
+      .placement-pdf-exporting .kids-track-step.is-assigned::after,
+      .placement-pdf-exporting .teen-track-step.is-assigned::after {
+        top: -7px !important;
+        right: 12px !important;
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 0.68rem !important;
+      }
+      .placement-pdf-exporting .kids-track-arrow,
+      .placement-pdf-exporting .teen-track-arrow {
+        font-size: 1.1rem !important;
+      }
+      .placement-pdf-exporting .teen-report-note,
+      .placement-pdf-exporting .kids-report-note {
+        display: block !important;
+        margin-top: 6px !important;
+        padding-top: 5px !important;
+        border-top: 1px dashed #cbd5e1 !important;
+        font-size: 0.65rem !important;
+        line-height: 1.25 !important;
+        color: #475569 !important;
       }
       .placement-pdf-exporting .kids-report.kids-report-long-name .kids-report-head .subtitle {
         font-size: 0.74rem !important;
@@ -861,69 +889,75 @@
     ]);
   }
 
-  async function waitForReportAssets(report) {
-    const images = Array.from(report.querySelectorAll('img'));
-    await Promise.all(images.map(async image => {
-      if (image.complete && image.naturalWidth > 0) return;
-      await settleWithin(image.decode(), 5000);
-    }));
+  function waitForReportAssets(reportElement) {
+    if (!reportElement) return Promise.resolve();
+    const images = Array.from(reportElement.querySelectorAll('img'));
+    const pending = images
+      .filter(img => !img.complete)
+      .map(img => new Promise(resolve => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+      }));
+    return settleWithin(Promise.all(pending), 5000);
   }
 
-  async function rasterizeProfileCharts(report) {
-    const replacements = [];
-    const reportDocument = report.ownerDocument || document;
-    const reportWindow = reportDocument.defaultView || global;
-    const Serializer = reportWindow.XMLSerializer || global.XMLSerializer;
-    const ImageConstructor = reportWindow.Image || global.Image;
-    const BlobConstructor = reportWindow.Blob || global.Blob;
-    const urlApi = reportWindow.URL || global.URL;
-    const charts = report.querySelectorAll(
-      '.rc-profile-chart svg, .teen-profile-chart svg, .kids-profile-chart svg, '
-      + '.report-space-art svg, .report-continuation-art svg'
+  async function rasterizeProfileCharts(reportElement) {
+    if (!reportElement) return () => {};
+    const chartContainers = Array.from(
+      reportElement.querySelectorAll('.rc-profile-chart, .teen-profile-chart, .kids-profile-chart')
     );
-    for (const svg of charts) {
-      const rect = svg.getBoundingClientRect();
-      if (rect.width < 1 || rect.height < 1) continue;
+    if (!chartContainers.length) return () => {};
 
-      const clone = svg.cloneNode(true);
-      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      clone.setAttribute('width', String(rect.width));
-      clone.setAttribute('height', String(rect.height));
-      const source = new Serializer().serializeToString(clone);
-      const sourceUrl = urlApi.createObjectURL(new BlobConstructor([source], { type: 'image/svg+xml' }));
+    const chartWindow = reportElement.ownerDocument?.defaultView || global;
+    const restoredItems = [];
+
+    for (const container of chartContainers) {
+      const svg = container.querySelector('svg');
+      if (!svg) continue;
       try {
-        const image = new ImageConstructor();
-        image.decoding = 'async';
-        image.src = sourceUrl;
-        await image.decode();
-        const scale = 2;
-        const canvas = reportDocument.createElement('canvas');
-        canvas.width = Math.ceil(rect.width * scale);
-        canvas.height = Math.ceil(rect.height * scale);
-        const context = canvas.getContext('2d');
-        context.scale(scale, scale);
-        context.drawImage(image, 0, 0, rect.width, rect.height);
+        const svgString = new chartWindow.XMLSerializer().serializeToString(svg);
+        const svgBlob = new chartWindow.Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = chartWindow.URL.createObjectURL(svgBlob);
+        const img = new chartWindow.Image();
+        img.crossOrigin = 'anonymous';
 
-        const raster = reportDocument.createElement('img');
-        raster.src = canvas.toDataURL('image/png');
-        raster.alt = svg.getAttribute('aria-label') || 'Profil kemampuan';
-        const isDecorativeArt = Boolean(
-          svg.closest('.report-space-art, .report-continuation-art')
-        );
-        raster.style.cssText = isDecorativeArt
-          ? `${svg.style.cssText};position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;`
-          : `${svg.style.cssText};width:100%;height:auto;object-fit:contain;display:block;`;
-        svg.replaceWith(raster);
-        replacements.push({ svg, raster });
-      } finally {
-        urlApi.revokeObjectURL(sourceUrl);
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = url;
+        });
+
+        const rect = container.getBoundingClientRect();
+        const dpr = chartWindow.devicePixelRatio || 2;
+        const width = Math.max(Math.round(rect.width || 320), 320);
+        const height = Math.max(Math.round(rect.height || 185), 185);
+
+        const canvas = reportElement.ownerDocument.createElement('canvas');
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        canvas.style.display = 'block';
+        canvas.style.margin = '0 auto';
+
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        chartWindow.URL.revokeObjectURL(url);
+        svg.style.display = 'none';
+        container.appendChild(canvas);
+
+        restoredItems.push(() => {
+          canvas.remove();
+          svg.style.display = '';
+        });
+      } catch (e) {
+        console.warn('SVG rasterization failed, retaining live vector chart.', e);
       }
     }
-    return () => {
-      for (const { svg, raster } of replacements) {
-        if (raster.isConnected) raster.replaceWith(svg);
-      }
-    };
+
+    return () => restoredItems.forEach(restore => restore());
   }
 
   async function createReportPdf(options = {}) {
@@ -995,12 +1029,8 @@
           },
           pagebreak: {
             mode: ['css', 'legacy'],
-            before: isKidsReport
-              ? []
-              : ['.rc-print-continuation', '.teen-print-continuation'],
-            avoid: isKidsReport
-              ? ['.kids-report-head', '.kids-pillar', '.kids-track-step']
-              : ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid']
+            before: ['.rc-print-continuation', '.teen-print-continuation', '.kids-print-continuation'],
+            avoid: ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid', '.kids-report-head', '.kids-pillar', '.kids-track-step', '.kids-section', '.kids-two-col']
           }
         }).from(report);
         const generatedBlob = await worker.toPdf().outputPdf('blob');

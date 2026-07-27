@@ -918,58 +918,85 @@
       .placement-pdf-exporting .kids-print-continuation strong {
         color: #ffffff !important;
         font-family: 'Orbitron', 'Space Grotesk', sans-serif !important;
-        font-size: 0.96rem !important;
-      }
+}
       .placement-pdf-exporting .kids-print-continuation span {
         color: #d9eaff !important;
         font-size: 0.68rem !important;
       }
-      .placement-pdf-exporting .kids-two-col {
+      .placement-pdf-exporting .kids-two-col,
+      .placement-pdf-exporting .teen-two-col {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
         gap: 10px !important;
       }
-      .placement-pdf-exporting .kids-two-col .kids-section {
-        margin-bottom: 10px !important;
-        padding: 10px 12px !important;
+      .placement-pdf-exporting .kids-two-col .kids-section,
+      .placement-pdf-exporting .teen-two-col .teen-section {
+        margin-bottom: 8px !important;
+        padding: 8px 10px !important;
       }
       .placement-pdf-exporting .kids-two-col p,
-      .placement-pdf-exporting .kids-two-col li {
-        font-size: 0.76rem !important;
-        line-height: 1.38 !important;
+      .placement-pdf-exporting .kids-two-col li,
+      .placement-pdf-exporting .teen-two-col p,
+      .placement-pdf-exporting .teen-two-col li {
+        font-size: 0.72rem !important;
+        line-height: 1.32 !important;
       }
-      .placement-pdf-exporting .kids-path-name {
-        margin: 2px auto 8px !important;
-        padding: 6px 14px !important;
-        border-radius: 11px !important;
-        font-size: 1.05rem !important;
+      .placement-pdf-exporting .kids-path-name,
+      .placement-pdf-exporting .teen-path-name {
+        margin: 2px auto 6px !important;
+        padding: 4px 12px !important;
+        border-radius: 10px !important;
+        font-size: 0.92rem !important;
       }
-      .placement-pdf-exporting .kids-current-module {
-        margin: 0 auto 10px !important;
-        padding: 5px 10px !important;
-        font-size: 0.76rem !important;
+      .placement-pdf-exporting .kids-current-module,
+      .placement-pdf-exporting .teen-current-module {
+        margin: 0 auto 6px !important;
+        padding: 3px 10px !important;
+        font-size: 0.72rem !important;
       }
-      .placement-pdf-exporting .kids-track {
+      .placement-pdf-exporting .kids-track,
+      .placement-pdf-exporting .teen-track {
         justify-content: center !important;
         overflow: visible !important;
-        gap: 8px !important;
-        padding: 4px 0 8px !important;
+        gap: 6px !important;
+        padding: 2px 0 4px !important;
       }
-      .placement-pdf-exporting .kids-track-step {
+      .placement-pdf-exporting .kids-track-step,
+      .placement-pdf-exporting .teen-track-step {
         flex: 1 1 0 !important;
         min-width: 0 !important;
-        min-height: 70px !important;
-        padding: 8px 10px !important;
+        min-height: 52px !important;
+        padding: 6px 8px !important;
         border-radius: 999px !important;
-        font-size: 0.78rem !important;
+        font-size: 0.74rem !important;
         break-inside: avoid !important;
         page-break-inside: avoid !important;
       }
-      .placement-pdf-exporting .kids-track-step.is-assigned {
+      .placement-pdf-exporting .kids-track-step.is-assigned,
+      .placement-pdf-exporting .teen-track-step.is-assigned {
         background: #f9c013 !important;
       }
-      .placement-pdf-exporting .kids-track-arrow {
-        font-size: 1.25rem !important;
+      .placement-pdf-exporting .kids-track-step.is-assigned::after,
+      .placement-pdf-exporting .teen-track-step.is-assigned::after {
+        top: -7px !important;
+        right: 12px !important;
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 0.68rem !important;
+      }
+      .placement-pdf-exporting .kids-track-arrow,
+      .placement-pdf-exporting .teen-track-arrow {
+        font-size: 1.1rem !important;
+      }
+      .placement-pdf-exporting .teen-report-note,
+      .placement-pdf-exporting .kids-report-note {
+        display: block !important;
+        margin-top: 6px !important;
+        padding-top: 5px !important;
+        border-top: 1px dashed #cbd5e1 !important;
+        font-size: 0.65rem !important;
+        line-height: 1.25 !important;
+        color: #475569 !important;
       }
       .placement-pdf-exporting .kids-report.kids-report-long-name .kids-report-head .subtitle {
         font-size: 0.74rem !important;
@@ -1018,69 +1045,75 @@
     ]);
   }
 
-  async function waitForReportAssets(report) {
-    const images = Array.from(report.querySelectorAll('img'));
-    await Promise.all(images.map(async image => {
-      if (image.complete && image.naturalWidth > 0) return;
-      await settleWithin(image.decode(), 5000);
-    }));
+  function waitForReportAssets(reportElement) {
+    if (!reportElement) return Promise.resolve();
+    const images = Array.from(reportElement.querySelectorAll('img'));
+    const pending = images
+      .filter(img => !img.complete)
+      .map(img => new Promise(resolve => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+      }));
+    return settleWithin(Promise.all(pending), 5000);
   }
 
-  async function rasterizeProfileCharts(report) {
-    const replacements = [];
-    const reportDocument = report.ownerDocument || document;
-    const reportWindow = reportDocument.defaultView || global;
-    const Serializer = reportWindow.XMLSerializer || global.XMLSerializer;
-    const ImageConstructor = reportWindow.Image || global.Image;
-    const BlobConstructor = reportWindow.Blob || global.Blob;
-    const urlApi = reportWindow.URL || global.URL;
-    const charts = report.querySelectorAll(
-      '.rc-profile-chart svg, .teen-profile-chart svg, .kids-profile-chart svg, '
-      + '.report-space-art svg, .report-continuation-art svg'
+  async function rasterizeProfileCharts(reportElement) {
+    if (!reportElement) return () => {};
+    const chartContainers = Array.from(
+      reportElement.querySelectorAll('.rc-profile-chart, .teen-profile-chart, .kids-profile-chart')
     );
-    for (const svg of charts) {
-      const rect = svg.getBoundingClientRect();
-      if (rect.width < 1 || rect.height < 1) continue;
+    if (!chartContainers.length) return () => {};
 
-      const clone = svg.cloneNode(true);
-      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      clone.setAttribute('width', String(rect.width));
-      clone.setAttribute('height', String(rect.height));
-      const source = new Serializer().serializeToString(clone);
-      const sourceUrl = urlApi.createObjectURL(new BlobConstructor([source], { type: 'image/svg+xml' }));
+    const chartWindow = reportElement.ownerDocument?.defaultView || global;
+    const restoredItems = [];
+
+    for (const container of chartContainers) {
+      const svg = container.querySelector('svg');
+      if (!svg) continue;
       try {
-        const image = new ImageConstructor();
-        image.decoding = 'async';
-        image.src = sourceUrl;
-        await image.decode();
-        const scale = 2;
-        const canvas = reportDocument.createElement('canvas');
-        canvas.width = Math.ceil(rect.width * scale);
-        canvas.height = Math.ceil(rect.height * scale);
-        const context = canvas.getContext('2d');
-        context.scale(scale, scale);
-        context.drawImage(image, 0, 0, rect.width, rect.height);
+        const svgString = new chartWindow.XMLSerializer().serializeToString(svg);
+        const svgBlob = new chartWindow.Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = chartWindow.URL.createObjectURL(svgBlob);
+        const img = new chartWindow.Image();
+        img.crossOrigin = 'anonymous';
 
-        const raster = reportDocument.createElement('img');
-        raster.src = canvas.toDataURL('image/png');
-        raster.alt = svg.getAttribute('aria-label') || 'Profil kemampuan';
-        const isDecorativeArt = Boolean(
-          svg.closest('.report-space-art, .report-continuation-art')
-        );
-        raster.style.cssText = isDecorativeArt
-          ? `${svg.style.cssText};position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;`
-          : `${svg.style.cssText};width:100%;height:auto;object-fit:contain;display:block;`;
-        svg.replaceWith(raster);
-        replacements.push({ svg, raster });
-      } finally {
-        urlApi.revokeObjectURL(sourceUrl);
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = url;
+        });
+
+        const rect = container.getBoundingClientRect();
+        const dpr = chartWindow.devicePixelRatio || 2;
+        const width = Math.max(Math.round(rect.width || 320), 320);
+        const height = Math.max(Math.round(rect.height || 185), 185);
+
+        const canvas = reportElement.ownerDocument.createElement('canvas');
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        canvas.style.display = 'block';
+        canvas.style.margin = '0 auto';
+
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        chartWindow.URL.revokeObjectURL(url);
+        svg.style.display = 'none';
+        container.appendChild(canvas);
+
+        restoredItems.push(() => {
+          canvas.remove();
+          svg.style.display = '';
+        });
+      } catch (e) {
+        console.warn('SVG rasterization failed, retaining live vector chart.', e);
       }
     }
-    return () => {
-      for (const { svg, raster } of replacements) {
-        if (raster.isConnected) raster.replaceWith(svg);
-      }
-    };
+
+    return () => restoredItems.forEach(restore => restore());
   }
 
   async function createReportPdf(options = {}) {
@@ -1152,12 +1185,8 @@
           },
           pagebreak: {
             mode: ['css', 'legacy'],
-            before: isKidsReport
-              ? []
-              : ['.rc-print-continuation', '.teen-print-continuation'],
-            avoid: isKidsReport
-              ? ['.kids-report-head', '.kids-pillar', '.kids-track-step']
-              : ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid']
+            before: ['.rc-print-continuation', '.teen-print-continuation', '.kids-print-continuation'],
+            avoid: ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid', '.kids-report-head', '.kids-pillar', '.kids-track-step', '.kids-section', '.kids-two-col']
           }
         }).from(report);
         const generatedBlob = await worker.toPdf().outputPdf('blob');
@@ -8391,7 +8420,7 @@ try {
                     .teen-priority li{margin-bottom:9px;line-height:1.5}.teen-path-name{display:table;text-align:center;margin:2px auto 18px;padding:12px 22px;border:2px solid #f0b400;border-radius:16px;background:#fff7d6;box-shadow:0 8px 22px rgba(240,180,0,.2);font-family:'Orbitron',sans-serif;font-size:clamp(1.2rem,3vw,1.8rem);font-weight:900;color:#265e9b}
                     .teen-current-module{display:flex;width:max-content;max-width:100%;align-items:center;gap:9px;margin:0 auto 18px;padding:9px 15px;border:2px solid #f0b400;border-radius:999px;background:#fff9d8;color:#704f00;font-size:.88rem;font-weight:850;box-shadow:0 7px 18px rgba(240,180,0,.16)}.teen-current-module strong{color:#17324f}
                     .teen-track{display:flex;align-items:center;justify-content:center;gap:14px;overflow-x:auto;padding:8px 4px 18px}.teen-track-step{position:relative;flex:1 0 190px;max-width:310px;min-height:112px;display:flex;align-items:center;justify-content:center;padding:20px 18px;border:3px solid #7f96ad;border-radius:999px;background:#fff;color:#17324f;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:1.06rem;font-weight:850;transition:transform .2s,box-shadow .2s}.teen-track-step.is-assigned{transform:translateY(-4px) scale(1.035);border-color:#f0a800;background:linear-gradient(135deg,#ffe45c,#f9c013);color:#4b3500;box-shadow:0 12px 28px rgba(240,168,0,.34),0 0 0 6px rgba(249,192,19,.13)}.teen-track-step.is-assigned::after{content:'✓';position:absolute;top:-11px;right:18px;display:grid;width:30px;height:30px;place-items:center;border:3px solid #fff;border-radius:50%;background:#22a06b;color:#fff;font-size:.9rem;box-shadow:0 5px 12px rgba(34,160,107,.25)}.teen-track-arrow{flex:0 0 auto;color:#7f96ad;font-size:2rem;font-weight:900}
-                    .teen-report-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}.teen-report-actions .teen-review-button{background:#fff;color:#265e9b;border:2px solid #bfd7ee;box-shadow:0 5px 0 #9ebdd9}.teen-report-note,.teen-print-continuation{display:none}
+                    .teen-report-actions{display:grid;grid-template-columns:1fr;gap:14px;margin-top:22px}.teen-report-actions .teen-review-button{background:#fff;color:#265e9b;border:2px solid #bfd7ee;box-shadow:0 5px 0 #9ebdd9}.teen-report-note,.teen-print-continuation{display:none}
                     .placement-pdf-exporting .teen-report.kids-report-long-name .kids-report-head .subtitle{font-size:.74rem!important;line-height:1.3!important}
                     .placement-pdf-exporting .teen-report.kids-report-long-name .kids-profile-layout{gap:8px!important}
                     .placement-pdf-exporting .teen-report .kids-profile-chart{width:430px!important;max-width:430px!important;height:270px!important}
@@ -8452,26 +8481,28 @@ try {
                 <section class="teen-section kids-section"><h2>Learning Path ${studentName}</h2><div class="teen-path-name kids-path-name">${escapeResultText(learningPath.name)}</div><div class="teen-current-module kids-current-module"><span aria-hidden="true">✦</span><span>Rekomendasi modul saat ini: <strong>${escapeResultText(assignedModule)}</strong></span></div><div class="teen-track kids-track">${learningPath.modules.map((module,index)=>`${index?'<span class="teen-track-arrow kids-track-arrow" aria-hidden="true">→</span>':''}<div class="teen-track-step kids-track-step${module===assignedModule?' is-assigned':''}">${index+1}. ${escapeResultText(module)}</div>`).join('')}</div></section>
                 <section class="teen-section kids-section" style="background:#eef8f5"><h2>Arah Belajar Berdasarkan Minat</h2><p>${interestAlignment}</p><p><strong>Alasan siswa:</strong> ${escapeResultText(state.stage3Reason||'Belum diisi.')}</p><p class="teen-report-note kids-report-note">Hasil placement ini digunakan sebagai rekomendasi titik mulai belajar. Perkembangan siswa tetap dipantau melalui proses belajar, proyek, dan umpan balik mentor.</p></section>
                 <div class="teen-report-actions kids-report-actions">
-                    <button class="btn-main" id="printTeensReport"><i class="fa-solid fa-file-pdf"></i> Cetak / Simpan PDF</button>
-                    <button class="btn-main teen-review-button" id="restartUnifiedTeens"><i class="fa-solid fa-arrow-left"></i> Selesai / Kembali ke Awal</button>
+                    <button class="btn-main" id="restartUnifiedTeens" style="padding:16px 24px;border:none;border-radius:1.2rem;font-weight:800;background:linear-gradient(180deg,#f9c013 0%,#e5ab00 100%);color:#5a3f00;box-shadow:0 7px 0 #b28400;cursor:pointer;text-transform:uppercase;font-family:'Orbitron',sans-serif;letter-spacing:1px;"><i class="fa-solid fa-arrow-left"></i> Selesai / Kembali ke Awal</button>
                 </div>
                 </article>`;
             const reportFilename = `Laporan Placement Test - ${studentName}.pdf`;
-            document.getElementById('printTeensReport').addEventListener('click', async () => {
-                if (window.PlacementSync?.downloadReportPdf) {
-                    try {
-                        await window.PlacementSync.downloadReportPdf({
-                            selector: '.teen-report',
-                            filename: reportFilename
-                        });
-                    } catch (error) {
-                        console.error('[Placement PDF] Unduhan visual gagal; membuka dialog cetak.', error);
+            const printTeensBtn = document.getElementById('printTeensReport');
+            if (printTeensBtn) {
+                printTeensBtn.addEventListener('click', async () => {
+                    if (window.PlacementSync?.downloadReportPdf) {
+                        try {
+                            await window.PlacementSync.downloadReportPdf({
+                                selector: '.teen-report',
+                                filename: reportFilename
+                            });
+                        } catch (error) {
+                            console.error('[Placement PDF] Unduhan visual gagal; membuka dialog cetak.', error);
+                            window.print();
+                        }
+                    } else {
                         window.print();
                     }
-                } else {
-                    window.print();
-                }
-            });
+                });
+            }
             const finalizePayload = state.pendingFinalizePayload || {
                 parentEmail: state.emailOrtu,
                 result: {
