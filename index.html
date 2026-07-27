@@ -1211,30 +1211,79 @@
       const topbar = document.querySelector('.topbar');
       const card = document.querySelector('.card');
       const splashScreen = document.getElementById('splashScreen');
+      const splashLogoBox = document.getElementById('splashLogoBox');
+      const splashLogoImg = splashLogoBox ? splashLogoBox.querySelector('img') : null;
+      const targetLogoImg = document.querySelector('.main-logo-img');
 
-      if (typeof gsap !== 'undefined') {
-        gsap.timeline()
-          .to(splashScreen, {
-            opacity: 0,
-            scale: 0.95,
-            duration: 0.6,
-            ease: "power3.inOut",
-            onComplete: () => {
-              splashScreen.style.display = 'none';
-            }
-          })
-          .to(card, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.7,
-            ease: "back.out(1.4)"
-          }, "-=0.3")
-          .to(topbar, {
-            opacity: 1,
-            y: 0,
-            duration: 0.5
-          }, "-=0.5");
+      if (typeof gsap !== 'undefined' && splashLogoBox && splashLogoImg && targetLogoImg) {
+        // Ensure card is in its exact final layout position for measurement
+        card.style.transition = 'none';
+        card.style.display = 'block';
+        card.classList.add('visible');
+        card.style.opacity = '0';
+        card.style.transform = 'none'; // No Y-shift so target coordinates stay 100% fixed
+
+        targetLogoImg.style.opacity = '0'; // Hide target logo until splash logo lands on it
+
+        // Read current scale of splash logo box from GSAP
+        const currentScale = gsap.getProperty(splashLogoBox, "scale") || 1;
+
+        // Measure bounding rects
+        const startRect = splashLogoImg.getBoundingClientRect();
+        const targetRect = targetLogoImg.getBoundingClientRect();
+
+        const startCenterX = startRect.left + startRect.width / 2;
+        const startCenterY = startRect.top + startRect.height / 2;
+        const targetCenterX = targetRect.left + targetRect.width / 2;
+        const targetCenterY = targetRect.top + targetRect.height / 2;
+
+        const deltaX = targetCenterX - startCenterX;
+        const deltaY = targetCenterY - startCenterY;
+        const finalScale = (targetRect.height / (startRect.height / currentScale));
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            splashScreen.style.display = 'none';
+            targetLogoImg.style.opacity = '1';
+            card.style.transition = '';
+          }
+        });
+
+        // 1. Immediately animate logo flight to target position (no waiting!)
+        tl.to(splashLogoBox, {
+          x: deltaX,
+          y: deltaY,
+          scale: finalScale,
+          duration: 0.75,
+          ease: "power2.inOut"
+        }, 0)
+        // 2. Simultaneously fade out splash text elements & glow ring
+        .to(["#splashTitle", "#splashDesc", "#splashBtn", ".logo-glow-ring"], {
+          opacity: 0,
+          y: -10,
+          duration: 0.3,
+          ease: "power2.in"
+        }, 0)
+        // 3. Simultaneously dissolve splash screen overlay background
+        .to(splashScreen, {
+          opacity: 0,
+          duration: 0.75,
+          ease: "power2.inOut"
+        }, 0)
+        // 4. Fade in form card container smoothly in place
+        .to(card, {
+          opacity: 1,
+          duration: 0.55,
+          ease: "power2.out"
+        }, 0.2)
+        // 5. Fade in topbar
+        .to(topbar, {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          ease: "power2.out"
+        }, 0.35);
+
       } else {
         if (splashScreen) splashScreen.style.display = 'none';
         if (card) card.classList.add('visible');
