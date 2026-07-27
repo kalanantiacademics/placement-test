@@ -1651,3 +1651,49 @@ When the test is completely finished, the frontend sends a `finalize` action.
   1. It generates a PDF report based on the results and saves it to the designated Google Drive folder.
   2. It attempts to email the parent.
   3. Finally, it updates the **`Sessions`** sheet one last time, changing `session_status` to `'completed'`, and attaching the Google Drive PDF URL and email delivery status to the row.
+
+---
+
+## 21. Branch Dashboard Portal & Authentication Architecture
+
+This section documents the architecture, data security, and API contract for the Branch Placement Test Dashboard Portal (`hasil-placement-test-kalananti.html`) and its Google Apps Script backend endpoints in `Code.gs`.
+
+### 21.1 Overview & Security Model
+
+The Branch Dashboard Portal provides Branch Managers (BM) and SA Kids at each Kalananti branch with secure, branch-scoped access to placement test results without exposing full database spreadsheet edit access or cross-branch data.
+
+- **Frontend File:** [`hasil-placement-test-kalananti.html`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/hasil-placement-test-kalananti.html)
+- **Authentication:** Token-based session authentication (`DashboardSessions` tab in Google Sheets). Sessions automatically expire after 24 hours.
+- **Authorization:** Standard branch users can strictly view data filtered by their authorized branch (`row.branch === authorizedBranch`).
+
+### 21.2 Google Sheets Security & Access Control Tabs
+
+- **`DROPDOWNS`**: Contains master branch names (Column A starting at row 5), authorized BM emails (Column B), and authorized SA Kids emails (Column C).
+- **`AccessRequests`**: Audit log recording user requests for branch dashboard access (`requested_at`, `branch`, `name`, `email`, `role`, `status`).
+- **`DashboardSessions`**: Active token database (`token`, `branch`, `email`, `role`, `created_at`, `expires_at`).
+
+### 21.3 Apps Script API Endpoint Specifications
+
+The backend handles both `doGet` (for quick branch list retrieval) and `doPost` (for authentication and branch-filtered data access).
+
+#### A. Fetch Branch List (`GET /doGet?action=get_branches`)
+- **Parameters:** `action=get_branches`
+- **Output:** `{ ok: true, branches: ["Online", "Branch A", ...] }`
+
+#### B. Request Access (`POST /doPost` with `action: 'request_dashboard_access'`)
+- **Payload:** `{ action: 'request_dashboard_access', branch, name, email, role }`
+- **Behavior:** Appends user credentials to Column B (BM) or Column C (SA Kids) in `DROPDOWNS` if not already registered, and logs entry in `AccessRequests`. Enforces a 5-minute review window for newly registered users.
+
+#### C. Branch Login (`POST /doPost` with `action: 'login_dashboard'`)
+- **Payload:** `{ action: 'login_dashboard', branch, email }`
+- **Behavior:** Validates email against `DROPDOWNS` for the specified branch. Creates a unique session token in `DashboardSessions` (valid for 24 hours).
+- **Output:** `{ ok: true, authenticated: true, token, branch, userEmail, role }`
+
+#### D. Fetch Branch Results (`POST /doPost` or `GET /doGet` with `action: 'get_branch_results'`)
+- **Payload:** `{ action: 'get_branch_results', token }`
+- **Behavior:** Validates `token` against `DashboardSessions`. Reads `Sessions` tab and returns ONLY records matching the authorized branch.
+
+#### E. Logout (`POST /doPost` with `action: 'logout_dashboard'`)
+- **Payload:** `{ action: 'logout_dashboard', token }`
+- **Behavior:** Invalidates and deletes the session token from `DashboardSessions`.
+

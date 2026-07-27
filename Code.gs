@@ -59,10 +59,23 @@ function doGet(event) {
       const sheet = spreadsheet.getSheetByName('DROPDOWNS');
       if (!sheet) throw new Error('Sheet DROPDOWNS not found');
       const lastRow = sheet.getLastRow();
-      if (lastRow <= 1) return json_({ ok: true, branches: [] });
-      const data = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
-      const branches = data.map(r => String(r[0] || '').trim()).filter(val => val !== '' && val !== 'BAC/EAC Branch Name');
+      if (lastRow < 5) return json_({ ok: true, branches: ['Online'] });
+      // Branch names start at row 5 in Column A
+      const data = sheet.getRange(5, 1, lastRow - 4, 1).getValues();
+      const branches = data
+        .map(r => String(r[0] || '').trim())
+        .filter(val => val !== '' && val !== 'BAC/EAC Branch Name');
       return json_({ ok: true, branches: branches });
+    } catch (error) {
+      return json_({ ok: false, error: String(error.message || error) });
+    }
+  }
+
+  if (action === 'get_branch_results') {
+    try {
+      const token = event?.parameter?.token;
+      const result = getBranchResults_({ token });
+      return json_({ ok: true, ...result });
     } catch (error) {
       return json_({ ok: false, error: String(error.message || error) });
     }
@@ -74,7 +87,8 @@ function doGet(event) {
     version: 2,
     capabilities: {
       visualPdfAttachment: true,
-      legacyPdfFallback: false
+      legacyPdfFallback: false,
+      branchDashboard: true
     }
   });
 }
@@ -85,12 +99,30 @@ function doPost(event) {
   let operation = null;
   try {
     operation = JSON.parse(event?.postData?.contents || '{}');
+    const action = operation.action;
+
+    // Handle branch dashboard actions
+    if (action === 'request_dashboard_access') {
+      const result = requestDashboardAccess_(operation);
+      return json_({ ok: true, ...result });
+    } else if (action === 'login_dashboard') {
+      const result = loginDashboard_(operation);
+      return json_({ ok: true, ...result });
+    } else if (action === 'get_branch_results') {
+      const result = getBranchResults_(operation);
+      return json_({ ok: true, ...result });
+    } else if (action === 'logout_dashboard') {
+      const result = logoutDashboard_(operation);
+      return json_({ ok: true, ...result });
+    }
+
+    // Default placement test operations
     validateOperation_(operation);
 
     let result;
-    if (operation.action === 'register') result = register_(operation);
-    else if (operation.action === 'save_stage') result = saveStage_(operation);
-    else if (operation.action === 'finalize') result = finalize_(operation);
+    if (action === 'register') result = register_(operation);
+    else if (action === 'save_stage') result = saveStage_(operation);
+    else if (action === 'finalize') result = finalize_(operation);
     else throw new Error('unsupported_action');
 
     appendLog_(operation, 'success', '');
@@ -429,13 +461,6 @@ function buildEmailBody_(row, pdfUrl, payload) {
             </td>
           </tr>
 
-          <!-- Pure HTML/CSS Star Atmosphere Row -->
-          <tr>
-            <td align="center" style="padding: 6px 0 12px; font-size: 18px; color: #f9c013; letter-spacing: 14px; opacity: 0.9;">
-              ✦ ✨ ⭐ ✦ ⭐ ✨ ✦
-            </td>
-          </tr>
-
           <!-- Status Badge -->
           <tr>
             <td align="center" style="padding-top: 4px;">
@@ -684,4 +709,351 @@ function json_(payload) {
   return ContentService
     .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ====================================================
+// BRANCH DASHBOARD AUTHENTICATION & DATA FETCHING
+// ====================================================
+
+function parseBranchCellEntries_(cellText) {
+  const text = String(cellText || '').trim();
+  if (!text) return [];
+
+  const rawParts = text.split(',');
+  const entries = [];
+
+  for (let i = 0; i < rawParts.length; i++) {
+    const part = rawParts[i].trim();
+    if (!part) continue;
+
+    const dashIdx = part.lastIndexOf('-');
+    if (dashIdx > 0) {
+      const name = part.substring(0, dashIdx).trim();
+      const email = part.substring(dashIdx + 1).trim();
+      entries.push({ name: name || 'User', email: email });
+    } else {
+      const emailMatch = part.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (emailMatch) {
+        entries.push({ name: part.replace(emailMatch[0], '').trim() || 'User', email: emailMatch[0] });
+      } else {
+        entries.push({ name: part, email: part });
+      }
+    }
+  }
+  return entries;
+}
+
+function requestDashboardAccess_(operation) {
+  const branch = String(operation.branch || '').trim();
+  const name = String(operation.name || '').trim();
+  const email = String(operation.email || '').trim().toLowerCase();
+  const rawRole = String(operation.role || '').trim();
+
+  if (!branch || !name || !email) {
+    throw new Error('Semua field (Cabang, Nama, Email, Peran) wajib diisi.');
+  }
+
+  const isBM = /BM|Branch\s*Manager/i.test(rawRole);
+  const targetCol = isBM ? 2 : 3; // Column B (2) for BM, Column C (3) for SA Kids
+  const roleLabel = isBM ? 'Branch Manager (BM)' : 'SA Kids';
+
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const dropdownSheet = spreadsheet.getSheetByName('DROPDOWNS');
+  if (!dropdownSheet) throw new Error('Sheet DROPDOWNS tidak ditemukan.');
+
+  const lastRow = dropdownSheet.getLastRow();
+  if (lastRow < 5) throw new Error('Data cabang belum tersedia.');
+
+  // Branch names start at row 5 in Column A
+  const branchValues = dropdownSheet.getRange(5, 1, lastRow - 4, 1).getValues();
+  let targetRow = -1;
+  for (let i = 0; i < branchValues.length; i++) {
+    const bName = String(branchValues[i][0] || '').trim();
+    if (bName.toLowerCase().replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ') === branch.toLowerCase().replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ')) {
+      targetRow = 5 + i;
+      break;
+    }
+  }
+
+  if (targetRow === -1) {
+    throw new Error(`Cabang "${branch}" tidak ditemukan.`);
+  }
+
+  // Read current cell value
+  const cellRange = dropdownSheet.getRange(targetRow, targetCol);
+  const currentVal = String(cellRange.getValue() || '').trim();
+  const formattedEntry = `${name} - ${email}`;
+
+  const existingEntries = parseBranchCellEntries_(currentVal);
+  const isAlready = existingEntries.some(e => e.email.toLowerCase() === email);
+
+  // Check if email already exists in cell
+  if (isAlready) {
+    recordAccessRequest_(spreadsheet, branch, name, email, roleLabel, 'approved');
+    return {
+      requested: true,
+      alreadyRegistered: true,
+      message: 'Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 5 menit, ya.'
+    };
+  }
+
+  // Append new entry
+  const newVal = currentVal ? `${currentVal}, ${formattedEntry}` : formattedEntry;
+  cellRange.setValue(newVal);
+
+  // Record timestamp in AccessRequests sheet
+  recordAccessRequest_(spreadsheet, branch, name, email, roleLabel, 'pending_5min');
+
+  return {
+    requested: true,
+    alreadyRegistered: false,
+    message: 'Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 5 menit, ya.'
+  };
+}
+
+function recordAccessRequest_(spreadsheet, branch, name, email, role, status) {
+  let reqSheet = spreadsheet.getSheetByName('AccessRequests');
+  if (!reqSheet) {
+    reqSheet = spreadsheet.insertSheet('AccessRequests');
+    reqSheet.appendRow(['requested_at', 'branch', 'name', 'email', 'role', 'status']);
+    reqSheet.setFrozenRows(1);
+    reqSheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#e8eaed');
+  }
+  reqSheet.appendRow([new Date().toISOString(), branch, name, email, role, status || 'pending_5min']);
+}
+
+function loginDashboard_(operation) {
+  const branch = String(operation.branch || '').trim();
+  const email = String(operation.email || '').trim().toLowerCase();
+
+  if (!branch || !email) {
+    throw new Error('Cabang dan Email wajib diisi.');
+  }
+
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const dropdownSheet = spreadsheet.getSheetByName('DROPDOWNS');
+  if (!dropdownSheet) throw new Error('Sheet DROPDOWNS tidak ditemukan.');
+
+  const lastRow = dropdownSheet.getLastRow();
+  if (lastRow < 5) throw new Error('Data cabang tidak ditemukan.');
+
+  const branchValues = dropdownSheet.getRange(5, 1, lastRow - 4, 3).getValues(); // Cols A, B, C
+  let userRole = null;
+  let targetBranchName = branch;
+  let potentialTypoMatch = null;
+
+  for (let i = 0; i < branchValues.length; i++) {
+    const bName = String(branchValues[i][0] || '').trim();
+    const cleanBName = bName.toLowerCase().replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ');
+    const cleanBranch = branch.toLowerCase().replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ');
+
+    if (cleanBName === cleanBranch) {
+      targetBranchName = bName; // Preserve exact name
+      const bmCellText = String(branchValues[i][1] || '');
+      const saCellText = String(branchValues[i][2] || '');
+
+      const bmEntries = parseBranchCellEntries_(bmCellText);
+      const saEntries = parseBranchCellEntries_(saCellText);
+
+      // 1. Check exact email match (standard case-insensitive match)
+      for (let j = 0; j < bmEntries.length; j++) {
+        if (bmEntries[j].email.toLowerCase() === email) {
+          userRole = 'Branch Manager (BM)';
+          break;
+        }
+      }
+      if (!userRole) {
+        for (let j = 0; j < saEntries.length; j++) {
+          if (saEntries[j].email.toLowerCase() === email) {
+            userRole = 'SA Kids';
+            break;
+          }
+        }
+      }
+
+      // 2. If exact match fails, check for username match to detect typos (e.g. aldeina@kalanati.id)
+      if (!userRole) {
+        const inputUsername = email.split('@')[0].trim();
+        for (let j = 0; j < bmEntries.length; j++) {
+          const entryUsername = bmEntries[j].email.split('@')[0].trim().toLowerCase();
+          if (entryUsername && entryUsername === inputUsername) {
+            potentialTypoMatch = { name: bmEntries[j].name, email: bmEntries[j].email, role: 'Branch Manager (BM)' };
+            break;
+          }
+        }
+        if (!potentialTypoMatch) {
+          for (let j = 0; j < saEntries.length; j++) {
+            const entryUsername = saEntries[j].email.split('@')[0].trim().toLowerCase();
+            if (entryUsername && entryUsername === inputUsername) {
+              potentialTypoMatch = { name: saEntries[j].name, email: saEntries[j].email, role: 'SA Kids' };
+              break;
+            }
+          }
+        }
+      }
+
+      break;
+    }
+  }
+
+  if (!userRole) {
+    if (potentialTypoMatch) {
+      throw new Error(`Email "${email}" tidak ditemukan. Di cabang ini terdaftar atas nama ${potentialTypoMatch.name} (${potentialTypoMatch.email}). Apakah kamu salah ketik email atau orang yang berbeda?`);
+    } else {
+      throw new Error('Email belum terdaftar untuk cabang ini. Silakan klik "Minta Akses" terlebih dahulu.');
+    }
+  }
+
+  // Check 5-minute cooldown ONLY for newly pending requests
+  const reqSheet = spreadsheet.getSheetByName('AccessRequests');
+  if (reqSheet && reqSheet.getLastRow() > 1) {
+    const reqData = reqSheet.getRange(2, 1, reqSheet.getLastRow() - 1, 6).getValues(); // requested_at, branch, name, email, role, status
+    let newestPendingTime = 0;
+    for (let i = reqData.length - 1; i >= 0; i--) {
+      const rTime = new Date(reqData[i][0]).getTime();
+      const rBranch = String(reqData[i][1] || '').trim().toLowerCase();
+      const rEmail = String(reqData[i][3] || '').trim().toLowerCase();
+      const rStatus = String(reqData[i][5] || '').trim();
+
+      if (rBranch === branch.toLowerCase() && rEmail === email && rStatus === 'pending_5min' && !isNaN(rTime)) {
+        if (rTime > newestPendingTime) newestPendingTime = rTime;
+      }
+    }
+
+    if (newestPendingTime > 0) {
+      const now = Date.now();
+      const diffMs = now - newestPendingTime;
+      const fiveMinsMs = 5 * 60 * 1000;
+      if (diffMs < fiveMinsMs) {
+        const remainingSecs = Math.ceil((fiveMinsMs - diffMs) / 1000);
+        const minsLeft = Math.floor(remainingSecs / 60);
+        const secsLeft = remainingSecs % 60;
+        const timeStr = minsLeft > 0 ? `${minsLeft}m ${secsLeft}s` : `${secsLeft}s`;
+        throw new Error(`Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 5 menit, ya (sisa waktu: ${timeStr}).`);
+      }
+    }
+  }
+
+  // Generate Session Token
+  const token = hash_(`${targetBranchName}:${email}:${Date.now()}:${Math.random()}`);
+  saveDashboardSession_(spreadsheet, token, targetBranchName, email, userRole);
+
+  return {
+    authenticated: true,
+    token: token,
+    branch: targetBranchName,
+    userEmail: email,
+    role: userRole
+  };
+}
+
+function saveDashboardSession_(spreadsheet, token, branch, email, role) {
+  let sessSheet = spreadsheet.getSheetByName('DashboardSessions');
+  if (!sessSheet) {
+    sessSheet = spreadsheet.insertSheet('DashboardSessions');
+    sessSheet.appendRow(['token', 'branch', 'email', 'role', 'created_at', 'expires_at']);
+    sessSheet.setFrozenRows(1);
+    sessSheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#e8eaed');
+  }
+
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(); // 24-hour token
+  sessSheet.appendRow([token, branch, email, role, now.toISOString(), expiresAt]);
+}
+
+function getBranchResults_(operation) {
+  const token = String(operation.token || '').trim();
+  if (!token) throw new Error('Token sesi tidak valid. Silakan login kembali.');
+
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const sessSheet = spreadsheet.getSheetByName('DashboardSessions');
+  if (!sessSheet || sessSheet.getLastRow() <= 1) {
+    throw new Error('Sesi tidak ditemukan. Silakan login kembali.');
+  }
+
+  const sessData = sessSheet.getRange(2, 1, sessSheet.getLastRow() - 1, 6).getValues();
+  let authorizedBranch = null;
+  let userEmail = null;
+  let userRole = null;
+
+  for (let i = sessData.length - 1; i >= 0; i--) {
+    const t = String(sessData[i][0] || '').trim();
+    if (t === token) {
+      const expiresAt = new Date(sessData[i][5]).getTime();
+      if (!isNaN(expiresAt) && Date.now() > expiresAt) {
+        throw new Error('Sesi telah kadaluarsa. Silakan login kembali.');
+      }
+      authorizedBranch = String(sessData[i][1] || '').trim();
+      userEmail = String(sessData[i][2] || '').trim();
+      userRole = String(sessData[i][3] || '').trim();
+      break;
+    }
+  }
+
+  if (!authorizedBranch) {
+    throw new Error('Sesi tidak terautentikasi.');
+  }
+
+  // Read Sessions Sheet
+  const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
+  if (!sessionsSheet || sessionsSheet.getLastRow() <= 1) {
+    return {
+      branch: authorizedBranch,
+      userEmail: userEmail,
+      role: userRole,
+      results: []
+    };
+  }
+
+  const data = sessionsSheet.getRange(2, 1, sessionsSheet.getLastRow() - 1, SESSION_HEADERS.length).getValues();
+  const filtered = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    const studentBranch = String(row[SESSION_HEADERS.indexOf('branch')] || '').trim();
+
+    // Check branch match (case-insensitive)
+    if (studentBranch.toLowerCase() === authorizedBranch.toLowerCase()) {
+      filtered.push({
+        placement_id: row[SESSION_HEADERS.indexOf('submission_id')] || '-',
+        student_name: row[SESSION_HEADERS.indexOf('student_name')] || '-',
+        student_age: row[SESSION_HEADERS.indexOf('exact_age')] || '-',
+        audience: row[SESSION_HEADERS.indexOf('audience')] || '-',
+        parent_email: row[SESSION_HEADERS.indexOf('parent_email')] || '-',
+        branch: studentBranch || authorizedBranch,
+        child_confirmed: row[SESSION_HEADERS.indexOf('child_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('child_confirmed')] === true,
+        guardian_confirmed: row[SESSION_HEADERS.indexOf('guardian_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('guardian_confirmed')] === true,
+        assigned_module: row[SESSION_HEADERS.indexOf('assigned_module')] || '-',
+        potential_module: row[SESSION_HEADERS.indexOf('potential_module')] || '-',
+        assigned_level: row[SESSION_HEADERS.indexOf('assigned_level')] || '-',
+        final_status: row[SESSION_HEADERS.indexOf('final_status')] || 'in_progress',
+        pdf_file_url: row[SESSION_HEADERS.indexOf('pdf_file_url')] || '',
+        email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'pending'
+      });
+    }
+  }
+
+  return {
+    branch: authorizedBranch,
+    userEmail: userEmail,
+    role: userRole,
+    results: filtered
+  };
+}
+
+function logoutDashboard_(operation) {
+  const token = String(operation.token || '').trim();
+  if (token) {
+    try {
+      const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+      const sessSheet = spreadsheet.getSheetByName('DashboardSessions');
+      if (sessSheet && sessSheet.getLastRow() > 1) {
+        const finder = sessSheet.getRange('A:A').createTextFinder(token).matchEntireCell(true).findNext();
+        if (finder) {
+          sessSheet.deleteRow(finder.getRow());
+        }
+      }
+    } catch (e) {}
+  }
+  return { loggedOut: true };
 }

@@ -4,6 +4,19 @@ All notable changes, bug fixes, visual improvements, and architectural updates t
 
 ---
 
+## [Unreleased] - 2026-07-27
+
+### 32. Added Branch Dashboard Portal, Updated PRD Architecture, Fixed Question Timer Skipping & Radar Chart Normalization
+
+#### **What Was Fixed & Goal**
+- **Branch Placement Test Dashboard Portal**: Created [`hasil-placement-test-kalananti.html`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/hasil-placement-test-kalananti.html) and added token-based branch authentication & branch-filtered data access APIs in [`Code.gs`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/Code.gs#L714). Branch Managers and SA Kids can now request access, log in, and view branch-scoped student results securely.
+- **PRD Section 21 Architecture Documentation**: Appended Section 21 to [`PRD-placement-test.md`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/PRD-placement-test.md#L1656) detailing the security model, Google Sheets access control tabs (`DROPDOWNS`, `AccessRequests`, `DashboardSessions`), and Apps Script API specifications.
+- **Teens Timer Auto-Advance Bug Fix**: Resolved premature question skipping in [`teens.html`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/teens.html) where timer tick events triggered question skipping across questions 6-8.
+- **Radar Chart Score Normalization**: Updated pillar score normalization across `junior-final-placement-test.html`, `kids-final-placement-test.html`, and `teens.html` to guarantee radar charts display within 0-100 bounds accurately.
+- **Online/Offline Branch Dropdown**: Added online/offline mode toggle and searchable branch selection dropdown in `index.html`.
+
+---
+
 ## [Unreleased] - 2026-07-25
 
 ### 31. Fixed Result Screen Scrollability & 2-Page PDF Export Formatting
