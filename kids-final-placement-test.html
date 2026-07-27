@@ -13958,6 +13958,17 @@ window.PlacementSync?.configure();
         }
 
         function getRadarChart(l, c, s, d) {
+          const norm = (v) => {
+            let num = Number(v);
+            if (!Number.isFinite(num)) return 0;
+            if (num > 5) num = num / 100;
+            else if (num > 1) num = num / 5;
+            return Math.max(0, Math.min(1, num));
+          };
+          l = norm(l);
+          c = norm(c);
+          s = norm(s);
+          d = norm(d);
           const cx = 360,
             cy = 280,
             r = 160;
@@ -14076,11 +14087,8 @@ window.PlacementSync?.configure();
           const normalizePillarScore = (value) => {
             const numeric = Number(value);
             if (!Number.isFinite(numeric)) return 0;
-            const ratio = usesNormalizedPillarScores
-              ? numeric
-              : numeric > 5
-                ? numeric / 100
-                : numeric / 5;
+            const ratio =
+              numeric > 5 ? numeric / 100 : numeric > 1 ? numeric / 5 : numeric;
             return Math.max(0, Math.min(1, ratio));
           };
           const scores = Object.fromEntries(

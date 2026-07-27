@@ -8219,6 +8219,17 @@ try {
         }
 
         function getRadarChart(l, c, s, d) {
+            const norm = (v) => {
+                let num = Number(v);
+                if (!Number.isFinite(num)) return 0;
+                if (num > 5) num = num / 100;
+                else if (num > 1) num = num / 5;
+                return Math.max(0, Math.min(1, num));
+            };
+            l = norm(l);
+            c = norm(c);
+            s = norm(s);
+            d = norm(d);
             const cx = 360, cy = 280, r = 160;
             const pL = `${cx},${cy - r*l}`;
             const pC = `${cx + r*c},${cy}`;
