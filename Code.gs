@@ -9,6 +9,7 @@ const PLACEMENT_CONFIG = Object.freeze({
 const SESSION_HEADERS = [
   'submission_id', 'sync_token_hash', 'student_name', 'exact_age', 'age_range',
   'audience', 'parent_email', 'branch', 'registered_at', 'session_status',
+  'child_confirmed', 'guardian_confirmed', 'consent_accepted_at', 'terms_version',
   'current_stage', 'current_question', 'last_activity_at', 'stage1_status',
   'stage1_completed_at', 'stage2_status', 'stage2_completed_at', 'stage3_status',
   'stage3_completed_at', 'assigned_module', 'potential_module', 'assigned_level',
@@ -50,7 +51,23 @@ function setupPlacementStorage() {
   };
 }
 
-function doGet() {
+function doGet(event) {
+  const action = event?.parameter?.action;
+  if (action === 'get_branches' || action === 'get_dropdowns') {
+    try {
+      const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+      const sheet = spreadsheet.getSheetByName('DROPDOWNS');
+      if (!sheet) throw new Error('Sheet DROPDOWNS not found');
+      const lastRow = sheet.getLastRow();
+      if (lastRow <= 1) return json_({ ok: true, branches: [] });
+      const data = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+      const branches = data.map(r => String(r[0] || '').trim()).filter(val => val !== '' && val !== 'BAC/EAC Branch Name');
+      return json_({ ok: true, branches: branches });
+    } catch (error) {
+      return json_({ ok: false, error: String(error.message || error) });
+    }
+  }
+
   return json_({
     ok: true,
     service: 'Kalananti Placement Test',
@@ -89,6 +106,7 @@ function doPost(event) {
 function register_(operation) {
   const registration = operation.payload || {};
   const student = registration.student || registration;
+  const consent = registration.consent || {};
   const sheet = getSheet_(PLACEMENT_CONFIG.sessionsSheet);
   const found = findSession_(sheet, operation.submissionId);
   const now = new Date().toISOString();
@@ -103,6 +121,10 @@ function register_(operation) {
     branch: student.branch || '',
     registered_at: registration.registeredAt || now,
     session_status: 'in_progress',
+    child_confirmed: consent.childConfirmed === true ? 'TRUE' : 'FALSE',
+    guardian_confirmed: consent.guardianConfirmed === true ? 'TRUE' : 'FALSE',
+    consent_accepted_at: consent.acceptedAt || now,
+    terms_version: consent.termsVersion || 'placement-tnc-v1',
     current_stage: 1,
     current_question: 0,
     last_activity_at: now,
@@ -194,7 +216,7 @@ function finalize_(operation) {
     MailApp.sendEmail({
       to: parentEmail,
       subject: `Hasil Placement Test Kalananti - ${row.student_name || 'Siswa'}`,
-      htmlBody: buildEmailBody_(row, pdf.url),
+      htmlBody: buildEmailBody_(row, pdf.url, payload),
       attachments: [pdf.blob],
       name: 'Kalananti Placement Test'
     });
@@ -303,11 +325,270 @@ function buildPdfHtml_(row, payload) {
   </body></html>`;
 }
 
-function buildEmailBody_(row, pdfUrl) {
-  return `<p>Halo Orang Tua/Wali ${escapeHtml_(row.student_name || 'Siswa')},</p>
-    <p>Placement Test Kalananti telah selesai. Laporan PDF terlampir pada email ini.</p>
-    <p>Salinan internal laporan: <a href="${escapeHtml_(pdfUrl)}">buka di Google Drive</a>.</p>
-    <p>Terima kasih,<br>Kalananti</p>`;
+function buildEmailBody_(row, pdfUrl, payload) {
+  const result = (payload && (payload.result || payload)) || {};
+  const studentName = escapeHtml_(row.student_name || 'Siswa');
+  const submissionId = escapeHtml_(row.submission_id || '-');
+  const assignedModule = escapeHtml_(result.assignedModule || row.assigned_module || '-');
+  const potentialModule = escapeHtml_(result.potentialModule || row.potential_module || '-');
+  const assignedLevel = escapeHtml_(result.assignedLevel || result.level || row.assigned_level || '-');
+  const isCandidate = result.lv3Candidate === true || row.lv3_candidate === true || String(row.lv3_candidate).toLowerCase() === 'true';
+  const safePdfUrl = escapeHtml_(pdfUrl || '#');
+  const summaryText = escapeHtml_(result.summary || 'Placement test telah diselesaikan. Rekomendasi ini menjadi titik awal perjalanan belajar siswa.');
+
+  const statusText = isCandidate
+    ? 'KANDIDAT REVIEW EMERGING — Lv3'
+    : (assignedLevel.includes('FOUNDATIONAL')
+      ? 'STATUS: SIAP MEMBANGUN FONDASI'
+      : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK');
+
+  const displayLevel = isCandidate ? 'KANDIDAT REVIEW — Lv3' : assignedLevel;
+
+  const lv3InstructionSection = isCandidate ? `
+    <!-- SPECIAL INSTRUCTION CARD FOR LEVEL 3 CANDIDATES -->
+    <tr>
+      <td style="padding: 24px 24px 0;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f5edff; border: 2px solid #d8b4fe; border-radius: 16px; padding: 20px; text-align: left;">
+          <tr>
+            <td>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td width="36" valign="top" style="padding-right: 12px;">
+                    <span style="font-size: 26px; line-height: 1;">🌟</span>
+                  </td>
+                  <td valign="top">
+                    <strong style="font-size: 16px; color: #5b21b6; display: block; margin-bottom: 6px;">
+                      Instruksi Khusus Kandidat Level 3 (Review Portofolio)
+                    </strong>
+                    <span style="font-size: 14px; color: #4c1d95; line-height: 1.6; display: block;">
+                      Selamat Ayah / Bunda! Ananda <strong>${studentName}</strong> terpilih sebagai kandidat untuk langsung masuk ke <strong>Level 3</strong> pada modul <strong>${assignedModule}</strong>.<br><br>
+                      Untuk menuntaskan proses evaluasi dan verifikasi Level 3, mohon Ayah / Bunda dapat <strong>membalas (reply) email ini</strong> dengan melampirkan <strong>portofolio atau hasil karya terbaik Ananda</strong> pada modul <strong>${assignedModule}</strong> (seperti foto/video proyek, tangkapan layar karya, file kodingan, atau karya digital yang pernah dibuat Ananda). Tim Akademik Kalananti akan segera melakukan peninjauan.
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>` : '';
+
+  return `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; display: block; }
+    body { margin: 0; padding: 0; width: 100% !important; background-color: #e8f2ff; font-family: 'Inter', Arial, sans-serif; color: #17324f; }
+  </style>
+</head>
+<body style="margin: 0; padding: 20px 0; background-color: #e8f2ff; font-family: 'Inter', Arial, sans-serif; color: #17324f;">
+
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 12px 32px rgba(16, 52, 92, 0.12);">
+    
+    <!-- Top Greeting Banner -->
+    <tr>
+      <td style="padding: 24px 28px 16px; background-color: #ffffff; text-align: left;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+          <tr>
+            <td>
+              <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #17324f; font-weight: 600;">
+                Halo Ayah / Bunda,
+              </p>
+              <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: #365d83;">
+                Terima kasih telah mengikutkan <strong style="color: #17324f;">${studentName}</strong> dalam <strong>Placement Test Kalananti</strong>. Seluruh proses evaluasi dan pemetaan potensi belajar Ananda telah berhasil dilakukan.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Pure CSS Space Star Background Header (No Image Dependencies) -->
+    <tr>
+      <td style="padding: 0 16px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #173f73 linear-gradient(135deg, #102d56 0%, #265e9b 60%, #2d8fb5 100%); border-radius: 18px; padding: 32px 24px; text-align: center; color: #ffffff;">
+          
+          <!-- Logo & Meta Row -->
+          <tr>
+            <td style="padding-bottom: 16px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="left" valign="middle">
+                    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo" width="140" style="background: rgba(255,255,255,0.95); padding: 8px 12px; border-radius: 12px; display: block; border: 0;">
+                  </td>
+                  <td align="right" valign="middle" style="font-size: 12px; color: #eaf4ff; font-weight: 700; line-height: 1.4;">
+                    PLACEMENT REPORT<br>
+                    <span style="color: #f9c013;">KALANANTI ACADEMICS</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Pure HTML/CSS Star Atmosphere Row -->
+          <tr>
+            <td align="center" style="padding: 6px 0 12px; font-size: 18px; color: #f9c013; letter-spacing: 14px; opacity: 0.9;">
+              ✦ ✨ ⭐ ✦ ⭐ ✨ ✦
+            </td>
+          </tr>
+
+          <!-- Status Badge -->
+          <tr>
+            <td align="center" style="padding-top: 4px;">
+              <span style="display: inline-block; padding: 6px 14px; background-color: #eef8f5; color: #287d73; border: 1px solid #a3d9d3; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">
+                ${statusText}
+              </span>
+            </td>
+          </tr>
+
+          <!-- Main Title & Student Name -->
+          <tr>
+            <td align="center" style="padding-top: 14px;">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; line-height: 1.3;">
+                Hasil &amp; Rekomendasi Belajar<br>
+                <span style="color: #f9c013; font-size: 26px; display: inline-block; margin-top: 4px;">${studentName}</span>
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Badges Placement (Module & Level) -->
+          <tr>
+            <td align="center" style="padding-top: 18px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+                <tr>
+                  <td style="padding: 4px;">
+                    <span style="display: inline-block; padding: 10px 18px; background-color: #eaf4ff; color: #265e9b; border: 2px solid #bfdbfe; border-radius: 12px; font-size: 15px; font-weight: 800;">
+                      ${assignedModule}
+                    </span>
+                  </td>
+                  <td style="padding: 4px;">
+                    <span style="display: inline-block; padding: 10px 18px; background-color: #f9c013; color: #5a3f00; border-radius: 12px; font-size: 15px; font-weight: 800;">
+                      ${displayLevel}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Subtitle / Summary Copy -->
+          <tr>
+            <td align="center" style="padding-top: 16px;">
+              <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #eaf4ff; max-width: 500px;">
+                ${summaryText}
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+
+    ${lv3InstructionSection}
+
+    <!-- Detail Breakdown Section -->
+    <tr>
+      <td style="padding: 24px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border: 1.5px solid #c9ddf1; border-radius: 16px; overflow: hidden;">
+          <tr>
+            <td style="padding: 16px 20px; background-color: #f4f8fc; border-bottom: 1.5px solid #c9ddf1;">
+              <h2 style="margin: 0; font-size: 16px; color: #17324f; font-weight: 700;">
+                📌 Ringkasan Hasil Evaluasi
+              </h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 16px 20px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #58799b; font-size: 14px; width: 40%;">Nama Siswa</td>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #17324f; font-size: 14px; font-weight: 700;">${studentName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #58799b; font-size: 14px;">Submission ID</td>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #17324f; font-size: 14px; font-weight: 600; font-family: monospace;">${submissionId}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #58799b; font-size: 14px;">Modul Rekomendasi</td>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #265e9b; font-size: 14px; font-weight: 700;">${assignedModule}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #58799b; font-size: 14px;">Modul Potensial</td>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #eef4fb; color: #17324f; font-size: 14px; font-weight: 600;">${potentialModule}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #58799b; font-size: 14px;">Level Rekomendasi</td>
+                  <td style="padding: 8px 0; color: #866200; font-size: 14px; font-weight: 700;">${displayLevel}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- PDF Attachment Callout Box -->
+    <tr>
+      <td style="padding: 0 24px 24px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #fff9e6; border: 1.5px dashed #f0b400; border-radius: 16px; padding: 20px; text-align: left;">
+          <tr>
+            <td>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td width="36" valign="top" style="padding-right: 12px;">
+                    <span style="font-size: 24px; line-height: 1;">📄</span>
+                  </td>
+                  <td valign="top">
+                    <strong style="font-size: 15px; color: #704f00; display: block; margin-bottom: 4px;">
+                      Laporan Lengkap Terlampir (PDF)
+                    </strong>
+                    <span style="font-size: 13px; color: #5a3f00; line-height: 1.5; display: block;">
+                      Dokumen PDF laporan hasil placement test lengkap (termasuk grafik Radar Kemampuan &amp; detail Learning Path) telah kami sertakan sebagai lampiran file pada email ini.
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Call to Action Buttons -->
+    <tr>
+      <td style="padding: 0 24px 24px;" align="center">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+          <tr>
+            <td align="center" style="border-radius: 12px; background: #265e9b;">
+              <a href="${safePdfUrl}" target="_blank" style="display: inline-block; padding: 14px 24px; font-size: 14px; color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 12px; background-color: #265e9b;">
+                🔗 Buka Laporan di Google Drive
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Footer Section -->
+    <tr>
+      <td style="padding: 20px 24px; background-color: #f4f8fc; border-top: 1px solid #e1ebf5; text-align: center;">
+        <p style="margin: 0 0 6px; font-size: 13px; color: #58799b; font-weight: 600;">
+          Tim Akademik Kalananti
+        </p>
+        <p style="margin: 0; font-size: 12px; color: #8ba2bd;">
+          Created by Kalananti Academics · © 2026
+        </p>
+      </td>
+    </tr>
+
+  </table>
+
+</body>
+</html>`;
 }
 
 function ensureSheet_(spreadsheet, name, headers) {
