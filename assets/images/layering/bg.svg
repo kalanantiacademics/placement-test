@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240">
+  <rect width="300" height="240" fill="#87CEEB"/> <!-- Sky -->
+  <circle cx="250" cy="50" r="30" fill="#FFD700"/> <!-- Sun -->
+  <!-- Clouds -->
+  <path d="M 50 60 Q 60 40 80 50 Q 100 40 110 60 Q 120 70 100 80 L 60 80 Q 40 70 50 60 Z" fill="white" opacity="0.9"/>
+  <path d="M 180 80 Q 190 60 210 70 Q 230 60 240 80 Q 250 90 230 100 L 190 100 Q 170 90 180 80 Z" fill="white" opacity="0.9"/>
+  <!-- Grass background -->
+  <path d="M 0 120 Q 150 100 300 130 L 300 240 L 0 240 Z" fill="#90EE90"/>
+  <path d="M 0 150 Q 150 130 300 160 L 300 240 L 0 240 Z" fill="#32CD32"/>
+  <path d="M 0 180 Q 150 160 300 190 L 300 240 L 0 240 Z" fill="#228B22"/>
+  <!-- Some background trees -->
+  <rect x="40" y="100" width="10" height="40" fill="#8B4513"/>
+  <circle cx="45" cy="90" r="25" fill="#006400"/>
+  <rect x="250" y="110" width="12" height="50" fill="#8B4513"/>
+  <circle cx="256" cy="100" r="30" fill="#006400"/>
+</svg>

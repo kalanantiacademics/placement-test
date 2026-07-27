@@ -1,0 +1,8 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(50, 50)">
+    <ellipse rx="13" ry="17" fill="#e65100"/>
+    <path d="M-13,0 A13,17 0 0,0 13,0 M0,-17 L0,17 M-8,-11 A18,18 0 0,1 -8,11 M8,-11 A18,18 0 0,0 8,11" stroke="#3e2723" stroke-width="1.5" fill="none"/>
+  </g>
+  <!-- motion lines down -->
+  <path d="M45,25 L45,30 M55,25 L55,30 M50,20 L50,30" stroke="#bdbdbd" stroke-width="2" stroke-linecap="round"/>
+</svg>

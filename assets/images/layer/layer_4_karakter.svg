@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <!-- Head -->
+  <circle cx="400" cy="400" r="25" fill="#ffb8b8"/>
+  <!-- Body -->
+  <rect x="385" y="425" width="30" height="60" fill="#3498db" rx="10"/>
+  <!-- Legs -->
+  <rect x="390" y="480" width="12" height="40" fill="#2c3e50" rx="6" transform="rotate(-15 396 480)"/>
+  <rect x="405" y="480" width="12" height="40" fill="#2c3e50" rx="6" transform="rotate(20 411 480)"/>
+  <!-- Arms -->
+  <rect x="375" y="430" width="12" height="45" fill="#e74c3c" rx="6" transform="rotate(30 381 430)"/>
+  <!-- Backpack -->
+  <rect x="370" y="430" width="15" height="40" fill="#e67e22" rx="5"/>
+</svg>

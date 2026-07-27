@@ -1,0 +1,8 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(50, 80)">
+    <ellipse rx="20" ry="10" fill="#e65100"/>
+    <path d="M-20,0 A20,10 0 0,0 20,0 M0,-10 L0,10 M-12,-6 A25,12 0 0,1 -12,6 M12,-6 A25,12 0 0,0 12,6" stroke="#3e2723" stroke-width="1.5" fill="none"/>
+  </g>
+  <!-- impact lines -->
+  <path d="M20,70 L30,80 M80,70 L70,80 M30,90 L20,95 M70,90 L80,95" stroke="#bdbdbd" stroke-width="2" stroke-linecap="round"/>
+</svg>

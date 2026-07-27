@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240">
+  <!-- Bush is positioned in the foreground, covering the bottom part of the cat -->
+  <g transform="translate(110, 140)">
+    <!-- Main bush shape -->
+    <path d="M 20 60 Q 0 40 20 20 Q 40 -10 70 0 Q 100 -10 120 20 Q 140 40 120 60 Q 100 80 70 70 Q 40 80 20 60 Z" fill="#008000"/>
+    <!-- Bush highlights -->
+    <path d="M 30 50 Q 15 35 30 20 Q 45 0 70 10 Q 95 0 110 20 Q 125 35 110 50 Q 95 65 70 55 Q 45 65 30 50 Z" fill="#228B22"/>
+    <path d="M 40 40 Q 30 30 40 20 Q 50 10 70 15 Q 90 10 100 20 Q 110 30 100 40 Q 90 50 70 45 Q 50 50 40 40 Z" fill="#32CD32"/>
+    <!-- Leaves details -->
+    <path d="M 30 30 Q 35 25 40 30 M 70 20 Q 75 15 80 20 M 100 35 Q 105 30 110 35 M 40 50 Q 45 45 50 50 M 90 50 Q 95 45 100 50" stroke="#006400" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

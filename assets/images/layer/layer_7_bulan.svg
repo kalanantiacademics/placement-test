@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <circle cx="200" cy="150" r="80" fill="#fff9c4" />
+  <circle cx="200" cy="150" r="90" fill="#fff9c4" opacity="0.3" filter="blur(5px)" />
+  <circle cx="215" cy="130" r="15" fill="#e6c229" opacity="0.2"/>
+  <circle cx="180" cy="170" r="25" fill="#e6c229" opacity="0.2"/>
+  <circle cx="160" cy="120" r="10" fill="#e6c229" opacity="0.2"/>
+</svg>

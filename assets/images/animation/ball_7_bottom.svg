@@ -1,0 +1,6 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(50, 75)">
+    <circle r="15" fill="#e65100"/>
+    <path d="M-15,0 A15,15 0 0,0 15,0 M0,-15 L0,15 M-10,-10 A20,20 0 0,1 -10,10 M10,-10 A20,20 0 0,0 10,10" stroke="#3e2723" stroke-width="1.5" fill="none"/>
+  </g>
+</svg>
