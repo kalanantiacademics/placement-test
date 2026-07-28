@@ -70,6 +70,14 @@
     }
     @keyframes starDrift { to { transform: translate3d(-120px, 70px, 0); } }
 
+    #threeCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
     .edge-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
     .edge-planet { position: absolute; pointer-events: none; opacity: 0.55; }
     .edge-left  { left: 0; }
