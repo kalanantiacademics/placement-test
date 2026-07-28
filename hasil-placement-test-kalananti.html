@@ -75,10 +75,10 @@
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       pointer-events: none;
-      z-index: 1;
+      z-index: -10;
     }
 
-    .edge-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .edge-layer { position: fixed; inset: 0; pointer-events: none; z-index: -5; overflow: hidden; }
     .edge-planet { position: absolute; pointer-events: none; opacity: 0.55; }
     .edge-left  { left: 0; }
     .edge-right { right: 0; }
@@ -91,11 +91,11 @@
     @keyframes twinkle { 0%,100% { opacity:0.4; transform:scale(0.9); } 50% { opacity:1; transform:scale(1.2); } }
     @keyframes pulseWatermark { 0%,100% { opacity: 0.035; transform: translateX(-50%) scale(1); } 50% { opacity: 0.055; transform: translateX(-50%) scale(1.02); } }
 
-    .animate-twinkle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 1; animation: twinkle 3s ease-in-out infinite; }
+    .animate-twinkle { position: fixed; border-radius: 50%; pointer-events: none; z-index: -4; animation: twinkle 3s ease-in-out infinite; }
     .star-1 { top: 26%; left: 36%; width: 10px; height: 10px; background: rgba(255,255,255,0.9); }
     .star-2 { top: 60%; right: 30%; width: 8px; height: 8px; background: #fde68a; animation-delay: 1.3s; }
     .star-3 { top: 14%; right: 44%; width: 6px; height: 6px; background: #bfdbfe; animation-delay: 0.7s; }
-    .bg-glow-orb { position: fixed; pointer-events: none; z-index: -1; border-radius: 50%; }
+    .bg-glow-orb { position: fixed; pointer-events: none; z-index: -6; border-radius: 50%; }
     .orb-1 { top: -8rem; left: -6rem; width: 36rem; height: 36rem; background: radial-gradient(circle, rgba(38,94,155,0.12) 0%, transparent 65%); }
     .orb-2 { bottom: -8rem; right: -6rem; width: 32rem; height: 32rem; background: radial-gradient(circle, rgba(249,192,19,0.14) 0%, transparent 65%); }
     .bg-watermark-text {
@@ -109,22 +109,28 @@
       color: rgba(38, 94, 155, 0.04);
       letter-spacing: 0.15em;
       pointer-events: none;
-      z-index: 0;
+      z-index: -8;
       white-space: nowrap;
       user-select: none;
       animation: pulseWatermark 10s ease-in-out infinite;
     }
 
-  <!-- Glow Orbs -->
-  <div class="bg-glow-orb orb-1"></div>
-  <div class="bg-glow-orb orb-2"></div>
-
-  <!-- Twinkle Stars -->
-  <div class="animate-twinkle star-1"></div>
-  <div class="animate-twinkle star-2"></div>
-  <div class="animate-twinkle star-3"></div>
-
-  <!-- Top Navigation Bar -->
+    .topbar {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: var(--card);
+      border: 1.5px solid var(--card-b);
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px -10px rgba(26, 69, 118, 0.12);
+      backdrop-filter: blur(14px);
+    }
     .topbar .brand {
       display: flex;
       align-items: center;
@@ -682,7 +688,7 @@
             <p class="card-subtitle">Untuk siswa yang ingin langsung mengikuti pengerjaan placement test evaluasi potensi dan rekomendasi level Kalananti.</p>
           </div>
           <div>
-            <a href="index.html" class="btn-action btn-primary">
+            <a href="https://www.kalananti.id/placement-test" class="btn-action btn-primary">
               <i class="fa-solid fa-play"></i> Mulai Placement Test
             </a>
           </div>
