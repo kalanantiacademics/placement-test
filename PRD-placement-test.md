@@ -1687,11 +1687,11 @@ Therefore:
 
 The function name is the stable search anchor. Line numbers below are a snapshot of the active files on **27 July 2026** and may move after editing.
 
-| Audience | Active file | Final report renderer | Current template landmark | Report selector |
-| --- | --- | --- | --- | --- |
-| Junior, 5–7 | `junior-final-placement-test.html` | `wireStage3()` | Function starts near line 1547; `const appContent` starts near line 1817; `appEl.innerHTML = appContent` installs the report | `.placement-report` |
-| Kids, 8–15 | `kids-final-placement-test.html` | `finalResult()` | Function starts near line 14071; `shell(...)` starts near line 14228; `<article class="placement-report kids-report...">` starts near line 14281 | `.placement-report` |
-| Teens, 16–18 | `teens.html` | `renderTeensResultReport(container)` | Function starts near line 8319; `container.innerHTML` starts near line 8417; `<article class="teen-report...">` starts near line 8447 | `.teen-report` |
+| Audience      | Active file                          | Final report renderer                  | Current template landmark                                                                                                                           | Report selector       |
+| ------------- | ------------------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| Junior, 5–7  | `junior-final-placement-test.html` | `wireStage3()`                       | Function starts near line 1547;`const appContent` starts near line 1817; `appEl.innerHTML = appContent` installs the report                     | `.placement-report` |
+| Kids, 8–15   | `kids-final-placement-test.html`   | `finalResult()`                      | Function starts near line 14071;`shell(...)` starts near line 14228; `<article class="placement-report kids-report...">` starts near line 14281 | `.placement-report` |
+| Teens, 16–18 | `teens.html`                       | `renderTeensResultReport(container)` | Function starts near line 8319;`container.innerHTML` starts near line 8417; `<article class="teen-report...">` starts near line 8447            | `.teen-report`      |
 
 Important distinctions:
 
@@ -1704,19 +1704,19 @@ Important distinctions:
 
 The shared source of truth is `placement-sync.js`.
 
-| Function | Current location snapshot | Responsibility |
-| --- | --- | --- |
-| `createReportPdf(options)` | `placement-sync.js`, near line 976 | Finds or accepts the report element, clones it into the PDF sandbox, waits for fonts/assets, rasterizes charts, applies export CSS, and returns `{ blob, filename }` |
-| `downloadReportPdf(options)` | `placement-sync.js`, near line 1082 | Creates a temporary `blob:` URL and downloads the generated browser PDF |
-| `finalizeWithReport(payload, options)` | `placement-sync.js`, near line 1095 | Generates the same visual PDF, converts it to Base64, adds `payload.pdfAttachment`, and queues the `finalize` operation |
+| Function                                 | Current location snapshot             | Responsibility                                                                                                                                                        |
+| ---------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createReportPdf(options)`             | `placement-sync.js`, near line 976  | Finds or accepts the report element, clones it into the PDF sandbox, waits for fonts/assets, rasterizes charts, applies export CSS, and returns`{ blob, filename }` |
+| `downloadReportPdf(options)`           | `placement-sync.js`, near line 1082 | Creates a temporary`blob:` URL and downloads the generated browser PDF                                                                                              |
+| `finalizeWithReport(payload, options)` | `placement-sync.js`, near line 1095 | Generates the same visual PDF, converts it to Base64, adds`payload.pdfAttachment`, and queues the `finalize` operation                                            |
 
 Generated or injected copies of these functions also exist inside the active final HTML artifacts:
 
-| File | `createReportPdf` | `downloadReportPdf` | `finalizeWithReport` |
-| --- | --- | --- | --- |
-| `junior-final-placement-test.html` | near line 1129 | near line 1235 | near line 1248 |
-| `kids-final-placement-test.html` | near line 1130 | near line 1236 | near line 1249 |
-| `teens.html` | near line 1129 | near line 1235 | near line 1248 |
+| File                                 | `createReportPdf` | `downloadReportPdf` | `finalizeWithReport` |
+| ------------------------------------ | ------------------- | --------------------- | ---------------------- |
+| `junior-final-placement-test.html` | near line 1129      | near line 1235        | near line 1248         |
+| `kids-final-placement-test.html`   | near line 1130      | near line 1236        | near line 1249         |
+| `teens.html`                       | near line 1129      | near line 1235        | near line 1248         |
 
 Do not independently hand-edit all embedded copies for a shared PDF behavior change. Update `placement-sync.js`, then use the verified injection/rebuild path for the affected final artifacts and check that only one active sync client/config block remains.
 
@@ -1838,15 +1838,15 @@ The `result` object is not what draws the visual PDF. It supports the email summ
 
 Backend ownership:
 
-| Complaint | Backend function to inspect |
-| --- | --- |
-| Session is rejected or token is invalid | `validateOperation_()` and `requireAuthorizedSession_()` |
-| Parent email is missing | `finalize_()` and the registered `Sessions.parent_email` value |
-| Visual PDF attachment is missing | `finalize_()` |
-| MIME, Base64, size, or PDF signature is rejected | `pdfBlobFromAttachment_()` |
-| PDF filename or Drive duplication is wrong | `createResultPdf_()` |
-| Email HTML summary is wrong | `buildEmailBody_()` |
-| Drive URL, email status, or final session status is wrong | `finalize_()` |
+| Complaint                                                 | Backend function to inspect                                        |
+| --------------------------------------------------------- | ------------------------------------------------------------------ |
+| Session is rejected or token is invalid                   | `validateOperation_()` and `requireAuthorizedSession_()`       |
+| Parent email is missing                                   | `finalize_()` and the registered `Sessions.parent_email` value |
+| Visual PDF attachment is missing                          | `finalize_()`                                                    |
+| MIME, Base64, size, or PDF signature is rejected          | `pdfBlobFromAttachment_()`                                       |
+| PDF filename or Drive duplication is wrong                | `createResultPdf_()`                                             |
+| Email HTML summary is wrong                               | `buildEmailBody_()`                                              |
+| Drive URL, email status, or final session status is wrong | `finalize_()`                                                    |
 
 ### 20.9 Safe PDF Preview Without New Source Files or Production Dev Mode
 
@@ -1882,20 +1882,20 @@ A browser `blob:` URL is valid only for the lifetime of its browser tab and is n
 
 Use this table before making any report change:
 
-| User complaint | First location to inspect | Typical owner |
-| --- | --- | --- |
-| Text, section order, module, level, Learning Path, or narrative is wrong for Junior | `junior-final-placement-test.html` → `wireStage3()` → `appContent` | Junior report renderer |
-| Text, section order, module, level, Learning Path, or narrative is wrong for Kids | `kids-final-placement-test.html` → `finalResult()` → `shell(...)` | Kids report renderer |
-| Text, section order, module, level, Learning Path, or narrative is wrong for Teens | `teens.html` → `renderTeensResultReport(container)` → `container.innerHTML` | Teens report renderer |
-| Report looks correct on screen but clips, shrinks, or breaks badly in PDF | `placement-sync.js` → `createReportPdf()` and `installPdfExportStyle()` | Shared browser PDF client |
-| Page 2 starts in the wrong place | `placement-sync.js` page-break rules plus `.rc-print-continuation`, `.kids-print-continuation`, or `.teen-print-continuation` in the audience template | Shared PDF client and audience template |
-| Radar chart is missing or blank in PDF | `placement-sync.js` → `rasterizeProfileCharts()` and the audience `getRadarChart()` | Shared PDF client and audience renderer |
-| Logo, illustration, or font is missing | `waitForReportAssets()`, font readiness, CORS settings, and the asset URL in the audience renderer | Shared PDF client and audience template |
-| Downloaded PDF differs from the emailed attachment | `finalizeWithReport()` payload, `Code.gs` → `pdfBlobFromAttachment_()`, and actual received email attachment | Browser-to-backend boundary |
-| `placement_report_not_found` occurs for Junior | `wireStage3()` and explicit `reportPdfOptions.element` / `document` for the Stage 3 iframe | Junior wrapper and shared PDF client |
-| PDF is created but email fails | `Code.gs` → `finalize_()` and `MailApp.sendEmail()` error/status | Apps Script backend |
-| Email content is wrong but attachment is correct | `Code.gs` → `buildEmailBody_()` | Apps Script email template |
-| Drive file name, duplicate behavior, or URL is wrong | `Code.gs` → `createResultPdf_()` | Apps Script storage |
+| User complaint                                                                      | First location to inspect                                                                                                                                      | Typical owner                           |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Text, section order, module, level, Learning Path, or narrative is wrong for Junior | `junior-final-placement-test.html` → `wireStage3()` → `appContent`                                                                                     | Junior report renderer                  |
+| Text, section order, module, level, Learning Path, or narrative is wrong for Kids   | `kids-final-placement-test.html` → `finalResult()` → `shell(...)`                                                                                      | Kids report renderer                    |
+| Text, section order, module, level, Learning Path, or narrative is wrong for Teens  | `teens.html` → `renderTeensResultReport(container)` → `container.innerHTML`                                                                            | Teens report renderer                   |
+| Report looks correct on screen but clips, shrinks, or breaks badly in PDF           | `placement-sync.js` → `createReportPdf()` and `installPdfExportStyle()`                                                                                 | Shared browser PDF client               |
+| Page 2 starts in the wrong place                                                    | `placement-sync.js` page-break rules plus `.rc-print-continuation`, `.kids-print-continuation`, or `.teen-print-continuation` in the audience template | Shared PDF client and audience template |
+| Radar chart is missing or blank in PDF                                              | `placement-sync.js` → `rasterizeProfileCharts()` and the audience `getRadarChart()`                                                                     | Shared PDF client and audience renderer |
+| Logo, illustration, or font is missing                                              | `waitForReportAssets()`, font readiness, CORS settings, and the asset URL in the audience renderer                                                           | Shared PDF client and audience template |
+| Downloaded PDF differs from the emailed attachment                                  | `finalizeWithReport()` payload, `Code.gs` → `pdfBlobFromAttachment_()`, and actual received email attachment                                            | Browser-to-backend boundary             |
+| `placement_report_not_found` occurs for Junior                                    | `wireStage3()` and explicit `reportPdfOptions.element` / `document` for the Stage 3 iframe                                                               | Junior wrapper and shared PDF client    |
+| PDF is created but email fails                                                      | `Code.gs` → `finalize_()` and `MailApp.sendEmail()` error/status                                                                                        | Apps Script backend                     |
+| Email content is wrong but attachment is correct                                    | `Code.gs` → `buildEmailBody_()`                                                                                                                           | Apps Script email template              |
+| Drive file name, duplicate behavior, or URL is wrong                                | `Code.gs` → `createResultPdf_()`                                                                                                                          | Apps Script storage                     |
 
 Acceptance gate:
 

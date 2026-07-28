@@ -53,33 +53,89 @@
       overflow-x: hidden;
     }
 
-    /* Three.js Background Canvas */
-    #threeCanvas {
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: -20;
+      opacity: 0.14;
+      background-image:
+        radial-gradient(circle at 14% 24%, rgba(255,255,255,0.9) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 78% 68%, rgba(255,255,255,0.75) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 56% 38%, rgba(255,255,255,0.60) 0 1px, transparent 1.4px),
+        radial-gradient(circle at 30% 82%, rgba(255,255,255,0.50) 0 1px, transparent 1.3px),
+        radial-gradient(circle at 90% 45%, rgba(255,255,255,0.55) 0 1px, transparent 1.4px);
+      background-size: 250px 250px, 320px 320px, 210px 210px, 290px 290px, 180px 180px;
+      animation: starDrift 200s linear infinite;
+    }
+    @keyframes starDrift { to { transform: translate3d(-120px, 70px, 0); } }
+
+    .edge-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .edge-planet { position: absolute; pointer-events: none; opacity: 0.55; }
+    .edge-left  { left: 0; }
+    .edge-right { right: 0; }
+    .char-float {
+      position: absolute; pointer-events: none; opacity: 0.7;
+      filter: drop-shadow(0 12px 24px rgba(26,69,118,0.22));
+    }
+    @keyframes floatY  { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-18px) rotate(2deg); } }
+    @keyframes floatY2 { 0%,100% { transform: translateY(0) rotate(2deg); } 50% { transform: translateY(-14px) rotate(-2deg); } }
+    @keyframes twinkle { 0%,100% { opacity:0.4; transform:scale(0.9); } 50% { opacity:1; transform:scale(1.2); } }
+    @keyframes pulseWatermark { 0%,100% { opacity: 0.035; transform: translateX(-50%) scale(1); } 50% { opacity: 0.055; transform: translateX(-50%) scale(1.02); } }
+
+    .animate-twinkle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 1; animation: twinkle 3s ease-in-out infinite; }
+    .star-1 { top: 26%; left: 36%; width: 10px; height: 10px; background: rgba(255,255,255,0.9); }
+    .star-2 { top: 60%; right: 30%; width: 8px; height: 8px; background: #fde68a; animation-delay: 1.3s; }
+    .star-3 { top: 14%; right: 44%; width: 6px; height: 6px; background: #bfdbfe; animation-delay: 0.7s; }
+    .bg-glow-orb { position: fixed; pointer-events: none; z-index: -1; border-radius: 50%; }
+    .orb-1 { top: -8rem; left: -6rem; width: 36rem; height: 36rem; background: radial-gradient(circle, rgba(38,94,155,0.12) 0%, transparent 65%); }
+    .orb-2 { bottom: -8rem; right: -6rem; width: 32rem; height: 32rem; background: radial-gradient(circle, rgba(249,192,19,0.14) 0%, transparent 65%); }
+    .bg-watermark-text {
       position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(3.5rem, 11vw, 10rem);
+      font-weight: 900;
+      color: rgba(38, 94, 155, 0.04);
+      letter-spacing: 0.15em;
       pointer-events: none;
       z-index: 0;
+      white-space: nowrap;
+      user-select: none;
+      animation: pulseWatermark 10s ease-in-out infinite;
     }
+  </style>
+</head>
+<body>
 
-    /* Top Navigation Bar */
-    .topbar {
-      position: sticky;
-      top: 0;
-      left: 0;
-      z-index: 100;
-      display: flex;
-      width: 100%;
-      min-height: 64px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 28px;
-      border-bottom: 1px solid rgba(165,204,244,.85);
-      background: rgba(255,255,255,.94);
-      box-shadow: 0 8px 30px -18px rgba(38,94,155,.3);
-      backdrop-filter: blur(14px);
-    }
+  <!-- Three.js Background Canvas -->
+  <canvas id="threeCanvas"></canvas>
+
+  <!-- Background Floating Assets & Planets (Lala & Lili) -->
+  <div class="edge-layer">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/e77f536b-e591-4ba8-b5b8-f5b2a3d3b33b.png" class="edge-planet edge-left" style="top:6%; width:min(22vw,170px);" alt="Planet Left Top">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/c08a7aed-567f-4e37-988c-1423a5b92643.png" class="edge-planet edge-left" style="top:65%; width:min(28vw,220px); transform:translateX(-30%);" alt="Planet Left Bottom">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/5f93f855-0466-47b3-ba85-bbaabbad7a2e.png" class="edge-planet edge-right" style="top:20%; width:min(26vw,210px); transform:translateX(30%);" alt="Planet Right Top">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/434fc5cb-e490-4e40-a921-d4519aa8a8a4.png" class="edge-planet edge-right" style="bottom:5%; width:min(30vw,250px);" alt="Planet Right Bottom">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/61f06160-989d-402e-be1b-eb1891afa86b.png" class="char-float" style="left:4%; top:18%; width:105px; animation:floatY 7s ease-in-out infinite;" alt="Lala">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/904cb9e9-ecd1-4731-a1ef-fa6a0bd50527.png" class="char-float" style="right:4%; top:48%; width:115px; animation:floatY2 8s ease-in-out infinite 1.5s;" alt="Lili">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/9b916b05-86ed-4509-aef6-e640606f3542.png" class="char-float" style="left:6%; bottom:6%; width:110px; animation:floatY 6s ease-in-out infinite 0.8s;" alt="Kalananti Mascot">
+  </div>
+
+  <!-- Background Translucent Watermark Text -->
+  <div class="bg-watermark-text">KALANANTI • LALA &amp; LILI</div>
+
+  <!-- Glow Orbs -->
+  <div class="bg-glow-orb orb-1"></div>
+  <div class="bg-glow-orb orb-2"></div>
+
+  <!-- Twinkle Stars -->
+  <div class="animate-twinkle star-1"></div>
+  <div class="animate-twinkle star-2"></div>
+  <div class="animate-twinkle star-3"></div>
+
+  <!-- Top Navigation Bar -->
     .topbar .brand {
       display: flex;
       align-items: center;

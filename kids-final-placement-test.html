@@ -421,92 +421,548 @@
       .placement-pdf-exporting .kids-report-actions,
       .placement-pdf-exporting button,
       .placement-pdf-exporting .no-print { display: none !important; }
+
+      .a4-container.placement-pdf-exporting,
+      .placement-pdf-exporting .a4-container,
       .placement-report.placement-pdf-exporting,
       .teen-report.placement-pdf-exporting,
-      .placement-pdf-exporting .placement-report,
-      .placement-pdf-exporting .teen-report {
+      .kids-report.placement-pdf-exporting {
         opacity: 1 !important;
         visibility: visible !important;
         filter: none !important;
         transform: none !important;
         width: 794px !important;
         max-width: 794px !important;
+        min-height: 297mm !important;
+        height: auto !important;
+        max-height: none !important;
         margin: 0 auto !important;
-        padding: 14px 18px !important;
+        padding: 16px 18px 18px 18px !important;
         box-shadow: none !important;
         border-radius: 0 !important;
-        background: #ffffff !important;
+        background: #e8f2ff !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 14px !important;
+        overflow: hidden !important;
+        color: #17324f !important;
+        font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
+        font-size: 13px !important;
+        line-height: 1.4 !important;
       }
+
+      .placement-pdf-exporting .report-footer {
+        width: 100% !important;
+        text-align: center !important;
+        color: rgba(38, 94, 155, 0.62) !important;
+        font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+        font-size: 0.7rem !important;
+        font-weight: 750 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        padding-top: 14px !important;
+        border-top: 1px dashed rgba(38, 94, 155, 0.25) !important;
+        margin-top: 12px !important;
+        flex-shrink: 0 !important;
+      }
+
+      .placement-pdf-exporting .teen-report-head,
+      .placement-pdf-exporting .kids-report-head,
+      .placement-pdf-exporting .rc-header {
+        position: relative !important;
+        isolation: isolate !important;
+        overflow: hidden !important;
+        padding: 18px 22px 20px !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.42) !important;
+        border-radius: 20px !important;
+        background: #173f73 !important;
+        color: #ffffff !important;
+        text-align: center !important;
+        box-shadow: 0 14px 28px -20px rgba(16, 52, 92, 0.62) !important;
+      }
+
+      .placement-pdf-exporting .teen-report-head > *:not(.report-space-art) {
+        position: relative !important;
+        z-index: 2 !important;
+      }
+
+      .placement-pdf-exporting .report-space-art {
+        position: absolute !important;
+        inset: 0 !important;
+        z-index: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+      }
+
+      .placement-pdf-exporting .report-space-art svg {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      .placement-pdf-exporting .report-art-planet {
+        position: absolute !important;
+        left: -20px !important;
+        bottom: -30px !important;
+        width: 105px !important;
+        opacity: 0.92 !important;
+      }
+
+      .placement-pdf-exporting .report-art-planet-right {
+        position: absolute !important;
+        right: -25px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 110px !important;
+        opacity: 0.92 !important;
+        pointer-events: none !important;
+      }
+
+      .placement-pdf-exporting .teen-report-brand,
+      .placement-pdf-exporting .kids-report-brand {
+        display: flex !important;
+        width: 100% !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        margin-bottom: 10px !important;
+      }
+
+      .placement-pdf-exporting .teen-report-brand img,
+      .placement-pdf-exporting .kids-report-brand img {
+        margin: 0 !important;
+        padding: 6px 12px !important;
+        border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.94) !important;
+        box-shadow: 0 6px 16px rgba(4, 26, 55, 0.15) !important;
+        height: 38px !important;
+      }
+
+      .placement-pdf-exporting .teen-report-meta,
+      .placement-pdf-exporting .kids-report-meta {
+        font-size: 0.74rem !important;
+        color: #eaf4ff !important;
+        text-align: right !important;
+        font-weight: 700 !important;
+        line-height: 1.35 !important;
+        letter-spacing: 0.03em !important;
+      }
+
+      .placement-pdf-exporting .teen-report-status,
+      .placement-pdf-exporting .kids-report-status {
+        display: inline-block !important;
+        margin: 0 0 6px !important;
+        padding: 4px 12px !important;
+        border: 1px solid #a3d9d3 !important;
+        border-radius: 999px !important;
+        background: #eef8f5 !important;
+        color: #287d73 !important;
+        font-size: 0.65rem !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+      }
+
+      .placement-pdf-exporting .teen-report-head h1,
+      .placement-pdf-exporting .kids-report-head h1 {
+        max-width: 720px !important;
+        margin: 4px auto 6px !important;
+        color: #ffffff !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 1.38rem !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+        text-shadow: 0 2px 8px rgba(4, 26, 55, 0.3) !important;
+      }
+
+      .placement-pdf-exporting .report-student-name {
+        display: inline-block !important;
+        max-width: 100% !important;
+        margin: 2px auto 10px !important;
+        padding: 4px 18px !important;
+        border-radius: 999px !important;
+        background: rgba(249, 192, 19, 0.18) !important;
+        border: 1.5px solid rgba(249, 192, 19, 0.5) !important;
+        color: #f9c013 !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 1.05rem !important;
+        font-weight: 800 !important;
+        text-shadow: 0 2px 8px rgba(4, 26, 55, 0.3) !important;
+        word-break: break-word !important;
+      }
+
+      .placement-pdf-exporting .teen-report-placement,
+      .placement-pdf-exporting .kids-report-placement {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        margin: 6px 0 8px !important;
+      }
+
+      .placement-pdf-exporting .teen-report-placement span,
+      .placement-pdf-exporting .kids-report-placement span {
+        padding: 6px 14px !important;
+        border-radius: 11px !important;
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-size: 0.88rem !important;
+        font-weight: 900 !important;
+      }
+
+      .placement-pdf-exporting .teen-module,
+      .placement-pdf-exporting .kids-module {
+        border: 2px solid #bfdbfe !important;
+        background: #eaf4ff !important;
+        color: #265e9b !important;
+      }
+
+      .placement-pdf-exporting .teen-level,
+      .placement-pdf-exporting .kids-level {
+        border: 0 !important;
+        background: linear-gradient(135deg, #f9c013, #e5ab00) !important;
+        color: #5a3f00 !important;
+      }
+
+      .placement-pdf-exporting .teen-report-head .subtitle,
+      .placement-pdf-exporting .kids-report-head .subtitle {
+        max-width: 700px !important;
+        margin: 0 auto !important;
+        color: #eaf4ff !important;
+        font-size: 0.76rem !important;
+        line-height: 1.36 !important;
+      }
+
+      .placement-pdf-exporting .teen-section,
+      .placement-pdf-exporting .kids-section,
+      .placement-pdf-exporting .rc-section {
+        padding: 14px 16px !important;
+        border: 1.5px solid rgba(38, 94, 155, 0.18) !important;
+        border-radius: 18px !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        color: #17324f !important;
+        margin-bottom: 14px !important;
+        box-shadow: none !important;
+      }
+
+      .placement-pdf-exporting .teen-section h2,
+      .placement-pdf-exporting .kids-section h2 {
+        display: block !important;
+        margin: 0 0 8px !important;
+        padding: 0 0 5px !important;
+        border-bottom: 2px solid rgba(38, 94, 155, 0.1) !important;
+        color: #17324f !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 0.95rem !important;
+        line-height: 1.25 !important;
+        font-weight: 800 !important;
+      }
+
+      .placement-pdf-exporting .teen-profile-layout,
+      .placement-pdf-exporting .kids-profile-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+
+      .placement-pdf-exporting .teen-profile-chart,
+      .placement-pdf-exporting .kids-profile-chart {
+        width: 100% !important;
+        max-width: 540px !important;
+        height: 240px !important;
+        margin: 0 auto 4px !important;
+      }
+
+      .placement-pdf-exporting .teen-pillar-grid,
+      .placement-pdf-exporting .kids-pillar-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        margin-bottom: 14px !important;
+      }
+
+      .placement-pdf-exporting .teen-pillar,
+      .placement-pdf-exporting .kids-pillar {
+        padding: 10px 12px !important;
+        border: 1px solid #c8ddf2 !important;
+        border-radius: 14px !important;
+        background: #ffffff !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+      }
+
+      .placement-pdf-exporting .teen-pillar:nth-child(1),
+      .placement-pdf-exporting .kids-pillar:nth-child(1) { background: #eef6ff !important; border-top: 2.5pt solid #3979bd !important; }
+      .placement-pdf-exporting .teen-pillar:nth-child(2),
+      .placement-pdf-exporting .kids-pillar:nth-child(2) { background: #fff8df !important; border-top: 2.5pt solid #e3aa00 !important; }
+      .placement-pdf-exporting .teen-pillar:nth-child(3),
+      .placement-pdf-exporting .kids-pillar:nth-child(3) { background: #edf9f6 !important; border-top: 2.5pt solid #32988d !important; }
+      .placement-pdf-exporting .teen-pillar:nth-child(4),
+      .placement-pdf-exporting .kids-pillar:nth-child(4) { background: #fff1f5 !important; border-top: 2.5pt solid #db6d91 !important; }
+
+      .placement-pdf-exporting .teen-pillar-head,
+      .placement-pdf-exporting .kids-pillar-head {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+        margin-bottom: 6px !important;
+      }
+
+      .placement-pdf-exporting .teen-pillar-head strong,
+      .placement-pdf-exporting .kids-pillar-head strong {
+        color: #17324f !important;
+        font-size: 0.84rem !important;
+        font-weight: 850 !important;
+      }
+
+      .placement-pdf-exporting .teen-band,
+      .placement-pdf-exporting .kids-band {
+        padding: 2px 7px !important;
+        border-radius: 6px !important;
+        font-size: 0.62rem !important;
+        font-weight: 900 !important;
+      }
+
+      .placement-pdf-exporting .teen-pillar .pillar-body,
+      .placement-pdf-exporting .kids-pillar .pillar-body {
+        margin: 0 !important;
+        color: #365d83 !important;
+        font-size: 0.72rem !important;
+        line-height: 1.32 !important;
+      }
+
+      .placement-pdf-exporting .teen-pillar .pillar-item,
+      .placement-pdf-exporting .kids-pillar .pillar-item {
+        margin-bottom: 4px !important;
+      }
+
+      .placement-pdf-exporting .tag-good { color: #1e615b !important; font-weight: 750 !important; }
+      .placement-pdf-exporting .tag-grow { color: #866200 !important; font-weight: 750 !important; }
+
       .placement-pdf-exporting .teen-print-continuation,
+      .placement-pdf-exporting .kids-print-continuation,
       .placement-pdf-exporting .rc-print-continuation {
         display: flex !important;
-        page-break-before: always !important;
-        break-before: page !important;
-        margin-top: 0 !important;
-        margin-bottom: 10px !important;
-        padding-top: 0 !important;
-      }
-      .placement-pdf-exporting .teen-print-continuation > div:last-child {
-        width: 100% !important;
-        min-width: 0 !important;
-        box-sizing: border-box !important;
-      }
-      .placement-pdf-exporting .teen-print-continuation strong {
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-        padding-right: 12px !important;
-        font-size: 0.86rem !important;
-      }
-      .placement-pdf-exporting .teen-print-continuation span {
-        flex: 0 0 auto !important;
-        white-space: nowrap !important;
-      }
-      .placement-pdf-exporting .teen-section,
-      .placement-pdf-exporting .rc-section {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-      }
-      .placement-pdf-exporting .teen-report-head,
-      .placement-pdf-exporting .rc-header {
-        page-break-after: avoid !important;
-        break-after: avoid !important;
-      }
-      .placement-pdf-exporting .teen-two-col,
-      .placement-pdf-exporting .rc-grid-2,
-      .placement-pdf-exporting .teen-pillar-grid {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-      }
-      .placement-report.placement-pdf-exporting:not(.kids-report),
-      .teen-report.placement-pdf-exporting,
-      .placement-pdf-exporting .placement-report:not(.kids-report),
-      .placement-pdf-exporting .teen-report {
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 14px !important;
+        min-height: 52px !important;
+        padding: 10px 18px !important;
+        border-radius: 14px !important;
+        background: linear-gradient(135deg, #102d56 0%, #173f73 60%, #2d8fb5 100%) !important;
+        color: #ffffff !important;
         position: relative !important;
-        min-height: auto !important;
-        max-height: none !important;
-        box-sizing: border-box !important;
-        background: #e8f2ff !important;
+        isolation: isolate !important;
+        overflow: hidden !important;
+        box-shadow: 0 10px 24px rgba(16, 52, 92, 0.15) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+        margin-top: 14px !important;
+        margin-bottom: 14px !important;
       }
-      .placement-report.placement-pdf-exporting:not(.kids-report)::after,
+
+      .placement-pdf-exporting .report-continuation-art {
+        position: absolute !important;
+        inset: 0 !important;
+        z-index: -1 !important;
+        overflow: hidden !important;
+      }
+
+      .placement-pdf-exporting .teen-print-continuation strong,
+      .placement-pdf-exporting .kids-print-continuation strong {
+        color: #ffffff !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 0.96rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.02em !important;
+      }
+
+      .placement-pdf-exporting .teen-print-continuation span,
+      .placement-pdf-exporting .kids-print-continuation span {
+        color: #d9eaff !important;
+        font-size: 0.68rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        padding: 4px 12px !important;
+        border-radius: 999px !important;
+      }
+
+      .placement-pdf-exporting .teen-two-col,
+      .placement-pdf-exporting .kids-two-col {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+      }
+
+      .placement-pdf-exporting .teen-two-col .teen-section:nth-child(1),
+      .placement-pdf-exporting .kids-two-col .kids-section:nth-child(1) {
+        background: #eff6ff !important;
+        border-color: #9fc5ea !important;
+      }
+
+      .placement-pdf-exporting .teen-two-col .teen-section:nth-child(2),
+      .placement-pdf-exporting .kids-two-col .kids-section:nth-child(2) {
+        background: #fff8e1 !important;
+        border-color: #efd06b !important;
+      }
+
+      .placement-pdf-exporting .teen-section p,
+      .placement-pdf-exporting .teen-section li,
+      .placement-pdf-exporting .kids-section p,
+      .placement-pdf-exporting .kids-section li {
+        font-size: 0.75rem !important;
+        line-height: 1.38 !important;
+        color: #17324f !important;
+      }
+
+      .placement-pdf-exporting .teen-priority,
+      .placement-pdf-exporting .kids-priority {
+        margin: 0 !important;
+        padding-left: 18px !important;
+      }
+
+      .placement-pdf-exporting .teen-priority li,
+      .placement-pdf-exporting .kids-priority li {
+        margin-bottom: 4px !important;
+      }
+
+      .placement-pdf-exporting .teen-path-name,
+      .placement-pdf-exporting .kids-path-name {
+        display: table !important;
+        margin: 2px auto 8px !important;
+        padding: 6px 18px !important;
+        border: 2px solid #f0b400 !important;
+        border-radius: 12px !important;
+        background: #fff7d6 !important;
+        box-shadow: 0 6px 16px rgba(240, 180, 0, 0.18) !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 1rem !important;
+        font-weight: 900 !important;
+        color: #265e9b !important;
+        text-align: center !important;
+      }
+
+      .placement-pdf-exporting .teen-current-module,
+      .placement-pdf-exporting .kids-current-module {
+        display: flex !important;
+        width: max-content !important;
+        max-width: 100% !important;
+        align-items: center !important;
+        gap: 6px !important;
+        margin: 0 auto 10px !important;
+        padding: 4px 12px !important;
+        border: 1.5px solid #f0b400 !important;
+        border-radius: 999px !important;
+        background: #fff9d8 !important;
+        color: #704f00 !important;
+        font-size: 0.72rem !important;
+        font-weight: 850 !important;
+      }
+
+      .placement-pdf-exporting .teen-track,
+      .placement-pdf-exporting .kids-track {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        padding: 4px 0 8px !important;
+      }
+
+      .placement-pdf-exporting .teen-track-step,
+      .placement-pdf-exporting .kids-track-step {
+        position: relative !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        min-height: 52px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 6px 10px !important;
+        border: 2px solid #7f96ad !important;
+        border-radius: 999px !important;
+        background: #ffffff !important;
+        color: #17324f !important;
+        text-align: center !important;
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-size: 0.76rem !important;
+        font-weight: 850 !important;
+      }
+
+      .placement-pdf-exporting .teen-track-step.is-assigned,
+      .placement-pdf-exporting .kids-track-step.is-assigned {
+        border-color: #f0a800 !important;
+        background: linear-gradient(135deg, #ffe45c, #f9c013) !important;
+        color: #4b3500 !important;
+        box-shadow: 0 8px 20px rgba(240, 168, 0, 0.28) !important;
+      }
+
+      .placement-pdf-exporting .teen-track-step.is-assigned::after,
+      .placement-pdf-exporting .kids-track-step.is-assigned::after {
+        content: '✓' !important;
+        position: absolute !important;
+        top: -7px !important;
+        right: 12px !important;
+        display: grid !important;
+        width: 22px !important;
+        height: 22px !important;
+        place-items: center !important;
+        border: 2px solid #ffffff !important;
+        border-radius: 50% !important;
+        background: #22a06b !important;
+        color: #ffffff !important;
+        font-size: 0.68rem !important;
+        font-weight: 900 !important;
+        box-shadow: 0 4px 8px rgba(34, 160, 107, 0.25) !important;
+      }
+
+      .placement-pdf-exporting .teen-track-arrow,
+      .placement-pdf-exporting .kids-track-arrow {
+        flex: 0 0 auto !important;
+        color: #7f96ad !important;
+        font-size: 1.1rem !important;
+        font-weight: 900 !important;
+      }
+
+      .placement-pdf-exporting .teen-report-note,
+      .placement-pdf-exporting .kids-report-note {
+        display: block !important;
+        margin-top: 6px !important;
+        padding-top: 5px !important;
+        border-top: 1px dashed #cbd5e1 !important;
+        font-size: 0.65rem !important;
+        line-height: 1.25 !important;
+        color: #475569 !important;
+      }
+      .placement-report.placement-pdf-exporting::after,
       .teen-report.placement-pdf-exporting::after,
-      .placement-pdf-exporting .placement-report:not(.kids-report)::after,
-      .placement-pdf-exporting .teen-report::after {
-        content: "Created by Kalananti Academics · © 2026";
+      .kids-report.placement-pdf-exporting::after,
+      .placement-pdf-exporting .placement-report::after,
+      .placement-pdf-exporting .teen-report::after,
+      .placement-pdf-exporting .kids-report::after {
+        content: "CREATED BY KALANANTI ACADEMICS · © 2026";
         position: absolute !important;
         right: 0 !important;
-        bottom: 12px !important;
+        bottom: 16px !important;
         left: 0 !important;
         display: block !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        color: rgba(38, 94, 155, 0.62) !important;
+        color: rgba(38, 94, 155, 0.65) !important;
         font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
-        font-size: 0.68rem !important;
-        font-weight: 750 !important;
+        font-size: 0.72rem !important;
+        font-weight: 800 !important;
         letter-spacing: 0.08em !important;
         line-height: 1.3 !important;
         text-align: center !important;
         text-transform: uppercase !important;
+        background: #e8f2ff !important;
+        padding: 8px 0 !important;
       }
       .placement-pdf-exporting .rc-print-continuation {
         min-height: 54px !important;
@@ -628,10 +1084,10 @@
       .placement-pdf-exporting .rc-profile-chart,
       .placement-pdf-exporting .teen-profile-chart,
       .placement-pdf-exporting .kids-profile-chart {
-        width: 320px !important;
-        max-width: 320px !important;
-        height: 240px !important;
-        margin: 0 auto 4px !important;
+        width: 100% !important;
+        max-width: 620px !important;
+        height: 380px !important;
+        margin: 0 auto 14px !important;
       }
       .placement-pdf-exporting .rc-profile-chart svg,
       .placement-pdf-exporting .rc-profile-chart img,
@@ -920,8 +1376,6 @@
         padding: 0 !important;
         border-radius: 14px !important;
         overflow: hidden !important;
-        break-before: page !important;
-        page-break-before: always !important;
         break-inside: avoid !important;
         page-break-inside: avoid !important;
       }
@@ -1127,12 +1581,286 @@
     return () => restoredItems.forEach(restore => restore());
   }
 
+  const MASTER_SKILL_MAP = {
+    logic: {
+      label: 'Logika',
+      skills: {
+        'Efisiensi': { strong: 'menyusun urutan perintah yang aman & efisien', grow: 'memilih rute & efisiensi langkah' },
+        'Pola': { strong: 'mengenali pola berulang & struktur urutan', grow: 'menganalisis pola logika berulang' },
+        'Kondisi': { strong: 'memahami percabangan logika bersyarat (JIKA-MAKA)', grow: 'penerapan logika percabangan bersyarat' },
+        'Looping': { strong: 'menggunakan perulangan (looping) untuk penyederhanaan', grow: 'menggunakan instruksi perulangan (looping)' },
+        'Debugging': { strong: 'menemukan & memperbaiki kesalahan alur/kode (debugging)', grow: 'menemukan lokasi error dan perbaikan alur (debugging)' }
+      }
+    },
+    creativity: {
+      label: 'Kreativitas',
+      skills: {
+        'Prediksi Visual': { strong: 'memprediksi alur animasi & reaksi objek', grow: 'memprediksi alur animasi & reaksi visual' },
+        'Layering': { strong: 'memahami struktur penumpukan objek (layering/hirarki)', grow: 'penataan susunan layer objek (depan/belakang)' },
+        'Estetika Warna': { strong: 'memilih kombinasi warna kontras & nyaman dibaca', grow: 'pemilihan kontras warna antarmuka' },
+        'Animasi Frame': { strong: 'merancang urutan frame animasi secara natural', grow: 'penyusunan alur frame gerakan animasi' },
+        'Layout UI': { strong: 'menyusun tata letak (layout UI) terstruktur', grow: 'penyusunan hirarki & layout antarmuka' }
+      }
+    },
+    spatial: {
+      label: 'Spasial',
+      skills: {
+        'Rotasi': { strong: 'memahami perubahan arah objek dari hasil rotasi', grow: 'visualisasi rotasi & arah objek' },
+        'Perspektif': { strong: 'membayangkan wujud objek dari berbagai sudut pandang (3D)', grow: 'pemahaman sudut pandang perspektif 3D' },
+        'Koordinat': { strong: 'menentukan lokasi pada sistem titik koordinat X-Y', grow: 'pemetaan lokasi titik koordinat X-Y' },
+        'Bangun Ruang': { strong: 'menghitung volume & susunan blok ruang 3D', grow: 'perhitungan volume & susunan ruang 3D' },
+        'Relasi': { strong: 'memahami batas area & hubungan antar-objek', grow: 'pemahaman batas area (hitbox) & relasi objek' }
+      }
+    },
+    digital: {
+      label: 'Literasi Digital',
+      skills: {
+        'Hardware & Input': { strong: 'menggunakan perangkat input (mouse/keyboard) dengan presisi', grow: 'penggunaan perangkat keras input' },
+        'Ikon UI': { strong: 'mengenali fungsi ikon & tombol antarmuka standar', grow: 'pengenalan ikon & simbol aplikasi' },
+        'Struktur Data': { strong: 'mengelompokkan jenis file & folder dengan teratur', grow: 'organisasi file & struktur folder' },
+        'Troubleshooting': { strong: 'menangani masalah teknis sederhana secara mandiri', grow: 'kemandirian penanganan kendala teknis (troubleshooting)' },
+        'File System': { strong: 'mengelola sistem penyimpanan file & navigasi', grow: 'navigasi direktori & sistem file' }
+      }
+    }
+  };
+
+  function buildReportAllElement(customData = {}, targetDocument = document) {
+    const registration = getRegistration() || {};
+    const student = registration.student || registration || {};
+    const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+    const safeArray = value => Array.isArray(value) ? value : [];
+    const clamp = value => Math.max(0, Math.min(1, Number(value) || 0));
+    const pillarOrder = ['logic', 'creativity', 'spatial', 'digital'];
+    const pillarAliases = {
+      logic: 'logic', logika: 'logic',
+      creativity: 'creativity', kreativitas: 'creativity',
+      spatial: 'spatial', spasial: 'spatial',
+      digital: 'digital', 'literasi digital': 'digital'
+    };
+    const normalizePillar = value => pillarAliases[String(value || '').trim().toLowerCase()] || String(value || '').trim().toLowerCase();
+    const evidence = customData.assessmentEvidence || {};
+    const name = String(customData.studentName || student.name || 'Siswa').trim();
+    const age = Number(customData.age || student.exactAge || student.age || 16);
+    const audience = String(customData.audience || evidence.audience || (
+      age <= 7 ? 'junior' : age <= 15 ? 'kids' : 'teens'
+    )).toLowerCase();
+    const reportDate = customData.reportDate || new Date().toLocaleDateString('id-ID', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+    const assignedModule = String(customData.assignedModule || 'Belum ditentukan');
+    const potentialModule = String(customData.potentialModule || '');
+    const level = String(customData.level || 'FOUNDATIONAL — Lv1');
+    const lv3Candidate = Boolean(customData.lv3Candidate);
+    const pathName = String(customData.pathName || 'Interactive Creator Path');
+    const learningModules = safeArray(customData.learningModules).length
+      ? safeArray(customData.learningModules)
+      : [assignedModule];
+
+    const normalizeAnswer = (item, stage, index) => {
+      const submittedValue = item?.responseText ?? item?.answerText ?? item?.selectedText ?? item?.submittedValue;
+      const responseText = Array.isArray(submittedValue)
+        ? submittedValue.join(' → ')
+        : (submittedValue && typeof submittedValue === 'object'
+          ? JSON.stringify(submittedValue)
+          : String(submittedValue ?? ''));
+      const correctValue = item?.correct ?? item?.isCorrect ?? item?.finalSubmissionCorrect;
+      return {
+        stage,
+        questionId: String(item?.questionId || item?.challengeId || `${stage}-${index + 1}`),
+        number: Number(item?.questionNumber ?? item?.questionIndex ?? item?.question ?? index) + (
+          item?.questionNumber ? 0 : item?.questionIndex !== undefined ? 1 : item?.question !== undefined ? 0 : 1
+        ),
+        pillar: normalizePillar(item?.pillar),
+        focus: String(item?.focus || item?.skill || item?.title || `Aktivitas ${index + 1}`),
+        prompt: String(item?.prompt || item?.questionText || ''),
+        responseText,
+        correct: typeof correctValue === 'boolean' ? correctValue : null,
+        firstSubmissionCorrect: item?.firstSubmissionCorrect,
+        finalSubmissionCorrect: item?.finalSubmissionCorrect,
+        submissionAttemptCount: Number(item?.submissionAttemptCount || item?.attempts || 1),
+        difficulty: item?.difficulty,
+        technicalError: item?.technicalError === true
+      };
+    };
+
+    let stage1AItems = safeArray(
+      evidence.stage1A?.answers || evidence.stage1A?.answerTrail || evidence.stage1A
+    ).map((item, index) => normalizeAnswer(item, 'Stage 1A', index));
+    let stage1BItems = safeArray(
+      evidence.stage1B?.answers || evidence.stage1B?.answerTrail || evidence.stage1B
+    ).map((item, index) => normalizeAnswer(item, 'Stage 1B', index));
+    if (!stage1AItems.length && safeArray(customData.questionResults).length) {
+      stage1AItems = customData.questionResults.map((item, index) => normalizeAnswer(item, 'Stage 1A', index));
+    }
+
+    const scoreFromFallback = pillar => {
+      const raw = Number(customData.scores?.[pillar]);
+      if (!Number.isFinite(raw)) return 0;
+      if (customData.scoreScale === 'raw5') return clamp(raw / 5);
+      return raw > 1 ? clamp(raw / 100) : clamp(raw);
+    };
+    const pillarBreakdown = {};
+    const scores = {};
+    pillarOrder.forEach(pillar => {
+      const stage1A = stage1AItems.filter(item => item.pillar === pillar && item.correct !== null && !item.technicalError);
+      const stage1B = stage1BItems.filter(item => item.pillar === pillar && item.correct !== null && !item.technicalError);
+      const stage1ARatio = stage1A.length
+        ? stage1A.filter(item => item.correct).length / stage1A.length
+        : null;
+      const stage1BRatio = stage1B.length
+        ? stage1B.filter(item => item.correct).length / stage1B.length
+        : null;
+      const ratio = stage1ARatio !== null
+        ? (stage1BRatio !== null ? (stage1ARatio * 0.6) + (stage1BRatio * 0.4) : stage1ARatio)
+        : scoreFromFallback(pillar);
+      const correctItems = [...stage1A, ...stage1B].filter(item => item.correct);
+      const growthItems = [...stage1A, ...stage1B].filter(item => !item.correct);
+      scores[pillar] = clamp(ratio);
+      pillarBreakdown[pillar] = {
+        score: scores[pillar],
+        stage1A,
+        stage1B,
+        correctItems,
+        growthItems,
+        strongSkills: [...new Set(correctItems.map(item => (
+          MASTER_SKILL_MAP[pillar]?.skills[item.focus]?.strong || item.focus
+        )))],
+        growthSkills: [...new Set(growthItems.map(item => (
+          MASTER_SKILL_MAP[pillar]?.skills[item.focus]?.grow || item.focus
+        )))]
+      };
+    });
+
+    const sortedPillars = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const topKey = sortedPillars[0]?.[0] || 'logic';
+    const bottomKey = sortedPillars[sortedPillars.length - 1]?.[0] || 'digital';
+    const topName = MASTER_SKILL_MAP[topKey].label;
+    const bottomName = MASTER_SKILL_MAP[bottomKey].label;
+    const hasQuestionEvidence = stage1AItems.length + stage1BItems.length > 0;
+    const metaTag = audience === 'junior'
+      ? 'PLACEMENT REPORT · JUNIOR 5–7'
+      : audience === 'teens'
+        ? 'PLACEMENT REPORT · TEENS 16–18'
+        : age >= 12
+          ? 'PLACEMENT REPORT · KIDS UPPER 12–15'
+          : 'PLACEMENT REPORT · KIDS 8–11';
+    const statusText = lv3Candidate
+      ? 'KANDIDAT REVIEW EMERGING — Lv3'
+      : level.startsWith('FOUNDATIONAL')
+        ? 'DIREKOMENDASIKAN MEMBANGUN FONDASI'
+        : 'SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK';
+    const mainSubtitle = `${escapeHtml(name)} direkomendasikan memulai <strong>${escapeHtml(assignedModule)}</strong> pada <strong>${escapeHtml(level)}</strong>.<br>Kekuatan utama terlihat pada pilar <strong>${escapeHtml(topName)}</strong>, dengan fokus perkembangan berikutnya pada <strong>${escapeHtml(bottomName)}</strong>.`;
+
+    function getBandInfo(ratio) {
+      if (ratio >= 0.8) return { label: 'Kekuatan Utama', bg: '#eaf8f3', color: '#1e615b' };
+      if (ratio >= 0.65) return { label: 'Berkembang Baik', bg: '#eff6ff', color: '#265e9b' };
+      if (ratio >= 0.45) return { label: 'Sedang Bertumbuh', bg: '#fff8e1', color: '#866200' };
+      return { label: 'Perlu Pendampingan', bg: '#fff1f2', color: '#9f1239' };
+    }
+
+    const cx = 360, cy = 265, r = 185;
+    const l = scores.logic, c = scores.creativity, s = scores.spatial, d = scores.digital;
+    const svgChart = `
+      <svg width="100%" height="100%" viewBox="0 0 720 535" style="display:block;margin:0 auto;max-width:650px">
+        <polygon points="${cx},${cy-r} ${cx+r},${cy} ${cx},${cy+r} ${cx-r},${cy}" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+        ${[0.75, 0.5, 0.25].map(scale => `<polygon points="${cx},${cy-r*scale} ${cx+r*scale},${cy} ${cx},${cy+r*scale} ${cx-r*scale},${cy}" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>`).join('')}
+        <line x1="${cx}" y1="${cy-r}" x2="${cx}" y2="${cy+r}" stroke="#cbd5e1" stroke-width="2"/>
+        <line x1="${cx-r}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="#cbd5e1" stroke-width="2"/>
+        <polygon points="${cx},${cy-r*l} ${cx+r*c},${cy} ${cx},${cy+r*s} ${cx-r*d},${cy}" fill="rgba(38,94,155,.25)" stroke="#265e9b" stroke-width="3.5" stroke-linejoin="round"/>
+        ${[[cx,cy-r*l],[cx+r*c,cy],[cx,cy+r*s],[cx-r*d,cy]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>`).join('')}
+        <text x="${cx}" y="${cy-r-16}" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="16" font-weight="800" fill="#17324f">LOGIKA</text>
+        <text x="${cx+r+16}" y="${cy+5}" text-anchor="start" font-family="'Orbitron',sans-serif" font-size="16" font-weight="800" fill="#17324f">KREATIVITAS</text>
+        <text x="${cx}" y="${cy+r+30}" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="16" font-weight="800" fill="#17324f">SPASIAL</text>
+        <text x="${cx-r-16}" y="${cy+5}" text-anchor="end" font-family="'Orbitron',sans-serif" font-size="16" font-weight="800" fill="#17324f">DIGITAL</text>
+      </svg>`;
+
+    const pillarCardsHtml = pillarOrder.map(key => {
+      const breakdown = pillarBreakdown[key];
+      const band = getBandInfo(breakdown.score);
+      const strongList = breakdown.strongSkills.length > 0 ? breakdown.strongSkills.join(', ') : 'Pemahaman konsep dasar';
+      const growthList = breakdown.growthSkills.length > 0 ? breakdown.growthSkills.join(', ') : 'Pengembangan tingkat lanjut';
+      return `
+        <article class="teen-pillar">
+          <div class="teen-pillar-head">
+            <strong>${MASTER_SKILL_MAP[key].label}</strong>
+            <span class="teen-band" style="background:${band.bg};color:${band.color};border:1px solid ${band.color}">${band.label}</span>
+          </div>
+          <div class="pillar-body">
+            <div class="pillar-item"><span class="tag-good">✓ Kekuatan:</span> ${escapeHtml(strongList)}.</div>
+            <div class="pillar-item" style="margin-top:3px;"><span class="tag-grow">⚡ Area Latihan:</span> ${escapeHtml(growthList)}.</div>
+          </div>
+        </article>`;
+    }).join('');
+
+    const whyLevelText = level.startsWith('FOUNDATIONAL')
+      ? `Rekomendasi ini bertujuan memperkuat fondasi logika &amp; algoritma dasar pilar ${escapeHtml(bottomName)} sebelum masuk ke proyek ${escapeHtml(assignedModule)} yang lebih kompleks.`
+      : `Siswa telah siap untuk level BASIC. Fokus berikutnya adalah mengembangkan solusi mandiri pada proyek ${escapeHtml(assignedModule)}.`;
+
+    const studentReason = String(evidence.stage3?.reason || customData.studentReason || 'Belum diisi.');
+
+    const learningTrackHtml = learningModules.map((module, index) => {
+      const isAssigned = module === assignedModule;
+      return `${index ? '<span class="teen-track-arrow" aria-hidden="true">→</span>' : ''}<div class="teen-track-step${isAssigned ? ' is-assigned' : ''}">${index + 1}. ${escapeHtml(module)}</div>`;
+    }).join('');
+
+    const allGrowth = pillarOrder.flatMap(pillar => pillarBreakdown[pillar].growthSkills);
+    const focusListHtml = (allGrowth.length ? [...new Set(allGrowth)].slice(0, 3) : [
+      'Algoritma & pseudocode terstruktur',
+      'Variabel, kondisi, & perulangan',
+      'Debugging mandiri'
+    ]).map(skill => `<li>${escapeHtml(skill.charAt(0).toUpperCase() + skill.slice(1))}.</li>`).join('');
+
+    const container = targetDocument.createElement('div');
+    container.className = 'a4-container placement-pdf-exporting';
+    container.id = 'reportPaper';
+    container.innerHTML = `
+      <header class="teen-report-head">
+        <div class="report-space-art" aria-hidden="true">
+          <svg viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="reportSky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102d56"/><stop offset=".58" stop-color="#265e9b"/><stop offset="1" stop-color="#2d8fb5"/></linearGradient><pattern id="reportStars" width="92" height="92" patternUnits="userSpaceOnUse"><circle cx="12" cy="18" r="2" fill="#fff" opacity=".68"/><circle cx="70" cy="36" r="1.4" fill="#f9c013" opacity=".9"/></pattern></defs><rect width="1000" height="420" fill="url(#reportSky)"/><rect width="1000" height="420" fill="url(#reportStars)"/></svg>
+          <img class="report-art-planet" src="https://cdn-web-2.ruangguru.com/landing-pages/assets/e77f536b-e591-4ba8-b5b8-f5b2a3d3b33b.png" alt="">
+          <img class="report-art-planet-right" src="https://cdn-web-2.ruangguru.com/landing-pages/assets/5f93f855-0466-47b3-ba85-bbaabbad7a2e.png" alt="">
+        </div>
+        <div class="teen-report-brand"><img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo"><span class="teen-report-meta">${metaTag}<br>${escapeHtml(reportDate)} · USIA ${age} TAHUN</span></div>
+        <span class="teen-report-status">${statusText}</span>
+        <h1>Profil Potensi dan Rekomendasi Belajar</h1>
+        <div class="report-student-name">${escapeHtml(name)}</div>
+        <div class="teen-report-placement"><span class="teen-module">${escapeHtml(assignedModule)}</span><span class="teen-level">${escapeHtml(level)}</span></div>
+        <p class="subtitle">${mainSubtitle}</p>
+      </header>
+      <section class="teen-section">
+        <h2>Profil Kemampuan ${escapeHtml(name)}</h2>
+        <div class="teen-profile-layout"><div class="teen-profile-chart">${svgChart}</div><div class="teen-pillar-grid">${pillarCardsHtml}</div></div>
+      </section>
+      <div class="teen-print-continuation"><strong>Rekomendasi &amp; Learning Path Siswa</strong><span>KALANANTI ACADEMICS</span></div>
+      <div class="teen-two-col">
+        <section class="teen-section"><h2>Mengapa Mulai dari Level Ini?</h2><p>${whyLevelText}</p></section>
+        <section class="teen-section"><h2>Fokus Perkembangan Awal</h2><ul class="teen-priority">${focusListHtml}</ul></section>
+      </div>
+      <section class="teen-section">
+        <h2>Learning Path Siswa</h2>
+        <div class="teen-path-name">${escapeHtml(pathName)}</div>
+        <div class="teen-current-module"><span>✦ Rekomendasi modul saat ini: <strong>${escapeHtml(assignedModule)}</strong></span></div>
+        <div class="teen-track">${learningTrackHtml}</div>
+      </section>
+      <section class="teen-section" style="background:#eef8f5;border-color:#8bcfc5">
+        <h2>Arah Belajar Berdasarkan Minat</h2>
+        <p>Jalur belajar ${escapeHtml(pathName)} disesuaikan dengan minat siswa pada proyek interaktif.</p>
+        <p style="margin-top:6px"><strong>Alasan siswa:</strong> ${escapeHtml(studentReason)}</p>
+        <p class="teen-report-note">Hasil placement ini digunakan sebagai rekomendasi titik mulai belajar. Perkembangan siswa tetap dipantau melalui proses belajar dan umpan balik mentor.</p>
+      </section>
+      <footer class="report-footer">CREATED BY KALANANTI ACADEMICS · © 2026</footer>`;
+    return container;
+  }
+
   async function createReportPdf(options = {}) {
     const frameDoc = document.getElementById('frame')?.contentDocument || document.querySelector('iframe')?.contentDocument;
     const sourceDocument = options.document?.querySelector
       ? options.document
       : (frameDoc || document);
-    const report = options.element || (
+
+    let report = options.element || (
       typeof options.selector === 'string'
         ? sourceDocument.querySelector(options.selector)
           || document.querySelector(options.selector)
@@ -1140,8 +1868,9 @@
         : null
     );
 
-    if (!report) {
-      throw new Error('placement_report_not_found');
+    // If reportData or report-all template requested or report missing, build report-all.html container
+    if (options.reportData || options.useReportAllTemplate || !report) {
+      report = buildReportAllElement(options.reportData || options, sourceDocument);
     }
 
     if (reportPdfCache.has(report)) return reportPdfCache.get(report);
@@ -1183,15 +1912,39 @@
           Number(reportDocument.documentElement?.scrollWidth) || 0,
           Number(reportDocument.body?.scrollWidth) || 0
         );
+        const isMultiPageDocument = Boolean(reportClone.querySelector('.a4-page, .report-page-break'));
+        const containerWidthPx = reportClone.offsetWidth || 794;
+        const containerHeightPx = reportClone.offsetHeight || reportClone.scrollHeight || 1000;
+        const pxToMm = 210 / containerWidthPx;
+        const contentHeightMm = Math.max(297, Math.ceil(containerHeightPx * pxToMm) + 10);
+
+        const jsPdfFormat = isMultiPageDocument
+          ? 'a4'
+          : [210, contentHeightMm];
+
+        const pagebreakConfig = isMultiPageDocument
+          ? {
+            mode: ['css', 'legacy'],
+            before: '.report-page-break',
+            avoid: [
+              '.teen-report-head',
+              '.teen-pillar',
+              '.report-evidence-card',
+              '.report-challenge-card',
+              '.report-interest-row'
+            ]
+          }
+          : { mode: [] };
+
         const worker = html2Pdf().set({
-          margin: isFullBleedReport ? 0 : 4,
+          margin: 0,
           filename,
-          image: { type: 'jpeg', quality: 0.96 },
+          image: { type: 'jpeg', quality: 0.98 },
           html2canvas: {
             scale: 2,
             useCORS: true,
             allowTaint: false,
-            backgroundColor: isFullBleedReport ? '#e8f2ff' : '#ffffff',
+            backgroundColor: '#e8f2ff',
             logging: false,
             imageTimeout: 15000,
             scrollX: 0,
@@ -1200,15 +1953,11 @@
           },
           jsPDF: {
             unit: 'mm',
-            format: 'a4',
+            format: jsPdfFormat,
             orientation: 'portrait',
             compress: true
           },
-          pagebreak: {
-            mode: ['css', 'legacy'],
-            before: ['.rc-print-continuation', '.teen-print-continuation', '.kids-print-continuation'],
-            avoid: ['.rc-header', '.rc-section', '.teen-report-head', '.teen-section', '.teen-two-col', '.teen-pillar-grid', '.kids-report-head', '.kids-pillar', '.kids-track-step', '.kids-section', '.kids-two-col']
-          }
+          pagebreak: pagebreakConfig
         }).from(reportClone);
         const generatedBlob = await worker.toPdf().outputPdf('blob');
         if (!(generatedBlob instanceof reportWindow.Blob) || generatedBlob.size < 1000) {
@@ -1298,6 +2047,7 @@
     checkpoint,
     finalize,
     finalizeWithReport,
+    buildReportAllElement,
     createReportPdf,
     downloadReportPdf,
     flush,
@@ -2955,8 +3705,6 @@ window.PlacementSync?.configure();
           border-radius: 5mm !important;
           background: #173f73 !important;
           color: #d9eaff !important;
-          break-before: page !important;
-          page-break-before: always !important;
           break-inside: avoid !important;
           position: relative !important;
           isolation: isolate !important;
@@ -7491,6 +8239,10 @@ window.PlacementSync?.configure();
                               assessmentVersion: 'kids-stage1a-v1',
                               audienceGroup: state.exactAge <= 8 ? 'junior' : ('kids'),
                               pillar: question.pillar,
+                              focus: question.focus || `Soal ${previous.index + 1}`,
+                              prompt: typeof question.text === 'string'
+                                  ? question.text
+                                  : (question.text?.[ageGroup] || question.text?.kids || ''),
                               difficulty: question.difficulty || 'basic',
                               interactionType,
                               correct: (state.scores[question.pillar] || 0) > (previous.scores[question.pillar] || 0),
@@ -10705,8 +11457,10 @@ window.PlacementSync?.configure();
             if(!state.submitted[m.id]){
               state.submitted[m.id]=true;state.scores[m.pillar]++;
               state.answerTrail.push({
-                questionId:m.id,pillar:m.pillar,difficulty:m.difficulty,interactionType:m.engine,
+                questionId:m.id,pillar:m.pillar,focus:m.focus||m.title||m.id,prompt:copy(m),
+                difficulty:m.difficulty,interactionType:m.engine,
                 submittedValue:[...state.selected],validationChecks:state.checks.map(check=>({...check})),
+                responseText:state.selected.map(id=>m.items.find(item=>item.id===id)?.label||id).join(' → '),
                 firstSubmissionCorrect:state.attempts.filter(attempt=>attempt.questionId===m.id)[0]?.correct===true,
                 correct:true,submittedAt:new Date().toISOString(),technicalError:false
               });
@@ -10720,8 +11474,13 @@ window.PlacementSync?.configure();
               const correct=state.choice===m.mcq.correct;
               state.submitted[m.id]=true;if(correct)state.scores[m.pillar]++;
               const evidence={
-                questionId:m.id,pillar:m.pillar,difficulty:m.difficulty,interactionType:'multiple_choice',
-                submittedValue:state.choice,correct,firstSubmissionCorrect:correct,
+                questionId:m.id,pillar:m.pillar,focus:m.focus||m.title||m.id,
+                prompt:m.mcq.question,difficulty:m.difficulty,interactionType:'multiple_choice',
+                submittedValue:state.choice,
+                responseText:(typeof m.mcq.options[state.choice]==='string'
+                  ?m.mcq.options[state.choice]
+                  :(m.mcq.options[state.choice]?.text||`Pilihan ${String.fromCharCode(65+state.choice)}`)),
+                correct,firstSubmissionCorrect:correct,
                 submittedAt:new Date().toISOString(),technicalError:false
               };
               state.attempts.push({...evidence,attemptedAt:evidence.submittedAt});
@@ -12034,6 +12793,8 @@ window.PlacementSync?.configure();
                   const telemetry = {
                       challengeId: challengeSession.challengeId,
                       module: adaptiveState.module,
+                      focus: levels[currentLvl]?.title || `Challenge ${currentLvl}`,
+                      prompt: levels[currentLvl]?.desc || "",
                       difficulty: currentLvl,
                       confirmation: challengeSession.isConfirmation,
                       submissionAttemptCount: challengeSession.submissionAttemptCount,
@@ -12055,6 +12816,8 @@ window.PlacementSync?.configure();
                   adaptiveState.challengeTrail.push({
                       challengeId: challengeSession.challengeId,
                       module: adaptiveState.module,
+                      focus: levels[currentLvl]?.title || `Challenge ${currentLvl}`,
+                      prompt: levels[currentLvl]?.desc || "",
                       difficulty: currentLvl,
                       confirmation: challengeSession.isConfirmation,
                       firstSubmissionCorrect: null,
@@ -12463,12 +13226,12 @@ window.PlacementSync?.configure();
               .glass-panel {
                   position: relative;
                   z-index: 2;
-                  overflow-y: auto;
-                  width: 80%;
-                  max-width: 1400px;
-                  height: calc(100vh - 48px);
-                  min-height: 650px;
-                  padding: 30px;
+                  width: 100%;
+                  max-width: 1180px;
+                  height: auto;
+                  min-height: auto;
+                  margin: 20px auto;
+                  padding: 36px 40px;
                   border: 1.5px solid var(--line);
                   border-radius: 32px;
                   background: var(--card);
@@ -12537,16 +13300,14 @@ window.PlacementSync?.configure();
 
               .mission-layout {
                   display: flex;
-                  flex: 1;
                   gap: 24px;
-                  min-height: 0;
-                  overflow: hidden;
+                  align-items: stretch;
               }
 
               .canvas-column {
                   display: flex;
-                  flex: 1.05;
-                  min-width: 330px;
+                  flex: 1;
+                  min-width: 300px;
                   flex-direction: column;
               }
 
@@ -12554,7 +13315,7 @@ window.PlacementSync?.configure();
                   position: relative;
                   display: flex;
                   flex: 1;
-                  min-height: 430px;
+                  min-height: 340px;
                   align-items: center;
                   justify-content: center;
                   overflow: hidden;
@@ -12612,8 +13373,6 @@ window.PlacementSync?.configure();
               }
 
               .question-content {
-                  flex: 1;
-                  overflow-y: auto;
                   padding: 24px;
               }
 
@@ -12971,7 +13730,7 @@ window.PlacementSync?.configure();
                       width: calc(100vw - 24px);
                       max-width: calc(100vw - 24px);
                       height: auto;
-                      min-height: calc(100vh - 24px);
+                      min-height: auto;
                       margin: 0 auto;
                       padding: 14px;
                       border-radius: 1.4rem;
@@ -13386,10 +14145,23 @@ window.PlacementSync?.configure();
                       ? `Pilihanmu pada modul utama adalah ${module}.`
                       : `Pilihanmu sama kuat pada ${result.leaders.join(" dan ")}.`;
                   const scoredQuestionCount = questions.filter(question => question.type !== "text").length;
+                  const responses = questions
+                      .filter(question => question.type !== "text")
+                      .map((question, index) => {
+                          const selectedModule = state.answers[index];
+                          const selected = question.options.find(option => option.module === selectedModule);
+                          return {
+                              questionNumber: index + 1,
+                              prompt: question.prompt[state.audience],
+                              answerText: selected?.text?.[state.audience] || selectedModule || "Belum dijawab",
+                              module: selectedModule || null
+                          };
+                      });
                   localStorage.setItem("kalananti-stage3-interest-v1", JSON.stringify({
                       completed: true,
                       audience: state.audience,
                       answers: state.answers,
+                      responses,
                       reason: state.reason,
                       scores: result.scores,
                       confirmedInterest: confirmedInterest,
@@ -13871,6 +14643,7 @@ window.PlacementSync?.configure();
           const stage1APerfect = stage1A.perfectScore === true,
             stage1BPerfect = stage1B.perfectScore === true;
           return {
+            scores: { ...s },
             combinedPillarScores,
             readinessScores,
             assignedModule,
@@ -13880,6 +14653,13 @@ window.PlacementSync?.configure();
             stage2AssessmentId: `stage2-${assignedModule.toLowerCase().replace(/\s+/g, "-")}-v1`,
             stage1APerfect,
             stage1BPerfect,
+            stage1A: {
+              answers: [...(stage1A.answerTrail || [])],
+            },
+            stage1B: {
+              selectedPillars: [...selectedPillars],
+              answers: [...(stage1B.answerTrail || [])],
+            },
             stage3EligibilityPrerequisites: {
               stage1APerfect,
               stage1BPerfect,
@@ -14040,30 +14820,28 @@ window.PlacementSync?.configure();
           c = norm(c);
           s = norm(s);
           d = norm(d);
-          const cx = 360,
-            cy = 280,
-            r = 160;
+          const cx = 360, cy = 265, r = 195;
           const pL = `${cx},${cy - r * l}`;
           const pC = `${cx + r * c},${cy}`;
           const pS = `${cx},${cy + r * s}`;
           const pD = `${cx - r * d},${cy}`;
           return `
-      <svg width="100%" height="100%" viewBox="0 0 720 560" style="display:block; margin: 0 auto; filter: drop-shadow(0 12px 18px rgba(38,94,155,0.12)); max-width: 580px;">
+      <svg width="100%" height="100%" viewBox="0 0 720 535" style="display:block; margin: 0 auto; filter: drop-shadow(0 12px 18px rgba(38,94,155,0.12)); max-width: 650px;">
         <polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="rgba(255,255,255,0.9)" stroke="#cbd5e1" stroke-width="2"/>
         <polygon points="${cx},${cy - r * 0.75} ${cx + r * 0.75},${cy} ${cx},${cy + r * 0.75} ${cx - r * 0.75},${cy}" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>
         <polygon points="${cx},${cy - r * 0.5} ${cx + r * 0.5},${cy} ${cx},${cy + r * 0.5} ${cx - r * 0.5},${cy}" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>
         <polygon points="${cx},${cy - r * 0.25} ${cx + r * 0.25},${cy} ${cx},${cy + r * 0.25} ${cx - r * 0.25},${cy}" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>
         <line x1="${cx}" y1="${cy - r}" x2="${cx}" y2="${cy + r}" stroke="#cbd5e1" stroke-width="2"/>
         <line x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="#cbd5e1" stroke-width="2"/>
-        <polygon points="${pL} ${pC} ${pS} ${pD}" fill="rgba(38,94,155,0.25)" stroke="#265e9b" stroke-width="3" stroke-linejoin="round"/>
-        <circle cx="${cx}" cy="${cy - r * l}" r="6" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
-        <circle cx="${cx + r * c}" cy="${cy}" r="6" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
-        <circle cx="${cx}" cy="${cy + r * s}" r="6" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
-        <circle cx="${cx - r * d}" cy="${cy}" r="6" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+        <polygon points="${pL} ${pC} ${pS} ${pD}" fill="rgba(38,94,155,0.25)" stroke="#265e9b" stroke-width="3.5" stroke-linejoin="round"/>
+        <circle cx="${cx}" cy="${cy - r * l}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="${cx + r * c}" cy="${cy}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="${cx}" cy="${cy + r * s}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="${cx - r * d}" cy="${cy}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
         <text x="${cx}" y="${cy - r - 16}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">LOGIKA</text>
-        <text x="${cx + r + 14}" y="${cy + 5}" text-anchor="start" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">KREATIVITAS</text>
-        <text x="${cx}" y="${cy + r + 28}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">SPASIAL</text>
-        <text x="${cx - r - 14}" y="${cy + 5}" text-anchor="end" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">DIGITAL</text>
+        <text x="${cx + r + 16}" y="${cy + 5}" text-anchor="start" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">KREATIVITAS</text>
+        <text x="${cx}" y="${cy + r + 30}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">SPASIAL</text>
+        <text x="${cx - r - 16}" y="${cy + 5}" text-anchor="end" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">DIGITAL</text>
       </svg>
       `;
         }
@@ -14237,13 +15015,12 @@ window.PlacementSync?.configure();
             .report-space-art svg{position:absolute;inset:0;width:100%;height:100%}
             .report-art-planet{position:absolute;left:-42px;bottom:-58px;width:135px;height:auto;object-fit:contain;opacity:.92;filter:drop-shadow(0 12px 20px rgba(5,24,49,.28))}
             .report-art-character{position:absolute;right:10px;top:16px;width:76px;height:auto;object-fit:contain;filter:drop-shadow(0 14px 22px rgba(5,24,49,.34))}
-            .kids-report{font-family:'Space Grotesk','Inter',sans-serif;max-width:860px;margin:20px auto 40px;background:#ffffff;border-radius:24px;padding:28px;box-shadow:0 20px 60px rgba(26,69,118,.12),0 4px 16px rgba(0,0,0,.04);border:1.5px solid rgba(180,215,255,.85);box-sizing:border-box}
-            .kids-report h1,.kids-report h2{font-family:'Orbitron',sans-serif}
-            .kids-report-head{text-align:center;margin-bottom:24px;position:relative;isolation:isolate;overflow:hidden;padding:32px 24px;border:1.5px solid rgba(255,255,255,.36);border-radius:1.5rem;background:#173f73;color:#fff;box-shadow:0 20px 48px -24px rgba(16,52,92,.65)}
+            .kids-report,.kids-report button{font-family:'Space Grotesk','Inter',sans-serif}.kids-report h1,.kids-report h2{font-family:'Orbitron',sans-serif}
+            .kids-report-head{text-align:center;margin-bottom:26px;position:relative;isolation:isolate;overflow:hidden;padding:36px;border:1.5px solid rgba(255,255,255,.36);border-radius:1.8rem;background:#173f73;color:#fff;box-shadow:0 24px 54px -28px rgba(16,52,92,.72)}
             .kids-report-head>*:not(.report-space-art){position:relative;z-index:2}
             .report-space-art{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}.report-space-art svg{position:absolute;inset:0;width:100%;height:100%}
             .report-art-planet{position:absolute;left:-42px;bottom:-58px;width:135px;opacity:.92;filter:drop-shadow(0 12px 20px rgba(5,24,49,.28))}.report-art-character{position:absolute;right:10px;top:16px;width:76px;filter:drop-shadow(0 14px 22px rgba(5,24,49,.34))}
-            .kids-report-head h1{max-width:960px;color:#fff;text-shadow:0 2px 9px rgba(4,26,55,.28)}
+            .kids-report-head h1,.kids-report-head h1 span{max-width:960px;color:#fff;text-shadow:0 2px 9px rgba(4,26,55,.28)}
             .kids-report-head .subtitle{color:#eaf4ff}
             .kids-report-brand{display:flex;width:100%;align-items:center;justify-content:space-between;margin-bottom:20px;}
             .kids-report-brand img{margin:0!important;padding:9px 13px;border-radius:14px;background:rgba(255,255,255,.94);box-shadow:0 10px 24px rgba(4,26,55,.2)}
@@ -14253,13 +15030,13 @@ window.PlacementSync?.configure();
             .kids-report-placement span{padding:12px 22px;border-radius:15px;font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:850}
             .kids-module{background:#eaf4ff;color:#265e9b;border:2px solid #bfdbfe}
             .kids-level{background:linear-gradient(135deg,#f9c013,#e5ab00);color:#5a3f00}
-            .kids-section{padding:24px;margin-bottom:18px;border:1.5px solid rgba(38,94,155,.16);border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 4px 16px rgba(38,94,155,.04)}
-            .kids-section h2{padding-bottom:10px;border-bottom:2px solid rgba(38,94,155,.1);color:#17324f;text-align:center;font-size:1.25rem;font-weight:800;}
+            .kids-section{padding:24px;margin-bottom:18px;border:1.5px solid rgba(38,94,155,.18);border-radius:20px;background:rgba(255,255,255,.72)}
+            .kids-section h2{padding-bottom:9px;border-bottom:2px solid rgba(38,94,155,.1);color:#17324f;text-align:center;font-size:1.25rem;font-weight:800;}
             .kids-profile-layout{display:flex;flex-direction:column;align-items:center;gap:24px}
             .kids-pillar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;width:100%}
-            .kids-pillar{padding:18px;border:1.5px solid #d4e4f5;border-radius:16px;background:#fff;box-shadow:0 4px 14px rgba(38,94,155,.05)}
+            .kids-pillar{padding:18px;border:1px solid #c8ddf2;border-radius:16px;background:#fff}
             .kids-pillar-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-            .kids-band{padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:900}
+            .kids-band{padding:5px 9px;border-radius:8px;font-size:.72rem;font-weight:900}
             .kids-two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
             .kids-priority li{margin-bottom:9px;line-height:1.5}
             .kids-path-name{display:table;text-align:center;margin:2px auto 18px;padding:12px 22px;border:2px solid #f0b400;border-radius:16px;background:#fff7d6;box-shadow:0 8px 22px rgba(240,180,0,.2);font-family:'Orbitron',sans-serif;font-size:clamp(1.2rem,3vw,1.8rem);font-weight:900;color:#265e9b}
@@ -14271,8 +15048,7 @@ window.PlacementSync?.configure();
             .kids-track-step.is-assigned::after{content:'✓';position:absolute;top:-11px;right:18px;display:grid;width:30px;height:30px;place-items:center;border:3px solid #fff;border-radius:50%;background:#22a06b;color:#fff;font-size:.9rem;box-shadow:0 5px 12px rgba(34,160,107,.25)}
             .kids-track-arrow{flex:0 0 auto;color:#7f96ad;font-size:2rem;font-weight:900}
             .kids-report-actions{display:grid;grid-template-columns:1fr;gap:14px;margin-top:22px}
-            .kids-report-note{margin-top:15px;font-size:0.85rem;color:#475569;border-top:1px dashed #cbd5e1;padding-top:12px;}
-            .kids-print-continuation{display:block}
+            .kids-report-note,.kids-print-continuation{display:none}
             @media(max-width:720px){.kids-profile-layout,.kids-pillar-grid,.kids-two-col{grid-template-columns:1fr}.kids-track{justify-content:flex-start}.kids-track-step{flex-basis:175px}.kids-track-arrow{font-size:1.5rem}}
         </style>
 
@@ -14348,7 +15124,7 @@ window.PlacementSync?.configure();
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 22px; background:linear-gradient(135deg, #102d56 0%, #173f73 60%, #2d8fb5 100%); color:#fff; border-radius:16px; box-shadow:0 10px 24px rgba(16, 52, 92, 0.15); border: 1.5px solid rgba(255,255,255,0.25);">
                 <strong style="font-family: 'Orbitron', sans-serif; font-size:1.1rem; letter-spacing: 0.02em;">Rekomendasi &amp; Learning Path ${esc(name)}</strong>
-                <span style="font-family: 'Space Grotesk', sans-serif; font-size:0.82rem; font-weight:800; opacity:0.9; background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:999px;">HALAMAN 2</span>
+                <span style="font-family: 'Space Grotesk', sans-serif; font-size:0.82rem; font-weight:800; opacity:0.9; background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:999px;">KALANANTI ACADEMICS</span>
               </div>
           </div>
 
@@ -14457,7 +15233,30 @@ window.PlacementSync?.configure();
             completedAt: state.stage3?.completedAt || new Date().toISOString(),
           };
           const reportPdfOptions = {
-            selector: ".placement-report",
+            useReportAllTemplate: true,
+            reportData: {
+              audience: "kids",
+              studentName: state.student?.name || "Siswa",
+              age: state.student?.exactAge || state.student?.age || 8,
+              reportDate: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
+              assignedModule: assigned || "Scratch",
+              potentialModule: potential || "",
+              level: level || "FOUNDATIONAL — Lv1",
+              lv3Candidate: Boolean(candidate),
+              pathName: learningPath?.name || "Interactive Creator Path",
+              learningModules: learningPath?.modules || ["Scratch", "Roblox Studio", "Python"],
+              confirmedInterest: state.stage3?.confirmedInterest || "",
+              studentReason: state.stage3?.reason || "Belum diisi.",
+              scoreScale: "raw5",
+              scores: state.stage1?.scores || {},
+              assessmentEvidence: {
+                audience: "kids",
+                stage1A: state.stage1?.stage1A || { answers: [] },
+                stage1B: state.stage1?.stage1B || { answers: [] },
+                stage2: state.stage2 || {},
+                stage3: state.stage3 || {}
+              }
+            },
             filename: reportFilename,
           };
           if (isQcResultMode) {

@@ -1,0 +1,1616 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Panduan Placement Test untuk Orang Tua — Kalananti</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --k-blue: #265E9B;
+      --k-blue-d: #1A4576;
+      --k-yellow: #F9C013;
+      --k-green: #339D9D;
+      --bg: #e8f2ff;
+      --bg2: #dbeeff;
+      --sky: #cfe5ff;
+      --nebula1: rgba(38,94,155,0.10);
+      --nebula2: rgba(249,192,19,0.10);
+      --card: rgba(255,255,255,0.94);
+      --card-b: rgba(180,215,255,0.85);
+      --text: #1a4576;
+      --muted: #4d7daf;
+      --navy: #153f73;
+      --navy-deep: #0d2f59;
+      --blue: #28679f;
+      --paper: #ffffff;
+      --ink: #17283e;
+      --line: #c8ddf2;
+      --yellow: #f9c013;
+      --yellow-soft: #fff8df;
+      --green: #339d9d;
+      --green-soft: #edf9f6;
+      --orange: #c87314;
+      --orange-soft: #fff4e7;
+      --pink: #b14372;
+      --pink-soft: #fff1f5;
+      --shadow: 0 24px 64px -16px rgba(38, 94, 155, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, var(--nebula1), transparent 36%),
+        radial-gradient(circle at 88% 12%, var(--nebula2), transparent 32%),
+        radial-gradient(circle at 50% 105%, rgba(51,157,157,0.14), transparent 34%),
+        linear-gradient(160deg, var(--bg) 0%, var(--bg2) 50%, var(--sky) 100%);
+      background-attachment: fixed;
+      font-family: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: -20;
+      opacity: 0.14;
+      background-image:
+        radial-gradient(circle at 14% 24%, rgba(255,255,255,0.9) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 78% 68%, rgba(255,255,255,0.75) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 56% 38%, rgba(255,255,255,0.60) 0 1px, transparent 1.4px),
+        radial-gradient(circle at 30% 82%, rgba(255,255,255,0.50) 0 1px, transparent 1.3px),
+        radial-gradient(circle at 90% 45%, rgba(255,255,255,0.55) 0 1px, transparent 1.4px);
+      background-size: 250px 250px, 320px 320px, 210px 210px, 290px 290px, 180px 180px;
+      animation: starDrift 200s linear infinite;
+    }
+    @keyframes starDrift { to { transform: translate3d(-120px, 70px, 0); } }
+
+    .edge-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .edge-planet { position: absolute; pointer-events: none; opacity: 0.55; }
+    .edge-left  { left: 0; }
+    .edge-right { right: 0; }
+    .char-float {
+      position: absolute; pointer-events: none; opacity: 0.55;
+      filter: drop-shadow(0 12px 24px rgba(38,94,155,0.20));
+    }
+    @keyframes floatY  { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-18px) rotate(2deg); } }
+    @keyframes floatY2 { 0%,100% { transform: translateY(0) rotate(2deg); } 50% { transform: translateY(-14px) rotate(-2deg); } }
+    @keyframes twinkle { 0%,100% { opacity:0.4; transform:scale(0.9); } 50% { opacity:1; transform:scale(1.2); } }
+    @keyframes pulseWatermark { 0%,100% { opacity: 0.035; transform: translateX(-50%) scale(1); } 50% { opacity: 0.055; transform: translateX(-50%) scale(1.02); } }
+
+    .animate-twinkle { position: fixed; border-radius: 50%; pointer-events: none; z-index: 1; animation: twinkle 3s ease-in-out infinite; }
+    .star-1 { top: 26%; left: 36%; width: 10px; height: 10px; background: rgba(255,255,255,0.9); }
+    .star-2 { top: 60%; right: 30%; width: 8px; height: 8px; background: #fde68a; animation-delay: 1.3s; }
+    .star-3 { top: 14%; right: 44%; width: 6px; height: 6px; background: #bfdbfe; animation-delay: 0.7s; }
+    .bg-glow-orb { position: fixed; pointer-events: none; z-index: -1; border-radius: 50%; }
+    .orb-1 { top: -8rem; left: -6rem; width: 36rem; height: 36rem; background: radial-gradient(circle, rgba(38,94,155,0.12) 0%, transparent 65%); }
+    .orb-2 { bottom: -8rem; right: -6rem; width: 32rem; height: 32rem; background: radial-gradient(circle, rgba(249,192,19,0.14) 0%, transparent 65%); }
+    .bg-watermark-text {
+      position: fixed;
+      top: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(3.5rem, 11vw, 10rem);
+      font-weight: 900;
+      color: rgba(38, 94, 155, 0.045);
+      letter-spacing: 0.12em;
+      pointer-events: none;
+      z-index: 0;
+      white-space: nowrap;
+      user-select: none;
+      animation: pulseWatermark 10s ease-in-out infinite;
+    }
+
+    button { font: inherit; }
+    button:focus-visible { outline: 4px solid rgba(255, 198, 23, .7); outline-offset: 3px; }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 10;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      overflow: auto;
+      padding: clamp(20px, 3vh, 42px) clamp(20px, 3vw, 56px) 96px;
+      background: transparent;
+    }
+    .slide.active { display: flex; align-items: center; justify-content: center; animation: enter .34s cubic-bezier(0.175,0.885,0.32,1.275) both; }
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .slide-inner {
+      width: min(1380px, 94vw);
+      height: auto;
+      min-height: auto;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 1.5px solid var(--card-b);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 2rem;
+      padding: clamp(28px, 3vw, 44px) clamp(32px, 3.5vw, 56px);
+      box-shadow: 0 24px 64px -16px rgba(38,94,155,0.18), 0 0 0 4px rgba(255,255,255,0.6);
+      position: relative;
+      z-index: 10;
+    }
+    .slide-number {
+      position: absolute;
+      top: 28px;
+      right: clamp(28px, 4vw, 64px);
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: var(--green);
+      font-size: .82rem;
+      font-weight: 800;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--yellow);
+    }
+    h1, h2, h3, h4, p { margin-top: 0; }
+    h1 {
+      max-width: 1100px;
+      margin-bottom: 22px;
+      color: var(--navy-deep);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.4rem, 4.8vw, 3.8rem);
+      line-height: 1.05;
+      letter-spacing: -.03em;
+    }
+    h2 {
+      max-width: 1120px;
+      margin-bottom: 16px;
+      color: var(--navy-deep);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -.025em;
+    }
+    h3 {
+      margin-bottom: 10px;
+      color: var(--navy);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+      line-height: 1.25;
+    }
+    h4 {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .lead {
+      max-width: 1040px;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.6vw, 1.28rem);
+      line-height: 1.55;
+      font-weight: 500;
+    }
+    .small { font-size: .92rem; color: var(--muted); line-height: 1.5; }
+    .muted { color: var(--muted); }
+    .accent { color: var(--blue); }
+    .highlight { color: var(--navy-deep); background: linear-gradient(transparent 62%, rgba(255,198,23,.55) 62%); }
+
+    .cover .slide-inner {
+      overflow: hidden;
+      color: #fff;
+      background:
+        radial-gradient(circle at 88% 22%, rgba(255, 198, 23, .28), transparent 22rem),
+        radial-gradient(circle at 76% 112%, rgba(66, 173, 210, .36), transparent 28rem),
+        linear-gradient(135deg, var(--navy-deep), var(--navy) 54%, #246f9a);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      box-shadow: 0 28px 72px -16px rgba(13,47,89,0.42), 0 0 0 4px rgba(255,255,255,0.25);
+    }
+    .cover::before, .cover::after, .section-break::before, .section-break::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .cover::before, .section-break::before { width: 420px; height: 420px; right: -100px; top: -160px; }
+    .cover::after, .section-break::after { width: 260px; height: 260px; right: 230px; bottom: -180px; }
+    .cover h1, .cover h2, .cover .lead { color: #fff; }
+    .cover .lead { color: #ddecfa; }
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: clamp(36px, 6vh, 72px);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 6px 18px rgba(4,26,55,0.15);
+    }
+    .doc-meta {
+      text-align: right;
+      color: #dbeaff;
+      font-size: .82rem;
+      font-weight: 850;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+    .cover-kicker {
+      display: inline-flex;
+      width: fit-content;
+      margin-bottom: 20px;
+      padding: 9px 16px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      color: #e8f4ff;
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .cover-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .cover-tags span {
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      color: #edf6ff;
+      font-size: .86rem;
+      font-weight: 800;
+    }
+    .section-break .slide-inner {
+      overflow: hidden;
+      color: #fff;
+      background:
+        radial-gradient(circle at 13% 82%, rgba(255, 198, 23, .22), transparent 22rem),
+        linear-gradient(135deg, var(--navy-deep), var(--navy) 58%, #2b7c99);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      box-shadow: 0 28px 72px -16px rgba(13,47,89,0.42);
+    }
+    .section-break h2, .section-break .lead { color: #fff; }
+    .section-break .lead { color: #ddecfa; }
+    .section-index {
+      display: grid;
+      width: clamp(80px, 8vw, 110px);
+      height: clamp(80px, 8vw, 110px);
+      place-items: center;
+      margin-bottom: 28px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-radius: 28px;
+      color: var(--navy-deep);
+      background: var(--yellow);
+      box-shadow: 0 18px 45px rgba(0,0,0,.25);
+      font-size: clamp(2rem, 3.2vw, 2.8rem);
+      font-weight: 950;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .grid-2, .grid-3, .grid-4 { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card {
+      padding: clamp(20px, 2.2vw, 28px);
+      border: 1.5px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 12px 32px rgba(38, 94, 155, .08);
+      font-size: 0.98rem;
+    }
+    .card p:last-child, .callout p:last-child, .question-card p:last-child { margin-bottom: 0; }
+    .card.blue { border-color: #9fc5ea; background: linear-gradient(145deg, #edf6ff, #fff); }
+    .card.yellow { border-color: #fde68a; background: linear-gradient(145deg, var(--yellow-soft), #fff); }
+    .card.green { border-color: #a3d9d3; background: linear-gradient(145deg, var(--green-soft), #fff); }
+    .card.pink { border-color: #fbcfe8; background: linear-gradient(145deg, var(--pink-soft), #fff); }
+    .card.orange { border-color: #fed7aa; background: linear-gradient(145deg, var(--orange-soft), #fff); }
+    .icon-box {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      color: #fff;
+      background: var(--navy);
+      font-weight: 950;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+    }
+    .big-number {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+      font-weight: 950;
+      line-height: 1;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: var(--sky);
+      font-size: .78rem;
+      font-weight: 850;
+    }
+    .tag.yellow { color: #654e08; background: var(--yellow-soft); }
+    .tag.green { color: #13654e; background: var(--green-soft); }
+    .tag.pink { color: #8c315b; background: var(--pink-soft); }
+
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(100px, 1fr));
+      align-items: stretch;
+      gap: 12px;
+    }
+    .journey-step {
+      position: relative;
+      min-height: 165px;
+      padding: 20px 16px;
+      border: 1.5px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(22,63,113,.07);
+    }
+    .journey-step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -18px;
+      color: var(--blue);
+      font-size: 1.5rem;
+      font-weight: 950;
+      transform: translateY(-50%);
+    }
+    .journey-step b {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--navy);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+    }
+    .journey-step strong { display: block; margin-bottom: 6px; color: var(--navy); font-size: 0.95rem; }
+    .journey-step span { display: block; color: var(--muted); font-size: .82rem; line-height: 1.35; }
+    .journey-step.final { border-color: #e6c351; background: var(--yellow-soft); }
+    .journey-step.final b { color: var(--navy); background: var(--yellow); }
+
+    .callout {
+      display: grid;
+      grid-template-columns: auto minmax(0,1fr);
+      gap: 16px;
+      align-items: start;
+      margin-top: 20px;
+      padding: 18px 22px;
+      border: 1.5px solid #ecd67a;
+      border-radius: 20px;
+      color: #6b5614;
+      background: var(--yellow-soft);
+      font-size: 0.98rem;
+    }
+    .callout .icon {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--navy);
+      background: var(--yellow);
+      font-weight: 950;
+      font-size: 1.1rem;
+    }
+    .callout strong { display: block; margin-bottom: 4px; color: #634d07; font-size: 1.02rem; }
+    .callout.blue { border-color: #afd1ed; color: #31506f; background: #eff7ff; }
+    .callout.blue .icon { color: #fff; background: var(--blue); }
+    .callout.green { border-color: #a3d9d3; color: #1e6652; background: var(--green-soft); }
+    .callout.green .icon { color: #fff; background: var(--green); }
+
+    .pillar-card { position: relative; overflow: hidden; }
+    .pillar-card::after {
+      content: "";
+      position: absolute;
+      width: 92px;
+      height: 92px;
+      right: -33px;
+      bottom: -41px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: .08;
+    }
+    .pillar-card.logic { color: #1f67a6; }
+    .pillar-card.creative { color: #a87a00; }
+    .pillar-card.spatial { color: #19785e; }
+    .pillar-card.digital { color: #a63869; }
+    .pillar-card p { color: var(--muted); font-size: 0.95rem; }
+
+    .question-card {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border: 1.5px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 12px 36px rgba(22,63,113,.08);
+    }
+    .question-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: var(--blue);
+    }
+    .question-card.kids::before { background: var(--green); }
+    .question-card.teens::before { background: var(--pink); }
+    .question-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .question-label {
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .prompt {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1.5px solid #dceaf7;
+      border-radius: 16px;
+      background: #f7faff;
+      color: var(--ink);
+      font-size: clamp(.95rem, 1.3vw, 1.1rem);
+      font-weight: 750;
+      line-height: 1.45;
+    }
+    .measure {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .measure > div {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--green-soft);
+      color: #205e4d;
+      font-size: .85rem;
+      line-height: 1.45;
+    }
+    .measure > div:last-child { color: #725711; background: var(--yellow-soft); }
+    .measure strong { display: block; margin-bottom: 4px; color: inherit; font-size: 0.92rem; }
+    .answer {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+    .answer b { color: var(--navy); }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .comparison-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+      font-size: 2.4rem;
+      font-weight: 950;
+    }
+    .module-name {
+      display: inline-flex;
+      width: fit-content;
+      margin: 8px 0 14px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      color: #fff;
+      background: var(--navy);
+      font-weight: 950;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+    }
+    .module-name.potential { color: #684f08; background: var(--yellow); }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1.5px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 12px 36px rgba(22,63,113,.07);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: clamp(.85rem, 1.1vw, .98rem); }
+    th, td { padding: 15px 18px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: #fff; background: var(--navy); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; font-family: 'Orbitron', sans-serif; }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) td { background: #f8fbfe; }
+    td strong { color: var(--navy); }
+
+    .level-track {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    .level-card {
+      padding: 26px;
+      border: 1.5px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+      font-size: 0.96rem;
+    }
+    .level-card.current { border: 2px solid #e1b817; background: var(--yellow-soft); box-shadow: var(--shadow); }
+    .level-code {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--blue);
+      font-size: .82rem;
+      font-weight: 950;
+      letter-spacing: .08em;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .level-card h3 { font-size: clamp(1.3rem, 2vw, 1.85rem); }
+
+    .path-grid { display: grid; gap: 15px; }
+    .path-row {
+      display: grid;
+      grid-template-columns: minmax(200px,.75fr) 1.25fr;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 22px;
+      border: 1.5px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+    }
+    .path-title strong { display: block; color: var(--navy); font-size: 1.08rem; }
+    .path-title span { color: var(--muted); font-size: .82rem; }
+    .nodes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .node {
+    .report-stack { display: grid; gap: 8px; }
+    .report-row {
+      display: grid;
+      grid-template-columns: 42px minmax(0,1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 11px 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+    .report-row b {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--navy);
+      font-size: .78rem;
+    }
+    .report-row strong { display: block; color: var(--navy); font-size: .84rem; }
+    .report-row span { display: block; color: var(--muted); font-size: .72rem; }
+
+    .scenario {
+      display: grid;
+      grid-template-columns: .7fr 1.3fr;
+      gap: 16px;
+      padding: 21px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 12px 36px rgba(22,63,113,.08);
+    }
+    .profile {
+      padding: 17px;
+      border-radius: 17px;
+      background: linear-gradient(145deg, var(--sky), #fff);
+    }
+    .profile strong { display: block; color: var(--navy); font-size: 1.18rem; }
+    .profile span { color: var(--muted); font-size: .78rem; }
+    .reasoning { display: grid; gap: 8px; }
+    .reasoning div { padding: 10px 12px; border-radius: 13px; background: #f7faff; font-size: .78rem; }
+    .reasoning b { color: var(--navy); }
+
+    .faq { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .faq details {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fff;
+    }
+    .faq summary { color: var(--navy); cursor: pointer; font-size: .9rem; font-weight: 900; }
+    .faq p { margin: 9px 0 0; color: var(--muted); font-size: .78rem; }
+
+    .source-list { display: grid; gap: 11px; }
+    .source-item {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+    .source-item strong { display: block; color: var(--navy); }
+    .source-item code { color: var(--muted); font-size: .76rem; word-break: break-word; }
+
+    .controls {
+      position: fixed;
+      z-index: 100;
+      right: 18px;
+      bottom: 17px;
+      left: 18px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 11px;
+      border: 1px solid rgba(214,226,238,.92);
+      border-radius: 17px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 14px 38px rgba(13,47,89,.18);
+      backdrop-filter: blur(14px);
+    }
+    .control-group { display: flex; gap: 7px; }
+    .control-button {
+      display: grid;
+      min-width: 39px;
+      height: 39px;
+      place-items: center;
+      padding: 0 11px;
+      border: 1px solid #cbd9e6;
+      border-radius: 11px;
+      color: var(--navy);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 950;
+    }
+    .control-button:hover { border-color: var(--blue); background: var(--sky); }
+    .progress-shell {
+      position: relative;
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #dce8f3;
+    }
+    .progress-bar { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--blue), var(--green), var(--yellow)); transition: width .25s ease; }
+    .counter { min-width: 73px; color: var(--muted); font-size: .72rem; font-weight: 900; text-align: right; }
+
+    .overview {
+      position: fixed;
+      z-index: 120;
+      inset: 0;
+      display: none;
+      overflow: auto;
+      padding: 28px;
+      background: rgba(13,47,89,.95);
+      backdrop-filter: blur(12px);
+    }
+    .overview.open { display: block; }
+    .overview-head {
+      width: min(1200px,100%);
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      color: #fff;
+    }
+    .overview-head h2 { margin: 0; color: #fff; font-size: 1.8rem; }
+    .overview-grid {
+      width: min(1200px,100%);
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+    }
+    .overview-item {
+      min-height: 126px;
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 16px;
+      color: #fff;
+      background: rgba(255,255,255,.09);
+      cursor: pointer;
+      text-align: left;
+    }
+    .overview-item:hover { background: rgba(255,255,255,.16); }
+    .overview-item b { display: block; margin-bottom: 9px; color: var(--yellow); font-size: .7rem; }
+    .overview-item span { font-size: .86rem; font-weight: 850; }
+
+    @media (max-width: 1080px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .journey { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .journey-step:not(:last-child)::after { display: none; }
+      .overview-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+    @media (max-width: 760px) {
+      body { overflow: hidden; }
+      .slide { padding: 68px 18px 92px; }
+      .slide-inner { min-height: auto; justify-content: flex-start; }
+      .slide-number { top: 23px; right: 18px; }
+      .brand-row { margin-bottom: 48px; }
+      .doc-meta { display: none; }
+      h1 { font-size: clamp(2.55rem, 14vw, 4.2rem); }
+      h2 { font-size: clamp(2rem, 10vw, 3.2rem); }
+      .grid-2, .grid-3, .grid-4, .level-track, .faq, .scenario { grid-template-columns: 1fr; }
+      .journey { grid-template-columns: 1fr 1fr; }
+      .comparison { grid-template-columns: 1fr; }
+      .comparison-arrow { transform: rotate(90deg); }
+      .measure { grid-template-columns: 1fr; }
+      .path-row { grid-template-columns: 1fr; }
+      .controls { right: 8px; bottom: 8px; left: 8px; }
+      .control-button { min-width: 37px; padding: 0 9px; }
+      .counter { min-width: 56px; }
+      .overview-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 460px) {
+      .journey, .overview-grid { grid-template-columns: 1fr; }
+      .progress-shell { display: none; }
+      .controls { grid-template-columns: auto 1fr; }
+      .counter { justify-self: end; }
+    }
+
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      body { overflow: visible; background: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .deck { width: auto; height: auto; }
+      .slide, .slide.active {
+        position: relative;
+        display: block !important;
+        width: 13.333in;
+        height: 7.5in;
+        overflow: hidden;
+        padding: .42in .55in .38in;
+        break-after: page;
+        animation: none;
+      }
+      .slide-inner { min-height: 6.7in; }
+      .slide-number { top: .25in; right: .45in; }
+      .controls, .overview { display: none !important; }
+      .card, .question-card, .scenario, .table-wrap { box-shadow: none; }
+      h1 { font-size: 45pt; }
+      h2 { font-size: 31pt; }
+      .lead { font-size: 13pt; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Edge & Floating Background Assets (Lili & Mascot — Lala Taken Out) -->
+  <div class="edge-layer">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/e77f536b-e591-4ba8-b5b8-f5b2a3d3b33b.png" class="edge-planet edge-left" style="top:6%; width:min(22vw,170px);" alt="Planet Left Top">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/c08a7aed-567f-4e37-988c-1423a5b92643.png" class="edge-planet edge-left" style="top:65%; width:min(28vw,220px); transform:translateX(-30%);" alt="Planet Left Bottom">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/5f93f855-0466-47b3-ba85-bbaabbad7a2e.png" class="edge-planet edge-right" style="top:20%; width:min(26vw,210px); transform:translateX(30%);" alt="Planet Right Top">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/434fc5cb-e490-4e40-a921-d4519aa8a8a4.png" class="edge-planet edge-right" style="bottom:5%; width:min(30vw,250px);" alt="Planet Right Bottom">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/904cb9e9-ecd1-4731-a1ef-fa6a0bd50527.png" class="char-float" style="right:3%; top:48%; width:110px; animation:floatY2 8s ease-in-out infinite 1.5s;" alt="Lili">
+    <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/9b916b05-86ed-4509-aef6-e640606f3542.png" class="char-float" style="left:4%; bottom:5%; width:105px; animation:floatY 6s ease-in-out infinite 0.8s;" alt="Kalananti Mascot">
+  </div>
+
+  <!-- Background Watermark Text -->
+  <div class="bg-watermark-text">KALANANTI ACADEMICS</div>
+
+  <!-- Glow Orbs & Twinkle Stars -->
+  <div class="bg-glow-orb orb-1"></div>
+  <div class="bg-glow-orb orb-2"></div>
+  <div class="animate-twinkle star-1"></div>
+  <div class="animate-twinkle star-2"></div>
+  <div class="animate-twinkle star-3"></div>
+
+  <main class="deck" id="deck">
+    <section class="slide cover active" data-title="Panduan Placement Test untuk Orang Tua">
+      <div class="slide-inner">
+        <div class="brand-row">
+          <div class="brand"><img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo" style="height:38px; width:auto;"></div>
+          <div class="doc-meta">Parent Guide · Placement Test<br>27 Juli 2026</div>
+        </div>
+        <span class="cover-kicker">Dari aktivitas pertama sampai learning path</span>
+        <h1>Panduan Placement Test untuk Orang Tua</h1>
+        <p class="lead">Apa yang anak lakukan, kemampuan apa yang diamati, bagaimana rekomendasi awal dipilih, dan mengapa jalur belajar tetap dimulai dari fondasi yang sesuai usia serta kesiapan anak.</p>
+        <div class="cover-tags">
+          <span>Junior · 5–7 tahun</span>
+          <span>Kids · 8–15 tahun</span>
+          <span>Teens · 16–18 tahun</span>
+          <span>Stage 1A → 1B → 2 → 3 → Result</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Empat jawaban utama untuk parents">
+      <div class="slide-inner">
+        <span class="eyebrow">Tujuan panduan</span>
+        <h2>Setelah placement test, parents seharusnya mendapat <span class="highlight">empat jawaban</span></h2>
+        <p class="lead">Bukan hanya “anak dapat level berapa”, tetapi alasan yang dapat dilacak dari aktivitas anak.</p>
+        <div class="grid-4">
+          <article class="card blue"><span class="icon-box">1</span><h3>Mulai dari mana?</h3><p>Assigned Module dan level awal yang paling tepat untuk dipelajari sekarang.</p></article>
+          <article class="card green"><span class="icon-box">2</span><h3>Apa kekuatannya?</h3><p>Pola kemampuan yang terlihat pada Logika, Kreativitas, Spasial, dan Literasi Digital.</p></article>
+          <article class="card yellow"><span class="icon-box">3</span><h3>Apa yang perlu dilatih?</h3><p>Area perkembangan yang muncul konsisten—tanpa memberi label “gagal” atau “tidak berbakat”.</p></article>
+          <article class="card pink"><span class="icon-box">4</span><h3>Arahnya ke mana?</h3><p>Learning Path berdasarkan tujuan proyek yang dipilih anak pada Stage 3.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Perjalanan lengkap placement test">
+      <div class="slide-inner">
+        <span class="eyebrow">Peta perjalanan</span>
+        <h2>Satu perjalanan, fungsi tiap stage berbeda</h2>
+        <p class="lead">Setiap tahap membawa bukti yang berbeda. Hasil lengkap baru muncul setelah Stage 3 selesai.</p>
+        <div class="journey">
+          <div class="journey-step"><b>0</b><strong>Registrasi</strong><span>Nama, usia, email orang tua, cabang.</span></div>
+          <div class="journey-step"><b>1A</b><strong>Fondasi</strong><span>Profil awal empat pilar.</span></div>
+          <div class="journey-step"><b>1B</b><strong>Penguatan</strong><span>Validasi potensi modul.</span></div>
+          <div class="journey-step"><b>M</b><strong>Modul</strong><span>Potential + Assigned Module.</span></div>
+          <div class="journey-step"><b>2</b><strong>Praktik</strong><span>Batas penguasaan pada Assigned Module.</span></div>
+          <div class="journey-step"><b>3</b><strong>Minat</strong><span>Tujuan proyek dan preferensi anak.</span></div>
+          <div class="journey-step final"><b>R</b><strong>Result</strong><span>Rekomendasi, profil, dan Learning Path.</span></div>
+        </div>
+        <div class="callout blue"><span class="icon">i</span><div><strong>Tidak ada result parsial di tengah perjalanan.</strong>Stage berpindah otomatis sampai seluruh bukti kemampuan, praktik, dan minat sudah terkumpul.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Apa yang diukur dan tidak diukur">
+      <div class="slide-inner">
+        <span class="eyebrow">Cara memahami assessment</span>
+        <h2>Placement test bukan ujian untuk mencari “anak paling pintar”</h2>
+        <div class="grid-2">
+          <article class="card green">
+            <span class="icon-box">✓</span>
+            <h3>Yang ingin diketahui</h3>
+            <p>Fondasi berpikir anak, kesiapan menggunakan alat digital, cara menyelesaikan tugas praktis, dan jenis proyek yang membuatnya tertarik belajar.</p>
+            <div class="tag-row"><span class="tag green">bukti kemampuan</span><span class="tag green">kesiapan</span><span class="tag green">kebutuhan latihan</span></div>
+          </article>
+          <article class="card orange">
+            <span class="icon-box">×</span>
+            <h3>Yang tidak boleh disimpulkan</h3>
+            <p>Satu jawaban salah tidak membuktikan bahwa anak tidak mampu. Pilihan minat juga tidak boleh dianggap sebagai skor kemampuan.</p>
+            <div class="tag-row"><span class="tag yellow">bukan diagnosis</span><span class="tag yellow">bukan perlombaan</span><span class="tag yellow">bukan label bakat</span></div>
+          </article>
+        </div>
+        <div class="callout"><span class="icon">!</span><div><strong>Guardrail interpretasi</strong>Gunakan minimal dua bukti yang konsisten dalam pilar atau challenge trail. Keputusan modul dan level tetap mengikuti mesin placement aktif, bukan satu soal yang berdiri sendiri.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Usia menentukan bentuk pengalaman">
+      <div class="slide-inner">
+        <span class="eyebrow">Routing awal</span>
+        <h2>Usia menentukan <span class="highlight">cara anak diuji</span>, bukan nilai anak</h2>
+        <p class="lead">Bahasa, tampilan, alat, dan tingkat abstraksi dibuat sesuai tahap perkembangan.</p>
+        <div class="grid-3">
+          <article class="card blue"><span class="big-number">5–7</span><h3>Junior</h3><p>Aktivitas visual, pilihan sederhana, urutan, cerita, dan interaksi yang aman untuk anak usia dini.</p><span class="tag">awal: Scratch Jr</span></article>
+          <article class="card green"><span class="big-number">8–15</span><h3>Kids</h3><p>Interaksi lebih beragam, manipulasi objek, tantangan block coding, dan reasoning yang makin kompleks.</p><span class="tag green">8–11 & 12–15 dirouting berbeda</span></article>
+          <article class="card pink"><span class="big-number">16–18</span><h3>Teens</h3><p>Bahasa teknis, debugging, code reasoning, input langsung, dan konteks proyek yang lebih matang.</p><span class="tag pink">arah teknis: Python</span></article>
+        </div>
+        <div class="callout blue"><span class="icon">↳</span><div><strong>Batas aktif:</strong> usia 7 masuk Junior, usia 8 masuk Kids. Di dalam kelompok Kids, usia 8–11 dan 12–15 tetap memiliki kebijakan modul yang berbeda.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Empat pilar kemampuan">
+      <div class="slide-inner">
+        <span class="eyebrow">Bahasa profil kemampuan</span>
+        <h2>Stage 1 melihat empat pilar yang saling melengkapi</h2>
+        <div class="grid-4">
+          <article class="card pillar-card logic"><span class="icon-box">L</span><h3>Logika</h3><p>Urutan, pola, kondisi, pengulangan, efisiensi, dan debugging.</p></article>
+          <article class="card pillar-card creative"><span class="icon-box">K</span><h3>Kreativitas</h3><p>Prediksi visual, susunan layer, warna, animasi, dan hierarki tampilan.</p></article>
+          <article class="card pillar-card spatial"><span class="icon-box">S</span><h3>Spasial</h3><p>Arah, rotasi, perspektif, koordinat, bentuk 3D, dan relasi ruang.</p></article>
+          <article class="card pillar-card digital"><span class="icon-box">D</span><h3>Literasi Digital</h3><p>Perangkat input, ikon, login aman, navigasi, file, dan troubleshooting.</p></article>
+        </div>
+        <div class="callout green"><span class="icon">✓</span><div><strong>Yang dicari adalah pola.</strong>Profil pilar membantu menjelaskan kekuatan dan kebutuhan latihan. Skor pilar tidak langsung menjadi level kursus.</div></div>
+      </div>
+    </section>
+
+    <section class="slide section-break" data-title="Stage 1A — Pemetaan fondasi">
+      <div class="slide-inner">
+        <span class="section-index">1A</span>
+        <h2>Pemetaan fondasi yang luas</h2>
+        <p class="lead">Anak mengerjakan 20 aktivitas yang menyebar pada Logika, Kreativitas, Spasial, dan Literasi Digital. Tujuannya melihat keluasan fondasi, belum menentukan level kursus.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Cara kerja Stage 1A">
+      <div class="slide-inner">
+        <span class="eyebrow">Stage 1A</span>
+        <h2>Bukan sekadar pilihan A–B–C</h2>
+        <p class="lead">Bentuk aktivitas menyesuaikan usia dan keterampilan yang sedang diamati.</p>
+        <div class="grid-4">
+          <article class="card blue"><span class="icon-box">→</span><h3>Urutan & rute</h3><p>Menyusun langkah agar karakter mencapai tujuan secara aman.</p></article>
+          <article class="card green"><span class="icon-box">↕</span><h3>Drag & arrange</h3><p>Mengurutkan frame, layer, objek, atau blok sesuai hubungan yang benar.</p></article>
+          <article class="card yellow"><span class="icon-box">◐</span><h3>Konfigurasi visual</h3><p>Mengatur warna, layout, atau posisi untuk memenuhi kriteria.</p></article>
+          <article class="card pink"><span class="icon-box">⌨</span><h3>Operasi digital</h3><p>Menggunakan ikon, login, file, input, dan kontrol perangkat.</p></article>
+        </div>
+        <div class="callout blue"><span class="icon">20</span><div><strong>Komposisi aktif per audience:</strong> 5 aktivitas Logika + 5 Kreativitas + 5 Spasial + 5 Literasi Digital.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Contoh Stage 1A — Junior">
+      <div class="slide-inner">
+        <span class="eyebrow">Contoh aktivitas · Junior</span>
+        <h2>Rute robot: bentuk sederhana, bukti yang tetap spesifik</h2>
+        <article class="question-card">
+          <div class="question-meta"><span class="question-label">Stage 1A · Logika · Efisiensi</span><span class="tag">multiple choice</span></div>
+          <div class="prompt">“Robot harus pulang ke Rumah 🏠. Manakah urutan perintah yang aman agar tidak menabrak Pohon 🌳 atau masuk ke Air 🌊?”</div>
+          <div class="measure">
+            <div><strong>Apa yang diukur?</strong>Memilih urutan instruksi yang aman dan efisien untuk mencapai tujuan.</div>
+            <div><strong>Apa yang dinilai?</strong>Urutan langkah, kepatuhan pada batas rute, dan kemampuan menghindari hambatan.</div>
+          </div>
+          <p class="answer"><b>Kriteria:</b> Bawah → Bawah → Kanan → Kanan. Jawaban benar menjadi satu bukti dasar Logika; tetap harus digabungkan dengan soal Logika lain.</p>
+        </article>
+        <div class="callout"><span class="icon">↗</span><div><strong>Jika belum memenuhi:</strong> bukti efisiensi rute belum terlihat pada percobaan ini. Artinya anak perlu latihan bertahap menyusun instruksi—bukan berarti anak “tidak logis”.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Contoh Stage 1A — Kids dan Teens">
+      <div class="slide-inner">
+        <span class="eyebrow">Contoh aktivitas · Kids & Teens</span>
+        <h2>Satu stage, bentuk tantangannya tumbuh bersama usia</h2>
+        <div class="grid-2">
+          <article class="question-card kids">
+            <div class="question-meta"><span class="question-label">Kids · Kreativitas · Estetika Warna</span><span class="tag green">color contrast</span></div>
+            <div class="prompt">Atur tulisan “SELAMAT DATANG” pada background laut malam agar paling mudah dibaca.</div>
+            <div class="measure">
+              <div><strong>Diukur</strong>Memilih kombinasi warna yang kontras, nyaman, dan mudah dibaca.</div>
+              <div><strong>Dinilai</strong>Rasio kontras minimal 4,5:1 dan aktivasi efek kontras.</div>
+            </div>
+          </article>
+          <article class="question-card teens">
+            <div class="question-meta"><span class="question-label">Teens · Logika · Debugging</span><span class="tag pink">flowchart</span></div>
+            <div class="prompt">Lengkapi flowchart checkout agar keputusan stok, alamat, pembayaran, dan pengiriman berjalan logis.</div>
+            <div class="measure">
+              <div><strong>Diukur</strong>Menemukan alur yang hilang dan menyusun kondisi secara runtut.</div>
+              <div><strong>Dinilai</strong>Cabang ya/tidak, urutan proses, dan akhir alur yang konsisten.</div>
+            </div>
+          </article>
+        </div>
+        <div class="callout green"><span class="icon">✓</span><div><strong>Makna untuk report:</strong> aktivitas ini memberi bukti dasar untuk pilar terkait. Narasi kekuatan hanya diambil jika pola serupa terlihat pada beberapa aktivitas.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Output Stage 1A">
+      <div class="slide-inner">
+        <span class="eyebrow">Output Stage 1A</span>
+        <h2>Stage 1A menghasilkan profil awal, <span class="highlight">bukan level</span></h2>
+        <div class="grid-2">
+          <article class="card blue">
+            <h3>Yang dibawa ke tahap berikutnya</h3>
+            <div class="report-stack">
+              <div class="report-row"><b>1</b><div><strong>Skor per pilar</strong><span>Logika, Kreativitas, Spasial, Literasi Digital.</span></div></div>
+              <div class="report-row"><b>2</b><div><strong>Pilar terkuat dan area tumbuh</strong><span>Dipakai untuk memilih penguatan pada Stage 1B.</span></div></div>
+              <div class="report-row"><b>3</b><div><strong>Sinyal kesiapan modul</strong><span>Masih harus divalidasi oleh Stage 1B dan aturan usia.</span></div></div>
+            </div>
+          </article>
+          <article class="card yellow">
+            <h3>Yang belum boleh diputuskan</h3>
+            <p>Stage 1A belum menetapkan FOUNDATIONAL — Lv1, BASIC — Lv2, atau EMERGING — Lv3.</p>
+            <p>Level baru dibahas setelah anak mengerjakan tantangan praktis pada Stage 2.</p>
+            <div class="tag-row"><span class="tag yellow">profil ≠ level</span><span class="tag yellow">potensi ≠ penempatan otomatis</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide section-break" data-title="Stage 1B — Penguatan potensi">
+      <div class="slide-inner">
+        <span class="section-index">1B</span>
+        <h2>Penguatan potensi dan validasi modul</h2>
+        <p class="lead">Stage 1B masuk lebih dalam pada pilar yang relevan. Anak tidak harus melihat seluruh bank soal; subset dipilih berdasarkan pola Stage 1A dan aturan routing usianya.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Cara kerja Stage 1B">
+      <div class="slide-inner">
+        <span class="eyebrow">Stage 1B</span>
+        <h2>Lebih adaptif dan lebih menantang</h2>
+        <div class="grid-3">
+          <article class="card blue"><span class="big-number">10</span><h3>Rute umum</h3><p>Biasanya 5 soal dari masing-masing dua pilar terpilih.</p></article>
+          <article class="card green"><span class="big-number">15</span><h3>Junior akselerasi</h3><p>Dapat meluas ke Logika, Kreativitas, dan Literasi Digital ketika ketiganya sempurna di 1A.</p></article>
+          <article class="card yellow"><span class="big-number">20</span><h3>Kids 8–11 akselerasi</h3><p>Dapat mencakup empat pilar ketika seluruh Stage 1A sempurna.</p></article>
+        </div>
+        <div class="callout blue"><span class="icon">i</span><div><strong>Bank soal lebih besar daripada paket yang dikerjakan seorang anak.</strong>Dokumen sumber memuat seluruh soal eligible agar setiap rute adaptif tetap punya bukti yang sesuai.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Contoh Stage 1B — Junior dan Kids">
+      <div class="slide-inner">
+        <span class="eyebrow">Contoh aktivitas · Stage 1B</span>
+        <h2>Soal menguji ulang pilar pada kedalaman yang lebih tinggi</h2>
+        <div class="grid-2">
+          <article class="question-card">
+            <div class="question-meta"><span class="question-label">Junior · Logika · Pola Matriks</span><span class="tag">advanced</span></div>
+            <div class="prompt">Posisi warna Biru dan Kuning berpindah pada grid 2×2. Seperti apa grid ke-3?</div>
+            <div class="measure">
+              <div><strong>Diukur</strong>Melacak perubahan posisi dalam pola bertingkat.</div>
+              <div><strong>Dinilai</strong>Konsistensi transformasi antarlangkah; jawaban kembali seperti grid pertama.</div>
+            </div>
+          </article>
+          <article class="question-card kids">
+            <div class="question-meta"><span class="question-label">Kids · Kreativitas · Visual Hierarchy</span><span class="tag green">configuration lab</span></div>
+            <div class="prompt">Atur layar menu agar tombol PLAY paling menonjol dan langsung ditemukan.</div>
+            <div class="measure">
+              <div><strong>Diukur</strong>Mengatur ukuran, posisi, dan kontras agar aksi utama mudah ditemukan.</div>
+              <div><strong>Dinilai</strong>PLAY di tengah, besar, kontras; Settings dibuat lebih kecil.</div>
+            </div>
+          </article>
+        </div>
+        <div class="callout"><span class="icon">↗</span><div><strong>Makna jika belum memenuhi:</strong> kebutuhan latihan menjadi lebih spesifik—misalnya transformasi pola atau prioritas visual—dan tidak otomatis menghapus potensi modul lain.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Contoh Stage 1B — Teens">
+      <div class="slide-inner">
+        <span class="eyebrow">Contoh aktivitas · Teens</span>
+        <h2>Debugging bukan sekadar menemukan typo</h2>
+        <article class="question-card teens">
+          <div class="question-meta"><span class="question-label">Teens · Logika · Debugging 2.0</span><span class="tag pink">advanced</span></div>
+          <div class="prompt">“Alur sistem Login ini memiliki celah keamanan (Logical Error). Baris ke berapa yang menyebabkan celah tersebut?”</div>
+          <div class="measure">
+            <div><strong>Apa yang diukur?</strong>Mendeteksi logical error dan menjelaskan bagian yang perlu diperbaiki.</div>
+            <div><strong>Apa yang dinilai?</strong>Anak mengidentifikasi bahwa password salah tidak boleh memberi akses ke dashboard.</div>
+          </div>
+          <p class="answer"><b>Peran di placement:</b> bukti penguat Logika dan kesiapan teknis; tetap dibaca bersama Stage 1A dan kebijakan modul Teens.</p>
+        </article>
+        <div class="callout blue"><span class="icon">≠</span><div><strong>Catatan:</strong> kreativitas tinggi saja dapat menjadi sinyal potensi Roblox Studio, tetapi tidak cukup untuk mengganti Assigned Module Teens. Assignment alternatif membutuhkan validasi Spasial yang lengkap.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Potential Module dan Assigned Module">
+      <div class="slide-inner">
+        <span class="eyebrow">Output Stage 1</span>
+        <h2>Dua istilah yang harus tetap dipisahkan</h2>
+        <div class="comparison">
+          <article class="card yellow">
+            <h3>Potential Module</h3>
+            <span class="module-name potential">Arah potensi jangka panjang</span>
+            <p>Modul tertinggi yang disarankan oleh profil kognitif. Bisa menjadi tujuan berikutnya, tetapi belum tentu aman atau tepat untuk dipelajari sekarang.</p>
+          </article>
+          <div class="comparison-arrow">≠</div>
+          <article class="card blue">
+            <h3>Assigned Module</h3>
+            <span class="module-name">Modul yang dipelajari sekarang</span>
+            <p>Modul sesuai usia dan kesiapan yang membuka Stage 2. Inilah rekomendasi utama yang harus paling jelas pada result.</p>
+          </article>
+        </div>
+        <div class="callout green"><span class="icon">✓</span><div><strong>Aturan inti:</strong> hanya Assigned Module yang membuka assessment Stage 2. Potential Module boleh tetap terkunci sambil anak membangun fondasi yang diperlukan.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Kebijakan modul berdasarkan usia">
+      <div class="slide-inner">
+        <span class="eyebrow">Age-safe routing</span>
+        <h2>Mengapa usia tetap menjadi pagar pengaman?</h2>
+        <p class="lead">Kemampuan tinggi boleh membuka rute akselerasi, tetapi bukti yang dibutuhkan dibuat ketat agar anak tidak ditempatkan pada alat dan abstraksi yang belum sesuai.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Usia</th><th>Awal aman</th><th>Rute lebih lanjut</th><th>Bukti untuk melewati awal aman</th></tr></thead>
+            <tbody>
+              <tr><td><strong>5–7</strong></td><td>Scratch Jr</td><td>Scratch</td><td>Logika, Kreativitas, dan Literasi Digital sempurna di 1A, lalu 15/15 di 1B.</td></tr>
+              <tr><td><strong>8–11</strong></td><td>Scratch</td><td>Roblox Studio</td><td>Empat pilar sempurna di 1A, lalu 20/20 di 1B.</td></tr>
+              <tr><td><strong>12–15</strong></td><td>Scratch</td><td>Roblox Studio / Python</td><td>Python memerlukan validasi Logika yang sangat kuat; Roblox memerlukan Spasial dan Literasi Digital yang kuat.</td></tr>
+              <tr><td><strong>16–18</strong></td><td>Python</td><td>Roblox Studio sebagai assignment alternatif</td><td>Spasial harus sempurna dan tervalidasi di Stage 1A serta 1B.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:10px">Rute ini adalah kebijakan modul aktif; Stage 2 tetap menentukan level di dalam Assigned Module.</p>
+      </div>
+    </section>
+
+    <section class="slide section-break" data-title="Stage 2 — Batas penguasaan praktis">
+      <div class="slide-inner">
+        <span class="section-index">2</span>
+        <h2>Menguji apa yang dapat anak lakukan dalam praktik</h2>
+        <p class="lead">Stage 2 hanya membuka lingkungan yang sesuai Assigned Module. Tantangan bergerak dari konsep dasar menuju kombinasi logika yang lebih kompleks untuk menemukan titik mulai belajar.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Cara kerja Stage 2">
+      <div class="slide-inner">
+        <span class="eyebrow">Stage 2</span>
+        <h2>Yang dicari adalah <span class="highlight">batas penguasaan</span>, bukan nilai ujian biasa</h2>
+        <div class="grid-4">
+          <article class="card blue"><span class="icon-box">1</span><h3>Modul spesifik</h3><p>Scratch Jr, Scratch/Blockly, Roblox Studio, atau Python sesuai assignment.</p></article>
+          <article class="card green"><span class="icon-box">2</span><h3>Tantangan bertingkat</h3><p>Kesulitan meningkat saat bukti berhasil dan turun ketika anak membutuhkan fondasi.</p></article>
+          <article class="card yellow"><span class="icon-box">3</span><h3>Trail tersimpan</h3><p>First submission, final submission, attempts, dan perjalanan challenge ikut dibaca.</p></article>
+          <article class="card pink"><span class="icon-box">4</span><h3>Level modul</h3><p>Hasil otomatis mengarah ke FOUNDATIONAL — Lv1 atau BASIC — Lv2.</p></article>
+        </div>
+        <div class="callout"><span class="icon">!</span><div><strong>Level bersifat module-specific.</strong>BASIC — Lv2 di Python tidak otomatis setara dengan BASIC — Lv2 di Roblox Studio karena bukti praktik dan alatnya berbeda.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Contoh Stage 2 — Junior dan Kids">
+      <div class="slide-inner">
+        <span class="eyebrow">Contoh tantangan praktis</span>
+        <h2>Dari menyusun blok sampai memakai kondisi di dalam loop</h2>
+        <div class="grid-2">
+          <article class="question-card">
+            <div class="question-meta"><span class="question-label">Junior · Algoritma Rute</span><span class="tag">interactive</span></div>
+            <div class="prompt">Bantu Kucing mencapai ikan dengan menyusun maksimal 5 blok program pada jalur aman.</div>
+            <div class="measure">
+              <div><strong>Diukur</strong>Menyusun instruksi gerak, membaca arah, dan menguji rute aman.</div>
+              <div><strong>Dinilai</strong>Target tercapai, urutan benar, dan batas jumlah blok dipatuhi.</div>
+            </div>
+          </article>
+          <article class="question-card kids">
+            <div class="question-meta"><span class="question-label">Kids · Challenge 4</span><span class="tag green">Blockly</span></div>
+            <div class="prompt">Ikuti jalan berliku. Gunakan blok IF di dalam “Ulangi sampai tujuan”.</div>
+            <div class="measure">
+              <div><strong>Diukur</strong>Menempatkan kondisi di dalam pengulangan untuk mengikuti jalan.</div>
+              <div><strong>Dinilai</strong>Target aman, repeat + if digunakan, maksimal 4 blok.</div>
+            </div>
+          </article>
+        </div>
+        <div class="callout green"><span class="icon">✓</span><div><strong>Inilah bedanya dengan Stage 1:</strong> anak tidak hanya mengenali konsep, tetapi harus membangun, menjalankan, dan memperbaiki solusi.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Contoh Stage 2 — Teens Python">
+      <div class="slide-inner">
+        <span class="eyebrow">Contoh tantangan praktis · Teens</span>
+        <h2>Code dinilai melalui perilaku fungsi, bukan tampilan jawaban</h2>
+        <article class="question-card teens">
+          <div class="question-meta"><span class="question-label">Python · Repair the Score Function</span><span class="tag pink">early basic</span></div>
+          <div class="prompt">Perbaiki fungsi agar setiap bintang bernilai 10 poin, bonus 20 berlaku mulai 5 bintang, dan fungsi mengembalikan total.</div>
+          <div class="measure">
+            <div><strong>Apa yang diukur?</strong>Membaca fungsi, memperbaiki kondisi, memperbarui nilai, dan mengembalikan hasil.</div>
+            <div><strong>Apa yang dinilai?</strong>Parameter dipakai, batas ≥5 benar, score diperbarui, dan fungsi menggunakan return.</div>
+          </div>
+          <p class="answer"><b>Bukti praktik:</b> solusi harus lolos seluruh pemeriksaan untuk berbagai input—bukan sekadar cocok dengan satu contoh.</p>
+        </article>
+        <div class="callout blue"><span class="icon">↗</span><div><strong>Jika belum lolos:</strong> report dapat menjelaskan kebutuhan latihan pada kondisi, perubahan nilai, atau konsep fungsi secara spesifik.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Hasil level Stage 2">
+      <div class="slide-inner">
+        <span class="eyebrow">Output Stage 2</span>
+        <h2>Hasil otomatis berhenti pada level yang aman dan terbukti</h2>
+        <div class="level-track">
+          <article class="level-card">
+            <span class="level-code">FOUNDATIONAL — Lv1</span>
+            <h3>Bangun fondasi</h3>
+            <p class="muted">Anak memerlukan latihan terstruktur pada konsep inti, alat, atau cara memecah masalah.</p>
+          </article>
+          <article class="level-card current">
+            <span class="level-code">BASIC — Lv2</span>
+            <h3>Fondasi sudah terlihat</h3>
+            <p class="muted">Anak menunjukkan penguasaan dasar yang cukup untuk mengerjakan kombinasi konsep lebih mandiri.</p>
+          </article>
+          <article class="level-card">
+            <span class="level-code">LV3 CANDIDATE</span>
+            <h3>Belum otomatis Lv3</h3>
+            <p class="muted">Status khusus saja; perlu portfolio dan persetujuan Academic Team sebelum EMERGING — Lv3 ditampilkan.</p>
+          </article>
+        </div>
+        <div class="callout"><span class="icon">!</span><div><strong>Tidak semua anak perlu review.</strong>Informasi portfolio/Lv3 hanya muncul untuk kandidat yang benar-benar memenuhi prasyarat luar biasa; Lv1 dan Lv2 adalah rekomendasi otomatis yang final.</div></div>
+      </div>
+    </section>
+
+    <section class="slide section-break" data-title="Stage 3 — Konfirmasi minat">
+      <div class="slide-inner">
+        <span class="section-index">3</span>
+        <h2>Menghubungkan kemampuan dengan tujuan yang membuat anak tertarik</h2>
+        <p class="lead">Semua audience mengerjakan 10 pertanyaan minat yang sesuai usia. Tidak ada jawaban benar atau salah, dan hasilnya tidak menghitung ulang modul maupun level.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Cara kerja Stage 3">
+      <div class="slide-inner">
+        <span class="eyebrow">Stage 3</span>
+        <h2>Minat dipakai untuk memilih arah proyek dan Learning Path</h2>
+        <div class="grid-4">
+          <article class="card blue"><span class="icon-box">🎬</span><h3>Jenis proyek</h3><p>Cerita interaktif, game 3D, aplikasi, program, atau otomatisasi.</p></article>
+          <article class="card green"><span class="icon-box">🧩</span><h3>Cara membangun</h3><p>Blok visual, objek 3D, atau kode berbasis teks.</p></article>
+          <article class="card yellow"><span class="icon-box">🔎</span><h3>Cara memperbaiki</h3><p>Menelusuri blok, playtest, atau membaca error dan nilai.</p></article>
+          <article class="card pink"><span class="icon-box">♥</span><h3>Pilihan akhir</h3><p>Modul yang ingin didalami serta alasan singkat anak.</p></article>
+        </div>
+        <div class="callout blue"><span class="icon">i</span><div><strong>Interest Confirmation:</strong> jawaban eksplisit “modul mana yang ingin kamu dalami?” menjadi konfirmasi akhir. Pertanyaan sebelumnya memberi konteks, bukan voting mayoritas yang mengalahkan pilihan akhir.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Contoh pertanyaan Stage 3">
+      <div class="slide-inner">
+        <span class="eyebrow">Contoh pertanyaan minat</span>
+        <h2>Bahasanya berbeda, sinyal tujuannya tetap konsisten</h2>
+        <div class="grid-3">
+          <article class="question-card">
+            <div class="question-meta"><span class="question-label">Junior</span><span class="tag pink">non-scored</span></div>
+            <div class="prompt">“Pilih satu proyek impianmu!”</div>
+            <p class="small">Animasi petualangan → Scratch<br>Game harta karun → Roblox Studio<br>Program kuis pintar → Python</p>
+          </article>
+          <article class="question-card kids">
+            <div class="question-meta"><span class="question-label">Kids</span><span class="tag pink">non-scored</span></div>
+            <div class="prompt">“Kalau membuat proyek hari ini, kamu paling ingin membuat apa?”</div>
+            <p class="small">Cerita & animasi → Scratch<br>Dunia game → Roblox Studio<br>Program penghitung/jawaban → Python</p>
+          </article>
+          <article class="question-card teens">
+            <div class="question-meta"><span class="question-label">Teens</span><span class="tag pink">non-scored</span></div>
+            <div class="prompt">“Setelah mempertimbangkan proses dan hasil proyeknya, modul mana yang ingin kamu dalami?”</div>
+            <p class="small">Scratch · Roblox Studio · Python<br>Diikuti alasan terbuka yang relevan.</p>
+          </article>
+        </div>
+        <div class="callout"><span class="icon">♥</span><div><strong>Yang diincar:</strong> motivasi, konteks proyek, pengalaman sebelumnya, dan tujuan belajar. Tidak ada “jawaban salah” dan pilihan ini tidak menaikkan skor pilar.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Stage 3 tidak mengubah placement">
+      <div class="slide-inner">
+        <span class="eyebrow">Pemisahan bukti</span>
+        <h2>Minat memberi arah—kemampuan menentukan titik mulai</h2>
+        <div class="grid-3">
+          <article class="card blue"><span class="icon-box">A</span><h3>Assigned Module</h3><p>Ditentukan dari Stage 1 + aturan usia. Menjawab: “belajar apa sekarang?”</p></article>
+          <article class="card green"><span class="icon-box">L</span><h3>Assigned Level</h3><p>Ditentukan dari Stage 2. Menjawab: “mulai dari kedalaman mana?”</p></article>
+          <article class="card pink"><span class="icon-box">I</span><h3>Interest Confirmation</h3><p>Ditentukan dari Stage 3. Menjawab: “proyek dan tujuan apa yang memotivasi?”</p></article>
+        </div>
+        <div class="callout green"><span class="icon">=</span><div><strong>Result yang sehat menyatukan ketiganya tanpa mencampurnya.</strong>Minat dapat dipakai sebagai tema proyek hari ini dan tujuan perjalanan besok, sementara penempatan sekarang tetap mengikuti bukti kesiapan.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Tiga Learning Path resmi">
+      <div class="slide-inner">
+        <span class="eyebrow">Arah Belajar Berdasarkan Minat</span>
+        <h2>Stage 3 memilih satu dari tiga Learning Path resmi</h2>
+        <div class="path-grid">
+          <div class="path-row"><div class="path-title"><strong>Interactive Creator Path</strong><span>Konfirmasi minat: Scratch / proyek interaktif</span></div><div class="nodes"><span class="node">Junior: Scratch Jr</span><span class="node-arrow">→</span><span class="node">Scratch</span><span class="node-arrow">·</span><span class="node">Teens berakhir di Python</span></div></div>
+          <div class="path-row"><div class="path-title"><strong>Game Creator Path</strong><span>Konfirmasi minat: Roblox Studio / game 3D</span></div><div class="nodes"><span class="node">Junior: Scratch Jr</span><span class="node-arrow">→</span><span class="node">Scratch</span><span class="node-arrow">→</span><span class="node">Roblox Studio</span></div></div>
+          <div class="path-row"><div class="path-title"><strong>App Creator Path</strong><span>Konfirmasi minat: Python / aplikasi & solusi</span></div><div class="nodes"><span class="node">Fondasi visual sesuai usia</span><span class="node-arrow">→</span><span class="node">Python</span></div></div>
+        </div>
+        <div class="callout blue"><span class="icon">i</span><div><strong>Urutan lengkap berbeda menurut audience.</strong>Untuk Teens, Python adalah tujuan teknis akhir pada setiap path: Interactive = Scratch → Roblox Studio → Python; Game = Roblox Studio → Python; App = Scratch → Python.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Matriks Learning Path per audience">
+      <div class="slide-inner">
+        <span class="eyebrow">Urutan modul resmi</span>
+        <h2>Satu nama path, urutan menyesuaikan tahap usia</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Interest Confirmation</th><th>Nama path</th><th>Junior · 5–7</th><th>Kids · 8–15</th><th>Teens · 16–18</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Scratch</strong></td><td>Interactive Creator</td><td>Scratch Jr → Scratch</td><td>Scratch Jr → Scratch → Roblox Studio</td><td>Scratch → Roblox Studio → <strong>Python</strong></td></tr>
+              <tr><td><strong>Roblox Studio</strong></td><td>Game Creator</td><td>Scratch Jr → Scratch → Roblox Studio</td><td>Scratch → Roblox Studio</td><td>Roblox Studio → <strong>Python</strong></td></tr>
+              <tr><td><strong>Python</strong></td><td>App Creator</td><td>Scratch Jr → Scratch → Python</td><td>Scratch → Python</td><td>Scratch → <strong>Python</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><span class="icon">!</span><div><strong>Chart Learning Path hanya berisi nama path dan urutan modul.</strong>Assigned Module, level, status tersedia/terkunci, dan alasan penempatan tetap dijelaskan di bagian result yang terpisah.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Mengapa anak tidak langsung ke modul tujuan">
+      <div class="slide-inner">
+        <span class="eyebrow">Mengapa tidak langsung “loncat”?</span>
+        <h2>Tujuan boleh jauh, titik mulai harus tetap realistis</h2>
+        <div class="grid-3">
+          <article class="card blue"><span class="icon-box">1</span><h3>Abstraksi bertahap</h3><p>Block visual membantu anak memahami urutan, event, kondisi, dan debugging sebelum menghadapi sintaks atau ruang 3D yang lebih berat.</p></article>
+          <article class="card green"><span class="icon-box">2</span><h3>Alat sesuai usia</h3><p>Kontrol, ketelitian input, navigasi, dan beban kerja harus cocok dengan kemandirian digital anak.</p></article>
+          <article class="card yellow"><span class="icon-box">3</span><h3>Fondasi yang dapat ditransfer</h3><p>Konsep dari Scratch Jr/Scratch menjadi bekal untuk Roblox Studio dan Python—bukan waktu yang “terbuang”.</p></article>
+        </div>
+        <div class="callout green"><span class="icon">→</span><div><strong>Bahasa untuk parents:</strong> “Minat anak menjadi tujuan perjalanan. Assigned Module adalah kendaraan pertama yang membangun kompetensi agar ia bisa mencapai tujuan itu dengan lebih siap.”</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Skenario Junior ingin Roblox">
+      <div class="slide-inner">
+        <span class="eyebrow">Skenario konkret 1</span>
+        <h2>Usia 6 tahun ingin membuat game Roblox</h2>
+        <div class="scenario">
+          <div class="profile"><strong>Nara · 6 tahun</strong><span>Stage 3 memilih proyek game 3D</span><div class="tag-row" style="margin-top:14px"><span class="tag">Assigned: Scratch Jr</span><span class="tag pink">Interest: Roblox</span></div></div>
+          <div class="reasoning">
+            <div><b>Learning Path:</b> Game Creator Path — Scratch Jr → Scratch → Roblox Studio.</div>
+            <div><b>Mengapa mulai Scratch Jr?</b> Nara membangun urutan, sebab-akibat, event, serta kemandirian dasar dengan antarmuka yang sesuai usia.</div>
+            <div><b>Bagaimana minat tetap dipakai?</b> Tema proyek Scratch Jr dapat berupa game petualangan, karakter, objective, dan reward sederhana.</div>
+            <div><b>Kapan bergerak lanjut?</b> Setelah bukti fondasi dan kesiapan alat berkembang—bukan hanya karena memilih Roblox pada Stage 3.</div>
+          </div>
+        </div>
+        <div class="callout blue"><span class="icon">i</span><div>Stage 3 tidak menolak minat Nara. Stage 3 menerjemahkan minat tersebut menjadi tujuan yang dapat dicapai melalui urutan belajar yang aman.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Skenario Kids ingin Python">
+      <div class="slide-inner">
+        <span class="eyebrow">Skenario konkret 2</span>
+        <h2>Usia 10 tahun ingin membuat program pintar</h2>
+        <div class="scenario">
+          <div class="profile"><strong>Raka · 10 tahun</strong><span>Stage 3 memilih aplikasi/kuis pintar</span><div class="tag-row" style="margin-top:14px"><span class="tag green">Assigned: Scratch</span><span class="tag pink">Interest: Python</span></div></div>
+          <div class="reasoning">
+            <div><b>Learning Path:</b> App Creator Path — Scratch → Python.</div>
+            <div><b>Mengapa mulai Scratch?</b> Raka dapat berlatih variabel, kondisi, loop, input-output, dan debugging tanpa terbebani sintaks teks terlebih dahulu.</div>
+            <div><b>Bagaimana minat tetap relevan?</b> Proyek Scratch dapat berupa kuis adaptif, penghitung nilai, atau alat tanya-jawab sederhana.</div>
+            <div><b>Apa yang dijelaskan di result?</b> Scratch adalah Assigned Module sekarang; Python adalah tujuan path yang dibangun secara bertahap.</div>
+          </div>
+        </div>
+        <div class="callout green"><span class="icon">✓</span><div>Urutan ini membuat parents melihat hubungan langsung antara minat Python dan kompetensi yang dibangun melalui Scratch.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Skenario Teens tertarik game">
+      <div class="slide-inner">
+        <span class="eyebrow">Skenario konkret 3</span>
+        <h2>Usia 17 tahun tertarik game development</h2>
+        <div class="scenario">
+          <div class="profile"><strong>Alya · 17 tahun</strong><span>Stage 3 memilih game 3D</span><div class="tag-row" style="margin-top:14px"><span class="tag">Assigned: Python</span><span class="tag pink">Interest: Roblox</span></div></div>
+          <div class="reasoning">
+            <div><b>Learning Path:</b> Game Creator Path — Roblox Studio → Python.</div>
+            <div><b>Mengapa Python tetap utama?</b> Untuk Teens, Python adalah arah teknis akhir; minat game memberi konteks proyek, bukan otomatis mengganti assignment.</div>
+            <div><b>Kapan Roblox boleh menjadi titik mulai?</b> Hanya jika validasi Spasial Stage 1A dan 1B memenuhi aturan assignment alternatif.</div>
+            <div><b>Jika readiness belum cukup?</b> Result menjelaskan gap Kreativitas/Spasial dengan bahasa perkembangan dan menjaga arah belajar menuju Python.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide section-break" data-title="Result — Menyatukan seluruh bukti">
+      <div class="slide-inner">
+        <span class="section-index">R</span>
+        <h2>Result bukan sekadar angka</h2>
+        <p class="lead">Laporan akhir menyatukan bukti Stage 1, performa praktis Stage 2, minat Stage 3, usia, dan kesiapan alat menjadi rekomendasi yang dapat dipahami parents.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Anatomi result untuk parents">
+      <div class="slide-inner">
+        <span class="eyebrow">Urutan informasi result</span>
+        <h2>Rekomendasi utama harus terlihat lebih dulu</h2>
+        <div class="grid-2">
+          <div class="report-stack">
+            <div class="report-row"><b>1</b><div><strong>Assigned Module + level</strong><span>Apa yang dipelajari sekarang dan mulai dari mana.</span></div></div>
+            <div class="report-row"><b>2</b><div><strong>Personalized placement statement</strong><span>Ringkasan bukti yang menjelaskan rekomendasi.</span></div></div>
+            <div class="report-row"><b>3</b><div><strong>Profil empat pilar</strong><span>Kekuatan, perkembangan, relevansi, dan aktivitas belajar.</span></div></div>
+            <div class="report-row"><b>4</b><div><strong>Mengapa modul ini sekarang</strong><span>Bukti → kebutuhan → aktivitas → kompetensi.</span></div></div>
+          </div>
+          <div class="report-stack">
+            <div class="report-row"><b>5</b><div><strong>Prioritas perkembangan awal</strong><span>Dua atau tiga fokus yang konkret.</span></div></div>
+            <div class="report-row"><b>6</b><div><strong>Learning Path</strong><span>Nama path dan urutan modul.</span></div></div>
+            <div class="report-row"><b>7</b><div><strong>Arah berdasarkan minat</strong><span>Tujuan proyek, path, dan alasan mulai dari modul saat ini.</span></div></div>
+            <div class="report-row"><b>8</b><div><strong>Review dan next action</strong><span>Hanya bila relevan; lalu unduh/consult/program.</span></div></div>
+          </div>
+        </div>
+        <div class="callout"><span class="icon">!</span><div><strong>Potential Module dan minat tidak boleh bersaing secara visual.</strong>Screen pertama harus membuat Assigned Module dan level saat ini langsung terbaca.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Cara menulis kekuatan dan area perkembangan">
+      <div class="slide-inner">
+        <span class="eyebrow">Bahasa yang aman untuk parents</span>
+        <h2>Dari bukti soal menjadi narasi perkembangan</h2>
+        <div class="grid-2">
+          <article class="card green">
+            <h3>Ketika bukti terlihat konsisten</h3>
+            <p><strong>“Nara mampu mengenali urutan dan hubungan sebab-akibat dengan konsisten.”</strong></p>
+            <p class="muted">Kemampuan ini penting untuk menyusun instruksi dan memecahkan masalah. Melalui Scratch Jr, Nara akan mengubah urutan tersebut menjadi proyek interaktif.</p>
+          </article>
+          <article class="card yellow">
+            <h3>Ketika bukti belum konsisten</h3>
+            <p><strong>“Bukti pada keterampilan ini belum terlihat konsisten.”</strong></p>
+            <p class="muted">Anak akan mendapat latihan bertahap, contoh visual, serta kesempatan mencoba dan memperbaiki solusi dalam Assigned Module.</p>
+          </article>
+        </div>
+        <div class="callout blue"><span class="icon">A</span><div><strong>Rumus narasi:</strong> bukti yang terlihat → mengapa penting → kebutuhan perkembangan → aktivitas di Assigned Module → kompetensi yang dituju.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Band profil empat pilar">
+      <div class="slide-inner">
+        <span class="eyebrow">Cara membaca profil</span>
+        <h2>Band membantu komunikasi, bukan membuat threshold baru</h2>
+        <div class="grid-4">
+          <article class="card green"><span class="big-number">80–100</span><h3>Kekuatan Utama</h3><p>Bukti konsisten pada beberapa aktivitas.</p></article>
+          <article class="card blue"><span class="big-number">65–79</span><h3>Berkembang Baik</h3><p>Fondasi terlihat dan siap diperluas.</p></article>
+          <article class="card yellow"><span class="big-number">45–64</span><h3>Sedang Bertumbuh</h3><p>Mulai terlihat; perlu latihan terstruktur.</p></article>
+          <article class="card orange"><span class="big-number">0–44</span><h3>Perlu Pendampingan</h3><p>Dukungan bertahap tanpa label gagal.</p></article>
+        </div>
+        <div class="callout"><span class="icon">!</span><div><strong>Band ini hanya untuk penyajian profil.</strong>Ia tidak menggantikan aturan rekomendasi modul, routing Stage 2, atau status review Lv3.</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Pertanyaan yang sering ditanyakan parents">
+      <div class="slide-inner">
+        <span class="eyebrow">FAQ parents</span>
+        <h2>Pertanyaan yang paling sering muncul</h2>
+        <div class="faq">
+          <details open><summary>Kalau satu soal salah, apakah anak tidak mampu?</summary><p>Tidak. Itu hanya berarti bukti keterampilan belum terlihat pada soal tersebut. Interpretasi harus memakai pola beberapa soal.</p></details>
+          <details open><summary>Kalau anak memilih Python, apakah langsung belajar Python?</summary><p>Belum tentu. Stage 3 menentukan tujuan path; Assigned Module tetap mengikuti usia dan bukti kesiapan dari Stage 1.</p></details>
+          <details open><summary>Mengapa anak seusia bisa mendapat modul berbeda?</summary><p>Karena Stage 1 memadukan kebijakan usia dengan profil kemampuan dan validator modul yang berbeda untuk tiap anak.</p></details>
+          <details open><summary>Apakah BASIC — Lv2 selalu lebih baik daripada Lv1?</summary><p>Bukan label “lebih pintar”. Level menunjukkan titik mulai belajar yang paling sesuai di dalam satu modul tertentu.</p></details>
+          <details open><summary>Apakah semua anak bisa mendapat Lv3?</summary><p>Lv3 tidak otomatis. Hanya kandidat khusus yang masuk portfolio review dan persetujuan Academic Team.</p></details>
+          <details open><summary>Apakah minat anak tetap digunakan jika assignment berbeda?</summary><p>Ya. Minat dipakai sebagai tema proyek dan arah Learning Path, sambil fondasi yang dibutuhkan dibangun terlebih dahulu.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Ringkasan akhir">
+      <div class="slide-inner">
+        <span class="eyebrow">Ringkasan</span>
+        <h2>Empat stage, satu rekomendasi yang dapat dijelaskan</h2>
+        <div class="grid-4">
+          <article class="card blue"><span class="icon-box">1A</span><h3>Melihat fondasi</h3><p>Empat pilar, 20 aktivitas, pola kemampuan awal.</p></article>
+          <article class="card green"><span class="icon-box">1B</span><h3>Menguatkan potensi</h3><p>Subset adaptif untuk memvalidasi module readiness.</p></article>
+          <article class="card yellow"><span class="icon-box">2</span><h3>Menentukan titik mulai</h3><p>Tantangan praktis pada Assigned Module dan level yang terbukti.</p></article>
+          <article class="card pink"><span class="icon-box">3</span><h3>Memberi arah minat</h3><p>Learning Path, konteks proyek, dan tujuan perjalanan.</p></article>
+        </div>
+        <div class="callout green"><span class="icon">✓</span><div><strong>Prinsip akhirnya:</strong> kemampuan menentukan titik mulai, usia menjaga pengalaman tetap aman, dan minat memberi alasan kuat untuk terus belajar.</div></div>
+      </div>
+    </section>
+
+    <section class="slide cover" data-title="Penutup">
+      <div class="slide-inner">
+        <div class="brand-row">
+          <div class="brand"><img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo" style="height:38px; width:auto;"></div>
+          <div class="doc-meta">Parent Guide · Placement Test<br>Evidence-based · Age-appropriate</div>
+        </div>
+        <span class="cover-kicker">Kemampuan × kesiapan × minat</span>
+        <h2>Setiap anak boleh punya tujuan besar.<br>Tugas placement adalah menemukan langkah pertamanya.</h2>
+        <p class="lead">Hasil yang baik tidak hanya memberi rekomendasi, tetapi membuat parents memahami mengapa rekomendasi itu relevan sekarang dan ke mana perjalanan anak dapat berkembang.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Sumber dan catatan">
+      <div class="slide-inner">
+        <span class="eyebrow">Lampiran sumber</span>
+        <h2>Konten deck dapat dilacak ke sumber aktif</h2>
+        <div class="source-list">
+          <div class="source-item"><strong>Matriks analisis aktivitas</strong><code>report-summary.html — 139 aktivitas Stage 1–2, fokus skill, makna keberhasilan, area perkembangan, dan sinyal report.</code></div>
+          <div class="source-item"><strong>Bank soal lengkap</strong><code>placement-test-question-bank.html — 169 entri Junior, Kids, dan Teens; termasuk 30 pertanyaan Stage 3 non-scored.</code></div>
+          <div class="source-item"><strong>Kontrak routing dan result aktif</strong><code>PRD-placement-test.md — kebijakan usia, Potential vs Assigned Module, Stage 2, Interest Confirmation, Learning Path, dan result hierarchy.</code></div>
+        </div>
+        <div class="callout blue"><span class="icon">i</span><div><strong>Cakupan deck:</strong> contoh dipilih untuk menunjukkan variasi bentuk dan tujuan pengukuran. Bank soal lengkap tetap menjadi referensi rinci per aktivitas.</div></div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Navigasi slide">
+    <div class="control-group">
+      <button class="control-button" id="overviewButton" type="button" aria-label="Buka daftar slide" title="Daftar slide (O)">☷</button>
+      <button class="control-button" id="previousButton" type="button" aria-label="Slide sebelumnya" title="Sebelumnya (←)">←</button>
+      <button class="control-button" id="nextButton" type="button" aria-label="Slide berikutnya" title="Berikutnya (→)">→</button>
+    </div>
+    <div class="progress-shell" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="counter" id="counter" aria-live="polite">1 / 1</div>
+  </nav>
+
+  <aside class="overview" id="overview" aria-label="Daftar seluruh slide" aria-hidden="true">
+    <div class="overview-head">
+      <h2>Daftar slide</h2>
+      <button class="control-button" id="closeOverviewButton" type="button" aria-label="Tutup daftar slide">×</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid"></div>
+  </aside>
+
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll(".slide")];
+      const progressBar = document.getElementById("progressBar");
+      const counter = document.getElementById("counter");
+      const previousButton = document.getElementById("previousButton");
+      const nextButton = document.getElementById("nextButton");
+      const overview = document.getElementById("overview");
+      const overviewGrid = document.getElementById("overviewGrid");
+      let current = 0;
+      let touchStartX = 0;
+
+      slides.forEach((slide, index) => {
+        const number = document.createElement("span");
+        number.className = "slide-number";
+        number.textContent = String(index + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+        slide.appendChild(number);
+
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "overview-item";
+        item.innerHTML = "<b>SLIDE " + String(index + 1).padStart(2, "0") + "</b><span>" + (slide.dataset.title || "Tanpa judul") + "</span>";
+        item.addEventListener("click", () => {
+          show(index);
+          closeOverview();
+        });
+        overviewGrid.appendChild(item);
+      });
+
+      function show(index, updateHash = true) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, slideIndex) => {
+          slide.classList.toggle("active", slideIndex === current);
+          slide.setAttribute("aria-hidden", slideIndex === current ? "false" : "true");
+          if (slideIndex === current) slide.scrollTop = 0;
+        });
+        previousButton.disabled = current === 0;
+        nextButton.disabled = current === slides.length - 1;
+        counter.textContent = (current + 1) + " / " + slides.length;
+        progressBar.style.width = ((current + 1) / slides.length * 100) + "%";
+        document.title = (slides[current].dataset.title || "Panduan Placement Test") + " — Kalananti";
+        if (updateHash) history.replaceState(null, "", "#slide-" + (current + 1));
+      }
+
+      function openOverview() {
+        overview.classList.add("open");
+        overview.setAttribute("aria-hidden", "false");
+        document.getElementById("closeOverviewButton").focus();
+      }
+      function closeOverview() {
+        overview.classList.remove("open");
+        overview.setAttribute("aria-hidden", "true");
+        document.getElementById("overviewButton").focus();
+      }
+
+      previousButton.addEventListener("click", () => show(current - 1));
+      nextButton.addEventListener("click", () => show(current + 1));
+      document.getElementById("overviewButton").addEventListener("click", openOverview);
+      document.getElementById("closeOverviewButton").addEventListener("click", closeOverview);
+      overview.addEventListener("click", (event) => { if (event.target === overview) closeOverview(); });
+
+      document.addEventListener("keydown", (event) => {
+        if (overview.classList.contains("open")) {
+          if (event.key === "Escape") closeOverview();
+          return;
+        }
+        if (["ArrowRight", "PageDown", " "].includes(event.key)) { event.preventDefault(); show(current + 1); }
+        if (["ArrowLeft", "PageUp"].includes(event.key)) { event.preventDefault(); show(current - 1); }
+        if (event.key === "Home") { event.preventDefault(); show(0); }
+        if (event.key === "End") { event.preventDefault(); show(slides.length - 1); }
+        if (event.key.toLowerCase() === "o") openOverview();
+      });
+
+      document.addEventListener("touchstart", (event) => { touchStartX = event.changedTouches[0].clientX; }, { passive: true });
+      document.addEventListener("touchend", (event) => {
+        const delta = event.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(delta) > 55) show(current + (delta < 0 ? 1 : -1));
+      }, { passive: true });
+
+      window.addEventListener("hashchange", () => {
+        const match = location.hash.match(/slide-(\d+)/);
+        if (match) show(Number(match[1]) - 1, false);
+      });
+
+      const initial = location.hash.match(/slide-(\d+)/);
+      show(initial ? Number(initial[1]) - 1 : 0, false);
+    })();
+  </script>
+</body>
+</html>
