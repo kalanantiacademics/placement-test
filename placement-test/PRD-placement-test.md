@@ -321,20 +321,25 @@ Stage 1B selection for Teens is deterministic:
 
 ### 7.4 Question Attempt Limit, Question Timer, and Skip Policy
 
-Across all assessment applications (`junior-final-placement-test.html`, `kids-final-placement-test.html`, `teens.html`), question navigation and attempt state must strictly enforce the following global rules:
+Across all assessment applications (`junior-final-placement-test.html`, `kids-final-placement-test.html`, `teens.html`), question navigation and attempt state enforce the following rules:
 
-1. **Attempt Limit (Max 2 Attempts):**
-   - Every question (multiple choice or interactive) provides a maximum of **2 submission attempts**.
-   - **First Attempt Incorrect:** Displays feedback banner/status ("Belum tepat. Kesempatan tersisa: 1. Silakan coba lagi.") and allows the student to try 1 more time.
-   - **Second Attempt Incorrect:** Displays final feedback ("Kesempatan habis.") and automatically advances to the next question, recording **score 0** for that question.
+1. **Stage 1A & Stage 1B Multiple Choice Policy (1 Attempt / Single-Click Advance):**
+   - Questions in Stage 1A and Stage 1B are standard multiple-choice selections (Opsi A, B, C, D).
+   - Selecting any option immediately records the answer (correct = full score, incorrect = score 0) and advances to the next question.
+   - This ensures rapid, seamless progression (~3-5 minutes total) and prevents artificial score inflation via process of elimination.
+
+2. **Stage 2 Practical & Interactive Lab Policy (Max 2 Attempts / 1x Retry):**
+   - Practical challenges (Scratch Jr block sequences, maze routes, visual hierarchy builder, inspector lab, contrast lab, 3D rotation lab, Python code debugging) allow up to **2 submission attempts**.
+   - **First Attempt Incorrect:** Displays feedback/hints ("Belum tepat. Kesempatan tersisa: 1. Silakan coba lagi.") allowing the student to adjust parameters/blocks.
+   - **Second Attempt Incorrect:** Displays final feedback ("Kesempatan habis.") and automatically advances to the next question with **score 0**.
    - **Correct Submission (1st or 2nd attempt):** Records full/earned credit and advances to the next question.
 
-2. **Per-Question Timer (2-Minute Hard Limit):**
+3. **Per-Question Timer (2-Minute Hard Limit):**
    - Each question has a hard duration limit of **2 minutes (120 seconds)**.
    - A question timer controller tracks elapsed time for each question key.
    - If 120 seconds elapse without a final submission, the system auto-submits a timeout response and advances to the next question with **score 0**.
 
-3. **Inactivity Skip Policy (1-Minute Lock):**
+4. **Inactivity Skip Policy (1-Minute Lock):**
    - The "Lewati Soal" (Skip Question) action is **disabled / hidden for the first 60 seconds (1 minute)** of each question.
    - Once 60 seconds elapse, the "Lewati Soal" button becomes enabled and available for the student.
    - If the student clicks "Lewati Soal", the system confirms the skip, records **score 0** for that question, and advances to the next question.

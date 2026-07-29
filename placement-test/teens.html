@@ -5254,10 +5254,6 @@ try {
             const audioBtn = '';
             
             let optionsHtml = '';
-            const attemptState = (window._ptStage1AttemptState && window._ptStage1AttemptState.qIndex === state.currentQuestionIndex) ? window._ptStage1AttemptState : null;
-            if (attemptState && attemptState.message) {
-                optionsHtml += `<div class="command-error" style="grid-column:1/-1;margin-bottom:14px;background:#fff7ed;border-color:#fdba74;color:#9a3412;" aria-live="polite">${attemptState.message}</div>`;
-            }
             options.forEach((opt, idx) => {
                 let iconHtml = '';
                 let textHtml = opt;
@@ -5267,8 +5263,7 @@ try {
                 } else if(typeof opt === 'object' && !opt.icon) {
                     textHtml = opt.text;
                 }
-                const isWrong = attemptState && attemptState.wrongIndices.includes(idx);
-                optionsHtml += `<button class="option-btn ${isWrong ? 'is-wrong' : ''}" ${isWrong ? 'disabled style="opacity:0.4;border-color:#ef4444;background:#fef2f2;"' : ''} onclick="answerStage1(${idx})">${iconHtml}<span>${textHtml}</span>${isWrong ? '<br><small style="color:#ef4444;font-weight:700;">(Belum tepat)</small>' : ''}</button>`;
+                optionsHtml += `<button class="option-btn" onclick="answerStage1(${idx})">${iconHtml}<span>${textHtml}</span></button>`;
             });
             
             let contentHtml = '';
@@ -5803,10 +5798,6 @@ try {
             const questionText = useAdvancedBank ? q.text.teens : q.text;
             
             let optionsHtml = '';
-            const attemptState1B = (window._ptStage1BAttemptState && window._ptStage1BAttemptState.qIndex === state.currentQuestionIndex) ? window._ptStage1BAttemptState : null;
-            if (attemptState1B && attemptState1B.message) {
-                optionsHtml += `<div class="command-error" style="grid-column:1/-1;margin-bottom:14px;background:#fff7ed;border-color:#fdba74;color:#9a3412;" aria-live="polite">${attemptState1B.message}</div>`;
-            }
             const options = useAdvancedBank ? q.options.teens : q.options;
             options.forEach((opt, idx) => {
                 let iconHtml = '';
@@ -5819,8 +5810,7 @@ try {
                 } else {
                     iconHtml = `<div class="emoji-icon"><i class="fa-solid fa-code" style="font-size:2rem;color:#818CF8;"></i></div>`;
                 }
-                const isWrong = attemptState1B && attemptState1B.wrongIndices.includes(idx);
-                optionsHtml += `<button class="option-btn ${isWrong ? 'is-wrong' : ''}" ${isWrong ? 'disabled style="opacity:0.4;border-color:#ef4444;background:#fef2f2;"' : ''} onclick="answerStage1Advanced(${idx})">${iconHtml}<span>${textHtml}</span>${isWrong ? '<br><small style="color:#ef4444;font-weight:700;">(Belum tepat)</small>' : ''}</button>`;
+                optionsHtml += `<button class="option-btn" onclick="answerStage1Advanced(${idx})">${iconHtml}<span>${textHtml}</span></button>`;
             });
 
             let contentHtml = '';
@@ -6162,51 +6152,20 @@ try {
         // ────────────────────────────────────────────────────────────────────
 
         window.answerStage1 = function(selectedIndex) {
-            if (!window._ptStage1AttemptState || window._ptStage1AttemptState.qIndex !== state.currentQuestionIndex) {
-                window._ptStage1AttemptState = { qIndex: state.currentQuestionIndex, attempts: 0, wrongIndices: [], message: '' };
-            }
-            const attemptState = window._ptStage1AttemptState;
-            const q = stage1Questions[state.currentQuestionIndex];
-            const correctAns = typeof q.correctIndex === 'object' ? q.correctIndex[state.ageGroup] : q.correctIndex;
-
-            if (selectedIndex === -999) {
-                cancelTeensAutoAdvance();
-                stopQuestionTimer();
-                recordTeensStageEvidence('Stage 1A', state.currentQuestionIndex, q, selectedIndex, false, q.type || 'visual_selection');
-                window._ptStage1AttemptState = null;
-                advanceStage1Question(q.pillar);
-                return;
-            }
-
-            const isCorrect = selectedIndex === correctAns;
-            if (isCorrect) {
-                cancelTeensAutoAdvance();
-                stopQuestionTimer();
-                state.scores[q.pillar]++;
-                recordTeensStageEvidence('Stage 1A', state.currentQuestionIndex, q, selectedIndex, true, q.type || 'visual_selection');
-                window._ptStage1AttemptState = null;
-                advanceStage1Question(q.pillar);
-                return;
-            }
-
-            attemptState.attempts++;
-            attemptState.wrongIndices.push(selectedIndex);
-
-            if (attemptState.attempts < 2) {
-                attemptState.message = 'Jawaban belum tepat! Kamu punya 1 kesempatan lagi. Silakan coba pilihan lain.';
-                render();
-                return;
-            }
-
             cancelTeensAutoAdvance();
             stopQuestionTimer();
-            recordTeensStageEvidence('Stage 1A', state.currentQuestionIndex, q, selectedIndex, false, q.type || 'visual_selection');
-            window._ptStage1AttemptState = null;
-            advanceStage1Question(q.pillar);
-        };
 
-        function advanceStage1Question(prevPillar) {
+            const q = stage1Questions[state.currentQuestionIndex];
+            const correctAns = typeof q.correctIndex === 'object' ? q.correctIndex[state.ageGroup] : q.correctIndex;
+            const isCorrect = selectedIndex === correctAns;
+            recordTeensStageEvidence('Stage 1A', state.currentQuestionIndex, q, selectedIndex, isCorrect, q.type || 'visual_selection');
+            if (isCorrect) {
+                state.scores[q.pillar]++;
+            }
+            
+            const prevPillar = q.pillar;
             state.currentQuestionIndex++;
+            
             if (state.currentQuestionIndex >= stage1Questions.length) {
                 determineModule();
                 window.PlacementSync?.saveStage(1, {
@@ -8535,53 +8494,21 @@ try {
         }
 
         window.answerStage1Advanced = function(selectedIndex) {
-            if (!window._ptStage1BAttemptState || window._ptStage1BAttemptState.qIndex !== state.currentQuestionIndex) {
-                window._ptStage1BAttemptState = { qIndex: state.currentQuestionIndex, attempts: 0, wrongIndices: [], message: '' };
-            }
-            const attemptState = window._ptStage1BAttemptState;
-
+            stopQuestionTimer();
             const useAdvancedBank = state.stage1AdvancedQueue && state.stage1AdvancedQueue.length > 0;
             const questions = useAdvancedBank ? state.stage1AdvancedQueue : (legacyModuleQuestions[state.recommendedModule] || legacyModuleQuestions['Scratch']);
             const q = questions[state.currentQuestionIndex];
             const correctAns = useAdvancedBank && typeof q.correctIndex === 'object' ? q.correctIndex[state.ageGroup] : q.correctIndex;
-
-            if (selectedIndex === -999) {
-                stopQuestionTimer();
-                recordTeensStageEvidence('Stage 1B', state.currentQuestionIndex, q, selectedIndex, false, 'visual_selection');
-                window._ptStage1BAttemptState = null;
-                advanceStage1BQuestion(questions, useAdvancedBank);
-                return;
-            }
-
             const isCorrect = selectedIndex === correctAns;
+            recordTeensStageEvidence('Stage 1B', state.currentQuestionIndex, q, selectedIndex, isCorrect, 'visual_selection');
+
             if (isCorrect) {
-                stopQuestionTimer();
                 state.stage1AdvancedScore++;
                 if (useAdvancedBank && q.pillar) {
                     state.stage1AdvancedPillarScores[q.pillar]++;
                 }
-                recordTeensStageEvidence('Stage 1B', state.currentQuestionIndex, q, selectedIndex, true, 'visual_selection');
-                window._ptStage1BAttemptState = null;
-                advanceStage1BQuestion(questions, useAdvancedBank);
-                return;
             }
-
-            attemptState.attempts++;
-            attemptState.wrongIndices.push(selectedIndex);
-
-            if (attemptState.attempts < 2) {
-                attemptState.message = 'Jawaban belum tepat! Kamu punya 1 kesempatan lagi. Silakan coba pilihan lain.';
-                render();
-                return;
-            }
-
-            stopQuestionTimer();
-            recordTeensStageEvidence('Stage 1B', state.currentQuestionIndex, q, selectedIndex, false, 'visual_selection');
-            window._ptStage1BAttemptState = null;
-            advanceStage1BQuestion(questions, useAdvancedBank);
-        };
-
-        function advanceStage1BQuestion(questions, useAdvancedBank) {
+            
             state.currentQuestionIndex++;
             if (state.currentQuestionIndex >= questions.length) {
                 if (useAdvancedBank) {
