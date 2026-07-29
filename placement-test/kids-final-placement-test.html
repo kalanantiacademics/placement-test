@@ -1651,7 +1651,7 @@
     });
     const assignedModule = String(customData.assignedModule || 'Belum ditentukan');
     const potentialModule = String(customData.potentialModule || '');
-    const level = String(customData.level || 'FOUNDATIONAL — Lv1');
+    const level = String(customData.level || 'Level 1');
     const lv3Candidate = Boolean(customData.lv3Candidate);
     const pathName = String(customData.pathName || 'Interactive Creator Path');
     const learningModules = safeArray(customData.learningModules).length
@@ -12869,7 +12869,7 @@ window.PlacementSync?.configure();
               function finishAssessment(highestMastery, extraFlag = '') {
                   const stage1 = readStage1Prerequisites();
                   adaptiveState.highestConfirmedMastery = Math.max(1, highestMastery);
-                  adaptiveState.automaticPlacement = highestMastery <= 3 ? 'FOUNDATIONAL — Lv1' : 'BASIC — Lv2';
+                  adaptiveState.automaticPlacement = highestMastery <= 3 ? 'Level 1' : 'Level 2';
                   if (extraFlag) addUnique(adaptiveState.reviewFlags, extraFlag);
                   if (highestMastery >= 6) addUnique(adaptiveState.reviewFlags, 'advanced_evidence_recorded');
                   if (stage1.assignedModule !== 'Scratch') addUnique(adaptiveState.reviewFlags, 'assessment_module_mismatch');
@@ -13946,16 +13946,16 @@ window.PlacementSync?.configure();
 
               const portfolioCopy = {
                   junior: {
-                      status: "Pilihan ini belum langsung membuatmu masuk Lv3. Sambil menunggu penilaian berikutnya, hasilmu tetap BASIC — Lv2.",
+                      status: "Pilihan ini belum langsung membuatmu masuk Lv3. Sambil menunggu penilaian berikutnya, hasilmu tetap Level 2.",
                       title: "Siapkan satu karya buatanmu",
                       intro: "Kalau kamu punya karya lama, minta bantuan orang tua untuk menyiapkannya. Karyanya harus benar-benar pernah kamu buat.",
-                      noPortfolio: "Belum punya karya? Tidak apa-apa. Kamu tetap bisa mulai dari BASIC — Lv2 dan membuat karya baru sambil belajar."
+                      noPortfolio: "Belum punya karya? Tidak apa-apa. Kamu tetap bisa mulai dari Level 2 dan membuat karya baru sambil belajar."
                   },
                   kids: {
-                      status: "Pilihan minat ini belum menetapkan EMERGING — Lv3. Sebelum portfolio dinilai dan disetujui Academic Team, rekomendasi yang berlaku tetap BASIC — Lv2.",
+                      status: "Pilihan minat ini belum menetapkan EMERGING — Lv3. Sebelum portfolio dinilai dan disetujui Academic Team, rekomendasi yang berlaku tetap Level 2.",
                       title: "Saran persiapan portfolio",
                       intro: "Siapkan minimal satu proyek yang sebelumnya pernah kamu buat dan sesuai dengan modul pilihanmu.",
-                      noPortfolio: "Jika belum mempunyai portfolio atau tidak melanjutkan prosesnya, kamu tetap direkomendasikan mulai dari BASIC — Lv2."
+                      noPortfolio: "Jika belum mempunyai portfolio atau tidak melanjutkan prosesnya, kamu tetap direkomendasikan mulai dari Level 2."
                   }
               };
 
@@ -14327,13 +14327,13 @@ window.PlacementSync?.configure();
             potentialModule: "Scratch",
           },
           stage2: {
-            level: "FOUNDATIONAL — Lv1",
+            level: "Level 1",
             masteryHighest: 0,
             challengeCount: 0,
             submissionCount: 0,
             lv3Candidate: false,
             trail: [],
-            automaticPlacement: "FOUNDATIONAL — Lv1",
+            automaticPlacement: "Level 1",
           },
           stage3: {
             completed: false,
@@ -14384,8 +14384,8 @@ window.PlacementSync?.configure();
             digital: randomItem(scorePool),
           };
           const assignedLevel = randomItem([
-            "FOUNDATIONAL — Lv1",
-            "BASIC — Lv2",
+            "Level 1",
+            "Level 2",
           ]);
           const submissionId =
             String(params.get("qcSubmissionId") || "").trim() ||
@@ -14417,7 +14417,7 @@ window.PlacementSync?.configure();
             level: assignedLevel,
             automaticPlacement: assignedLevel,
             assessmentValidity: "valid",
-            masteryHighest: assignedLevel === "BASIC — Lv2" ? 2 : 1,
+            masteryHighest: assignedLevel === "Level 2" ? 2 : 1,
             challengeCount: 4,
             submissionCount: 4,
             lv3Candidate: false,
@@ -14878,7 +14878,7 @@ window.PlacementSync?.configure();
             (!state.stage2?.assessmentValidity && assigned === "Scratch");
           const candidate = stage2Valid && state.stage2?.lv3Candidate === true;
           const level = stage2Valid
-            ? state.stage2?.automaticPlacement || "FOUNDATIONAL — Lv1"
+            ? state.stage2?.automaticPlacement || "Level 1"
             : "MENUNGGU ASSESSMENT MODUL";
           const pathTarget =
             interest !== "Belum ditentukan" ? interest : potential || assigned;
@@ -14987,8 +14987,8 @@ window.PlacementSync?.configure();
 
           let whyLearnNow = "",
             prioritiesHtml = "";
-          if (level === "FOUNDATIONAL — Lv1") {
-            whyLearnNow = `FOUNDATIONAL — Lv1 memberikan ruang bagi ${esc(name)} untuk memahami konsep inti tanpa terburu-buru. Fondasi yang kuat membantu anak tidak hanya mengikuti contoh, tetapi secara bertahap memahami mengapa sebuah instruksi menghasilkan tindakan tertentu.`;
+          if (level === "Level 1") {
+            whyLearnNow = `Level 1 memberikan ruang bagi ${esc(name)} untuk memahami konsep inti tanpa terburu-buru. Fondasi yang kuat membantu anak tidak hanya mengikuti contoh, tetapi secara bertahap memahami mengapa sebuah instruksi menghasilkan tindakan tertentu.`;
             prioritiesHtml = `<ul><li>Menyusun langkah dalam urutan yang benar.</li><li>Memahami hubungan antara instruksi dan hasil.</li><li>Menggunakan perangkat dan antarmuka dengan lebih mandiri.</li></ul>`;
           } else {
             whyLearnNow = `${esc(name)} sudah siap bergerak dari aktivitas pengenalan menuju pembuatan proyek yang lebih terstruktur. Pembelajaran pada level ini membantu anak mengubah kemampuan yang sudah terlihat menjadi kebiasaan berpikir: merencanakan, mencoba, mengevaluasi hasil, dan memperbaiki proyek.`;
@@ -14997,12 +14997,12 @@ window.PlacementSync?.configure();
 
           let mainCopy = `${esc(name)} direkomendasikan memulai ${esc(assigned)} pada ${esc(level)}. Kekuatan utama terlihat pada ${esc(strongestName)}, dengan ${esc(devName)} sebagai fokus pengembangan berikutnya.`;
           if (candidate) {
-            mainCopy = `${esc(name)} menunjukkan performa yang sangat kuat pada assessment Kids. Penempatan saat ini adalah BASIC — Lv2, dan terpilih sebagai kandidat EMERGING — Lv3.`;
+            mainCopy = `${esc(name)} menunjukkan performa yang sangat kuat pada assessment Kids. Penempatan saat ini adalah Level 2, dan terpilih sebagai kandidat EMERGING — Lv3.`;
           }
 
           const badgeStatus = candidate
             ? '<span class="rc-badge-status lv3">Status: Kandidat EMERGING — Lv3</span>'
-            : level === "FOUNDATIONAL — Lv1"
+            : level === "Level 1"
               ? '<span class="rc-badge-status">Status: Direkomendasikan untuk membangun fondasi</span>'
               : '<span class="rc-badge-status">Status: Siap mengembangkan kemampuan melalui proyek</span>';
           const reportDate = new Intl.DateTimeFormat("id-ID", {
@@ -15085,10 +15085,10 @@ window.PlacementSync?.configure();
                 <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo" style="height:48px;">
                 <span class="kids-report-meta">PLACEMENT REPORT - KIDS 8–15<br>${reportDate} · USIA ${exactAge} TAHUN</span>
             </div>
-            <span class="kids-report-status">${candidate ? 'KANDIDAT REVIEW EMERGING — Lv3' : level === 'FOUNDATIONAL — Lv1' ? 'STATUS: DIREKOMENDASIKAN UNTUK MEMBANGUN FONDASI' : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK'}</span>
+            <span class="kids-report-status">${candidate ? 'KANDIDAT REVIEW EMERGING — Lv3' : level === 'Level 1' ? 'STATUS: DIREKOMENDASIKAN UNTUK MEMBANGUN FONDASI' : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK'}</span>
             <h1 style="font-size: clamp(1.4rem, 3.2vw, 2.1rem); font-family: 'Orbitron', sans-serif; margin: 16px 0 6px; font-weight: 800; text-shadow: 0 2px 8px rgba(4,26,55,0.3);">Profil Potensi dan Rekomendasi Belajar</h1>
             <div class="report-student-name" style="display:inline-block; max-width:100%; margin: 2px auto 14px; padding: 4px 18px; border-radius: 999px; background: rgba(249, 192, 19, 0.18); border: 1.5px solid rgba(249, 192, 19, 0.5); color: #f9c013; font-family: 'Orbitron', sans-serif; font-size: clamp(0.95rem, 2.2vw, 1.35rem); font-weight: 800; text-shadow: 0 2px 8px rgba(4,26,55,0.3); word-break: break-word;">${esc(name)}</div>
-            <div class="kids-report-placement"><span class="kids-module">${esc(assigned)}</span><span class="kids-level">${esc(candidate ? "BASIC — Lv2" : level)}</span></div>
+            <div class="kids-report-placement"><span class="kids-module">${esc(assigned)}</span><span class="kids-level">${esc(candidate ? "Level 2" : level)}</span></div>
             <p class="subtitle" style="max-width:800px; margin:0 auto; line-height:1.6;">${mainCopy}</p>
           </header>
 
@@ -15250,7 +15250,7 @@ window.PlacementSync?.configure();
               reportDate: new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
               assignedModule: assigned || "Scratch",
               potentialModule: potential || "",
-              level: level || "FOUNDATIONAL — Lv1",
+              level: level || "Level 1",
               lv3Candidate: Boolean(candidate),
               pathName: learningPath?.name || "Interactive Creator Path",
               learningModules: learningPath?.modules || ["Scratch", "Roblox Studio", "Python"],

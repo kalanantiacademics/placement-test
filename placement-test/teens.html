@@ -1650,7 +1650,7 @@
     });
     const assignedModule = String(customData.assignedModule || 'Belum ditentukan');
     const potentialModule = String(customData.potentialModule || '');
-    const level = String(customData.level || 'FOUNDATIONAL — Lv1');
+    const level = String(customData.level || 'Level 1');
     const lv3Candidate = Boolean(customData.lv3Candidate);
     const pathName = String(customData.pathName || 'Interactive Creator Path');
     const learningModules = safeArray(customData.learningModules).length
@@ -8968,7 +8968,7 @@ try {
         function finishPythonStage2() {
             const passedLevels = stage2State.trail.filter(item => item.finalSubmissionCorrect).map(item => item.difficulty);
             const mastery = passedLevels.length ? Math.max(...passedLevels) : 1;
-            const level = mastery <= 3 ? 'FOUNDATIONAL — Lv1' : 'BASIC — Lv2';
+            const level = mastery <= 3 ? 'Level 1' : 'Level 2';
             state.stage2Result = {
                 assignedModule: state.recommendedModule || 'Python',
                 level,
@@ -9129,7 +9129,7 @@ try {
             markTestCompleted();
             const result = state.stage2Result || {
                 assignedModule: state.recommendedModule || 'Python',
-                level: 'FOUNDATIONAL — Lv1',
+                level: 'Level 1',
                 masteryHighest: 1,
                 challengeCount: 0,
                 submissionCount: 0,
@@ -9194,8 +9194,8 @@ try {
             const development=pillarInfo[sortedPillars.at(-1)?.[0]||'digital'].label;
             const assignedModule=result.assignedModule||state.recommendedModule||'Python';
             const whyLevel=result.level.startsWith('FOUNDATIONAL')
-                ? `${studentName} direkomendasikan memulai dari FOUNDATIONAL — Lv1 agar konsep algoritma, struktur program, penggunaan variabel, kondisi, dan debugging dasar dapat dibangun secara bertahap. Fondasi ini penting sebelum mengerjakan proyek ${escapeResultText(assignedModule)} yang lebih kompleks.`
-                : `${studentName} telah menunjukkan kesiapan untuk BASIC — Lv2 melalui challenge praktis. Fokus berikutnya adalah membuat solusi yang reusable, menguji beberapa kemungkinan input, membaca error, dan memperbaiki kode secara mandiri.`;
+                ? `${studentName} direkomendasikan memulai dari Level 1 agar konsep algoritma, struktur program, penggunaan variabel, kondisi, dan debugging dasar dapat dibangun secara bertahap. Fondasi ini penting sebelum mengerjakan proyek ${escapeResultText(assignedModule)} yang lebih kompleks.`
+                : `${studentName} telah menunjukkan kesiapan untuk Level 2 melalui challenge praktis. Fokus berikutnya adalah membuat solusi yang reusable, menguji beberapa kemungkinan input, membaca error, dan memperbaiki kode secara mandiri.`;
             const teenMainCopy=result.lv3Candidate
                 ? `${studentName} menunjukkan performa yang kuat dan konsisten pada assessment Teens. Penempatan yang telah dikonfirmasi saat ini adalah ${result.level} pada ${escapeResultText(assignedModule)}.`
                 : `${studentName} direkomendasikan memulai ${escapeResultText(assignedModule)} pada ${result.level}. Kekuatan paling terlihat berada pada ${strongest}, sementara ${development} menjadi fokus perkembangan berikutnya.`;
@@ -9319,7 +9319,7 @@ try {
                     reportDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
                     assignedModule: state.stage2Result?.assignedModule || state.recommendedModule || 'Python',
                     potentialModule: state.potentialModule || '',
-                    level: state.stage2Result?.level || state.recommendedLevel || 'FOUNDATIONAL — Lv1',
+                    level: state.stage2Result?.level || state.recommendedLevel || 'Level 1',
                     lv3Candidate: state.stage2Result?.lv3Candidate === true,
                     pathName: state.learning_path_name || 'Interactive Creator Path',
                     learningModules: state.learning_path_modules || ['Scratch', 'Roblox Studio', 'Python'],
@@ -9413,9 +9413,9 @@ try {
                 state.exactAge = 16;
                 state.scores = { logic: 4, creativity: 3, spatial: 5, digital: 3 };
                 state.recommendedModule = 'Python';
-                state.recommendedLevel = 'FOUNDATIONAL — Lv1';
+                state.recommendedLevel = 'Level 1';
                 state.stage2Result = {
-                    level: 'FOUNDATIONAL — Lv1',
+                    level: 'Level 1',
                     assignedModule: 'Python',
                     lv3Candidate: false
                 };

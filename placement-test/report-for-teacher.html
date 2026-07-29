@@ -893,7 +893,7 @@
                     day: 'numeric', month: 'long', year: 'numeric'
                 });
                 const assignedModule = String(customData.assignedModule || params.get('module') || 'Python');
-                const level = String(customData.level || params.get('level') || 'FOUNDATIONAL — Lv1');
+                const level = String(customData.level || params.get('level') || 'Level 1');
                 const pathName = String(customData.pathName || params.get('path') || 'Interactive Creator Path');
                 const lv3Candidate = Boolean(customData.lv3Candidate || params.get('lv3') === 'true');
                 const evidence = customData.assessmentEvidence || {};
@@ -1015,8 +1015,8 @@
                 }).join('');
 
                 const whyLevelText = level.startsWith('FOUNDATIONAL')
-                    ? `${escapeHtml(name)} ditempatkan pada FOUNDATIONAL — Lv1 untuk memastikan fondasi pemikiran komputasional (logika, variabel, dan percabangan) benar-benar kokoh sebelum melangkah ke pembuatan proyek ${escapeHtml(assignedModule)} yang lebih bebas.`
-                    : `${escapeHtml(name)} ditempatkan pada BASIC — Lv2 karena telah menunjukkan kesiapan praktis pada tantangan awal. Fokus pendampingan teacher adalah melatih kemandirian siswa dalam menyelesaikan masalah tanpa terlalu banyak petunjuk teknis.`;
+                    ? `${escapeHtml(name)} ditempatkan pada Level 1 untuk memastikan fondasi pemikiran komputasional (logika, variabel, dan percabangan) benar-benar kokoh sebelum melangkah ke pembuatan proyek ${escapeHtml(assignedModule)} yang lebih bebas.`
+                    : `${escapeHtml(name)} ditempatkan pada Level 2 karena telah menunjukkan kesiapan praktis pada tantangan awal. Fokus pendampingan teacher adalah melatih kemandirian siswa dalam menyelesaikan masalah tanpa terlalu banyak petunjuk teknis.`;
 
                 const studentReason = String(evidence.stage3?.reason || 'Suka membuat proyek interaktif dan berminat mengembangkan logika koding.');
 

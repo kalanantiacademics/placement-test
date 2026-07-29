@@ -432,24 +432,36 @@ function buildPdfHtml_(row, payload) {
   </body></html>`;
 }
 
+function formatCleanLevel_(levelStr) {
+  if (!levelStr) return '-';
+  const str = String(levelStr).trim();
+  if (!str || str === '-') return '-';
+  if (/(lv1|level\s*1|foundational)/i.test(str)) return 'Level 1';
+  if (/(lv2|level\s*2|basic)/i.test(str)) return 'Level 2';
+  if (/(lv3|level\s*3|intermediate)/i.test(str)) return 'Level 3';
+  if (/(lv4|level\s*4|advanced)/i.test(str)) return 'Level 4';
+  return str.replace(/^(FOUNDATIONAL|BASIC|INTERMEDIATE|ADVANCED)\s*[—\-]\s*/i, '');
+}
+
 function buildEmailBody_(row, pdfUrl, payload) {
   const result = (payload && (payload.result || payload)) || {};
   const studentName = escapeHtml_(row.student_name || 'Siswa');
   const submissionId = escapeHtml_(row.submission_id || '-');
   const assignedModule = escapeHtml_(result.assignedModule || row.assigned_module || '-');
   const potentialModule = escapeHtml_(result.potentialModule || row.potential_module || '-');
-  const assignedLevel = escapeHtml_(result.assignedLevel || result.level || row.assigned_level || '-');
+  const rawAssignedLevel = result.assignedLevel || result.level || row.assigned_level || '-';
+  const assignedLevel = escapeHtml_(formatCleanLevel_(rawAssignedLevel));
   const isCandidate = result.lv3Candidate === true || row.lv3_candidate === true || String(row.lv3_candidate).toLowerCase() === 'true';
   const safePdfUrl = escapeHtml_(pdfUrl || '#');
   const summaryText = escapeHtml_(result.summary || 'Placement test telah diselesaikan. Rekomendasi ini menjadi titik awal perjalanan belajar siswa.');
 
   const statusText = isCandidate
-    ? 'KANDIDAT REVIEW EMERGING — Lv3'
-    : (assignedLevel.includes('FOUNDATIONAL')
+    ? 'KANDIDAT REVIEW EMERGING — Level 3'
+    : (assignedLevel === 'Level 1'
       ? 'STATUS: SIAP MEMBANGUN FONDASI'
       : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK');
 
-  const displayLevel = isCandidate ? 'KANDIDAT REVIEW — Lv3' : assignedLevel;
+  const displayLevel = isCandidate ? 'Level 3 (Kandidat Review)' : assignedLevel;
 
   const lv3InstructionSection = isCandidate ? `
     <!-- SPECIAL INSTRUCTION CARD FOR LEVEL 3 CANDIDATES -->

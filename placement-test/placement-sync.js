@@ -1497,7 +1497,7 @@
     });
     const assignedModule = String(customData.assignedModule || 'Belum ditentukan');
     const potentialModule = String(customData.potentialModule || '');
-    const level = String(customData.level || 'FOUNDATIONAL — Lv1');
+    const level = String(customData.level || 'Level 1');
     const lv3Candidate = Boolean(customData.lv3Candidate);
     const pathName = String(customData.pathName || 'Interactive Creator Path');
     const learningModules = safeArray(customData.learningModules).length
