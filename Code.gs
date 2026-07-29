@@ -1118,7 +1118,7 @@ function getBranchResults_(operation) {
       student_age: row[SESSION_HEADERS.indexOf('exact_age')] || '-',
       audience: row[SESSION_HEADERS.indexOf('audience')] || '-',
       parent_email: row[SESSION_HEADERS.indexOf('parent_email')] || '-',
-      branch: studentBranch || 'Online',
+      branch: studentBranch || '-',
       child_confirmed: row[SESSION_HEADERS.indexOf('child_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('child_confirmed')] === true,
       guardian_confirmed: row[SESSION_HEADERS.indexOf('guardian_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('guardian_confirmed')] === true,
       assigned_module: row[SESSION_HEADERS.indexOf('assigned_module')] || '-',
