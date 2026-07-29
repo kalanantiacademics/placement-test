@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Report Summary — Analisis Soal Placement Test Kalananti</title>
+  <style>
+    :root {
+      --navy: #153f73;
+      --navy-deep: #0d2f59;
+      --blue: #28679f;
+      --sky: #eaf4ff;
+      --paper: #ffffff;
+      --ink: #17283e;
+      --muted: #60748b;
+      --line: #d6e2ee;
+      --yellow: #ffc617;
+      --yellow-soft: #fff8d9;
+      --green: #188866;
+      --green-soft: #e9f8f2;
+      --orange: #c87314;
+      --orange-soft: #fff4e7;
+      --pink: #b14372;
+      --pink-soft: #ffeff6;
+      --shadow: 0 16px 42px rgba(22, 63, 113, .11);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(255, 198, 23, .18), transparent 22rem),
+        linear-gradient(180deg, #e8f3ff 0, #f7fbff 36rem, #f2f6fa 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    .shell { width: min(1480px, calc(100% - 32px)); margin: 0 auto; }
+    .hero { padding: 28px 0 76px; }
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      min-height: 310px;
+      padding: 36px 40px 84px;
+      border-radius: 30px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 88% 26%, rgba(255, 198, 23, .22), transparent 18rem),
+        radial-gradient(circle at 75% 120%, rgba(66, 173, 210, .32), transparent 24rem),
+        linear-gradient(135deg, var(--navy-deep), var(--navy) 54%, #246f9a);
+      box-shadow: 0 24px 60px rgba(13, 47, 89, .22);
+    }
+    .hero-panel::before, .hero-panel::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 50%;
+    }
+    .hero-panel::before { width: 340px; height: 340px; right: -80px; top: -130px; }
+    .hero-panel::after { width: 220px; height: 220px; right: 210px; bottom: -170px; }
+    .brand-row { display: flex; justify-content: space-between; gap: 24px; align-items: center; }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      border-radius: 14px;
+      color: var(--navy);
+      background: #fff;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+    .brand-mark {
+      display: grid;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--navy);
+      background: var(--yellow);
+      font-size: .86rem;
+    }
+    .doc-meta { text-align: right; color: #dbeaff; font-size: .76rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .kicker {
+      display: inline-flex;
+      margin-top: 30px;
+      padding: 7px 11px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,.09);
+      color: #e8f4ff;
+      font-size: .74rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    h1 { max-width: 900px; margin: 14px 0 12px; font-size: clamp(2.25rem, 5vw, 4rem); line-height: .98; letter-spacing: -.052em; }
+    .hero-copy { max-width: 890px; margin: 0; color: #ddecfa; font-size: clamp(.95rem, 1.4vw, 1.1rem); }
+    .stats {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: -49px 24px 0;
+    }
+    .stat {
+      padding: 18px 20px;
+      border: 1px solid rgba(214, 226, 238, .85);
+      border-radius: 19px;
+      background: rgba(255,255,255,.96);
+      box-shadow: var(--shadow);
+    }
+    .stat b { display: block; color: var(--navy); font-size: 1.9rem; line-height: 1; }
+    .stat span { display: block; margin-top: 7px; color: var(--muted); font-size: .75rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .main { margin-top: 14px; padding-bottom: 80px; }
+    .method-grid {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, 1fr);
+      gap: 14px;
+      margin: 22px 0 26px;
+    }
+    .method-card {
+      padding: 19px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+    }
+    .method-card.primary { border-color: #a9cceb; background: linear-gradient(145deg, #edf7ff, #fff); }
+    .method-card .number {
+      display: grid;
+      width: 33px;
+      height: 33px;
+      place-items: center;
+      margin-bottom: 13px;
+      border-radius: 11px;
+      color: #fff;
+      background: var(--navy);
+      font-weight: 900;
+    }
+    .method-card h2 { margin: 0 0 6px; color: var(--navy); font-size: 1rem; }
+    .method-card p { margin: 0; color: var(--muted); font-size: .82rem; }
+    .guardrail {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 15px;
+      align-items: start;
+      margin: 0 0 22px;
+      padding: 17px 19px;
+      border: 1px solid #ecd67a;
+      border-radius: 18px;
+      background: var(--yellow-soft);
+      color: #6b5614;
+    }
+    .guardrail strong { display: block; margin-bottom: 2px; color: #634d07; }
+    .guardrail .icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--navy);
+      background: var(--yellow);
+      font-weight: 950;
+    }
+    .toolbar-wrap {
+      position: sticky;
+      z-index: 20;
+      top: 10px;
+      margin-bottom: 17px;
+      padding: 14px;
+      border: 1px solid rgba(214, 226, 238, .92);
+      border-radius: 21px;
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.6fr) repeat(3, minmax(130px, .65fr)) auto;
+      gap: 9px;
+    }
+    .field {
+      min-height: 45px;
+      width: 100%;
+      padding: 0 13px;
+      border: 1px solid #cbd9e6;
+      border-radius: 12px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 700;
+    }
+    .field:focus { outline: 3px solid rgba(40,103,159,.15); border-color: var(--blue); }
+    .action-menu { display: flex; gap: 8px; }
+    .btn {
+      min-height: 45px;
+      padding: 0 14px;
+      border: 1px solid #cbd9e6;
+      border-radius: 12px;
+      color: var(--navy);
+      background: #fff;
+      cursor: pointer;
+      font-size: .78rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .btn:hover { border-color: var(--blue); background: var(--sky); }
+    .btn.primary { border-color: var(--navy); color: #fff; background: var(--navy); }
+    .toolbar-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 11px;
+      padding: 0 3px;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 700;
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 7px; }
+    .legend span, .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .legend i { width: 8px; height: 8px; border-radius: 50%; }
+    .legend .good i { background: var(--green); }
+    .legend .grow i { background: var(--orange); }
+    .legend .interest i { background: var(--pink); }
+    .table-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: 0 10px 28px rgba(22,63,113,.065);
+    }
+    .table-scroll { overflow: auto; max-height: calc(100vh - 195px); }
+    table { width: 100%; min-width: 1240px; border-collapse: separate; border-spacing: 0; }
+    thead { position: sticky; z-index: 5; top: 0; }
+    th {
+      padding: 13px 15px;
+      border-bottom: 1px solid #bed1e2;
+      color: #fff;
+      background: var(--navy);
+      font-size: .7rem;
+      letter-spacing: .065em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    th:nth-child(1) { width: 130px; }
+    th:nth-child(2) { width: 290px; }
+    th:nth-child(3) { width: 230px; }
+    th:nth-child(4), th:nth-child(5) { width: 245px; }
+    td {
+      vertical-align: top;
+      padding: 15px;
+      border-bottom: 1px solid #e2eaf2;
+      background: #fff;
+      font-size: .79rem;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:hover td { background: #f9fcff; }
+    .identity { display: grid; gap: 7px; }
+    .identity strong { color: var(--navy); font-size: .84rem; }
+    .identity small { color: var(--muted); font-weight: 750; }
+    .badge.audience { width: fit-content; color: #fff; background: var(--blue); }
+    .badge.stage { color: var(--navy); background: var(--sky); }
+    .badge.pillar { color: #594508; background: var(--yellow-soft); }
+    .badge.preference { color: var(--pink); background: var(--pink-soft); }
+    .focus { margin: 0 0 6px; color: var(--navy); font-size: .93rem; line-height: 1.25; }
+    .prompt { margin: 0; color: #465d75; }
+    details { margin-top: 9px; }
+    summary { color: var(--blue); cursor: pointer; font-size: .72rem; font-weight: 850; }
+    .answer-box {
+      margin-top: 8px;
+      padding: 10px 11px;
+      border: 1px solid #c9dceb;
+      border-radius: 10px;
+      color: #38526d;
+      background: #f6faff;
+      font-size: .73rem;
+    }
+    .answer-box ol { margin: 7px 0 0; padding-left: 19px; }
+    .answer-box li + li { margin-top: 3px; }
+    .skill { font-weight: 780; color: #304b67; }
+    .signal {
+      display: grid;
+      grid-template-columns: 25px 1fr;
+      gap: 8px;
+      line-height: 1.38;
+    }
+    .signal .mark {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 950;
+    }
+    .signal.good .mark { background: var(--green); }
+    .signal.grow .mark { background: var(--orange); }
+    .signal.interest .mark { background: var(--pink); }
+    .signal p { margin: 0; }
+    .report-copy {
+      padding: 11px 12px;
+      border-left: 4px solid #9bbbd8;
+      border-radius: 0 10px 10px 0;
+      color: #3e5872;
+      background: #f4f8fc;
+    }
+    .empty { display: none; padding: 60px 20px; text-align: center; color: var(--muted); }
+    .empty strong { display: block; margin-bottom: 5px; color: var(--navy); font-size: 1.05rem; }
+    .logic-panel {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .logic-card {
+      padding: 21px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+    }
+    .logic-card h2 { margin: 0 0 8px; color: var(--navy); font-size: 1.08rem; }
+    .logic-card p { margin: 0 0 13px; color: var(--muted); font-size: .82rem; }
+    .formula {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .formula li {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f7faff;
+      font-size: .78rem;
+    }
+    .formula b { color: var(--navy); }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .flow div {
+      position: relative;
+      padding: 13px;
+      border: 1px solid #cbdce9;
+      border-radius: 13px;
+      background: #f8fbfe;
+      font-size: .75rem;
+    }
+    .flow div:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      right: -10px;
+      top: 50%;
+      color: var(--blue);
+      font-weight: 950;
+      transform: translateY(-50%);
+    }
+    .flow b { display: block; margin-bottom: 3px; color: var(--navy); }
+    .toast {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      bottom: 22px;
+      padding: 11px 16px;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--navy-deep);
+      box-shadow: var(--shadow);
+      font-size: .8rem;
+      font-weight: 800;
+      transform: translate(-50%, 120px);
+      transition: transform .22s ease;
+    }
+    .toast.show { transform: translate(-50%, 0); }
+    footer.page-footer { padding: 30px 0 50px; color: #7390aa; font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-align: center; text-transform: uppercase; }
+    @media (max-width: 1080px) {
+      .method-grid { grid-template-columns: 1fr 1fr; }
+      .toolbar { grid-template-columns: 1.5fr 1fr 1fr; }
+      .action-menu { grid-column: 1 / -1; }
+      .logic-panel { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 20px, 1480px); }
+      .hero { padding-top: 10px; }
+      .hero-panel { min-height: 0; padding: 24px 20px 88px; border-radius: 0 0 25px 25px; }
+      .doc-meta { display: none; }
+      .stats { grid-template-columns: 1fr 1fr; margin-inline: 10px; }
+      .stat { padding: 15px; }
+      .method-grid { grid-template-columns: 1fr; }
+      .toolbar-wrap { position: relative; top: auto; }
+      .toolbar { grid-template-columns: 1fr; }
+      .action-menu { grid-column: auto; display: grid; grid-template-columns: 1fr 1fr; }
+      .toolbar-foot { align-items: flex-start; flex-direction: column; }
+      .table-scroll { max-height: none; overflow: visible; }
+      table, tbody { display: block; min-width: 0; }
+      thead { display: none; }
+      tr {
+        display: grid;
+        margin: 0 10px 13px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      tr:first-child { margin-top: 10px; }
+      td { display: block; padding: 13px; border-bottom: 1px solid #e1eaf1; }
+      td:last-child { border-bottom: 0; }
+      td::before {
+        display: block;
+        margin-bottom: 7px;
+        color: #7890a6;
+        font-size: .64rem;
+        font-weight: 900;
+        letter-spacing: .075em;
+        text-transform: uppercase;
+      }
+      td:nth-child(1)::before { content: "Identitas"; }
+      td:nth-child(2)::before { content: "Soal"; }
+      td:nth-child(3)::before { content: "Yang diuji"; }
+      td:nth-child(4)::before { content: "Jika memenuhi"; }
+      td:nth-child(5)::before { content: "Jika belum memenuhi"; }
+      td:nth-child(6)::before { content: "Sinyal untuk report"; }
+      .flow { grid-template-columns: 1fr; }
+      .flow div:not(:last-child)::after { content: "↓"; right: 14px; top: auto; bottom: -13px; }
+    }
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: #fff; }
+      .shell { width: 100%; }
+      .hero { padding: 0 0 12px; }
+      .hero-panel { min-height: 0; padding: 18px 20px; border-radius: 12px; box-shadow: none; }
+      h1 { font-size: 27px; }
+      .hero-copy, .kicker { font-size: 9px; }
+      .stats { margin: 8px 0 0; }
+      .stat { padding: 9px 12px; border-radius: 8px; box-shadow: none; }
+      .stat b { font-size: 18px; }
+      .method-grid, .guardrail, .toolbar-wrap, .logic-panel, footer.page-footer { display: none !important; }
+      .table-card { border-radius: 0; box-shadow: none; }
+      .table-scroll { max-height: none; overflow: visible; }
+      table { min-width: 0; font-size: 7.5pt; }
+      thead { position: static; }
+      th, td { padding: 6px; }
+      tr { break-inside: avoid; }
+      details:not([open]) > *:not(summary) { display: none; }
+      .answer-box { padding: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <div class="hero-panel">
+        <div class="brand-row">
+          <div class="brand"><span class="brand-mark">K</span> Kalananti <small>Academics</small></div>
+          <div class="doc-meta">Placement Test · Internal Analysis<br>27 Juli 2026</div>
+        </div>
+        <span class="kicker">Evidence-to-report reference</span>
+        <h1>Matriks Analisis Soal Placement Test</h1>
+        <p class="hero-copy">Pemetaan per jenjang dan per soal: kompetensi yang diuji, makna jawaban yang memenuhi kriteria, area perkembangan bila belum memenuhi, serta kalimat bukti yang aman dipakai di laporan orang tua.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>3</b><span>Jenjang</span></div>
+        <div class="stat"><b>139</b><span>Aktivitas Stage 1–2</span></div>
+        <div class="stat"><b>137</b><span>Bukti yang dinilai</span></div>
+        <div class="stat"><b>2</b><span>Preferensi non-scored</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell main">
+    <section class="method-grid" aria-label="Cara membaca stage">
+      <article class="method-card primary"><span class="number">1A</span><h2>Pemetaan fondasi</h2><p>Melihat keluasan empat pilar: Logika, Kreativitas, Spasial, dan Literasi Digital. Dipakai untuk profil kemampuan, bukan level kursus.</p></article>
+      <article class="method-card"><span class="number">1B</span><h2>Penguatan potensi</h2><p>Menguji lebih dalam pilar terpilih dan memvalidasi potensi modul. Pertanyaan preferensi tetap dipisahkan dari bukti kemampuan.</p></article>
+      <article class="method-card"><span class="number">2</span><h2>Batas penguasaan</h2><p>Tantangan praktis pada Assigned Module. Hasil akhirnya mengikuti routing adaptif menuju FOUNDATIONAL — Lv1 atau BASIC — Lv2.</p></article>
+      <article class="method-card"><span class="number">R</span><h2>Masuk ke report</h2><p>Ambil pola bukti terkuat dan area perkembangan yang berulang. Jangan mengambil diagnosis dari satu respons saja.</p></article>
+    </section>
+
+    <aside class="guardrail">
+      <span class="icon">!</span>
+      <div><strong>Aturan interpretasi yang aman</strong>Satu jawaban salah berarti “bukti pada keterampilan ini belum terlihat di soal tersebut”, bukan berarti anak tidak mampu. Gunakan minimal dua bukti yang konsisten dalam pilar atau batas tantangan, dan tetap gunakan mesin placement aktif untuk keputusan modul/level.</div>
+    </aside>
+
+    <section class="toolbar-wrap" aria-label="Filter dan ekspor">
+      <div class="toolbar">
+        <input class="field" id="searchInput" type="search" placeholder="Cari soal, fokus, keterampilan, atau kata kunci…" aria-label="Cari analisis">
+        <select class="field" id="audienceFilter" aria-label="Filter jenjang">
+          <option value="">Semua jenjang</option><option>Junior</option><option>Kids</option><option>Teens</option>
+        </select>
+        <select class="field" id="stageFilter" aria-label="Filter stage">
+          <option value="">Semua stage</option><option>Stage 1A</option><option>Stage 1B</option><option>Stage 2</option>
+        </select>
+        <select class="field" id="pillarFilter" aria-label="Filter pilar">
+          <option value="">Semua pilar</option>
+        </select>
+        <div class="action-menu">
+          <button class="btn primary" id="csvButton" type="button">Unduh CSV</button>
+          <button class="btn" id="jsonButton" type="button">Salin JSON</button>
+          <button class="btn" type="button" onclick="window.print()">Cetak</button>
+        </div>
+      </div>
+      <div class="toolbar-foot">
+        <span id="resultCount">Menampilkan 139 dari 139 aktivitas</span>
+        <div class="legend"><span class="good"><i></i> Bukti kekuatan</span><span class="grow"><i></i> Area perkembangan</span><span class="interest"><i></i> Preferensi</span></div>
+      </div>
+    </section>
+
+    <section class="table-card" aria-label="Tabel analisis per soal">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Jenjang & Stage</th>
+              <th>Soal / Aktivitas</th>
+              <th>Yang Diuji</th>
+              <th>Jika Memenuhi Kriteria</th>
+              <th>Jika Belum Memenuhi</th>
+              <th>Sinyal untuk Report</th>
+            </tr>
+          </thead>
+          <tbody id="analysisRows"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="emptyState"><strong>Tidak ada hasil yang cocok</strong>Coba kurangi filter atau gunakan kata pencarian lain.</div>
+    </section>
+
+    <section class="logic-panel">
+      <article class="logic-card">
+        <h2>Band deskriptif untuk profil pilar</h2>
+        <p>Band ini hanya untuk cara menyampaikan profil kepada orang tua; tidak menggantikan threshold rekomendasi modul atau routing Stage 2.</p>
+        <ul class="formula">
+          <li><b>80–100</b><span>Kekuatan Utama — bukti konsisten pada beberapa soal.</span></li>
+          <li><b>65–79</b><span>Berkembang Baik — fondasi terlihat dan siap diperluas.</span></li>
+          <li><b>45–64</b><span>Sedang Bertumbuh — mulai terlihat, perlu latihan terstruktur.</span></li>
+          <li><b>0–44</b><span>Perlu Pendampingan — butuh dukungan bertahap, bukan label gagal.</span></li>
+        </ul>
+      </article>
+      <article class="logic-card">
+        <h2>Alur mengambil summary ke report</h2>
+        <p>Urutan ini menjaga agar narasi tetap dapat dilacak ke respons siswa dan tidak mencampur fungsi antar-stage.</p>
+        <div class="flow">
+          <div><b>1. Kelompokkan</b>Jawaban Stage 1 menurut pilar dan focus skill.</div>
+          <div><b>2. Cari pola</b>Pilih kekuatan dan kebutuhan yang muncul konsisten.</div>
+          <div><b>3. Konfirmasi</b>Cocokkan dengan trail praktis Stage 2 dan Assigned Module.</div>
+          <div><b>4. Tulis report</b>Bukti → arti perkembangan → latihan pada modul.</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="page-footer">Created by Kalananti Academics · Source: active Junior, Kids, and Teens placement artifacts · 2026</footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script id="rawData" type="application/json">[{"id":"junior-stage-1a-01","audience":"Junior","stage":"Stage 1A","number":1,"kind":"scored","focus":"Efisiensi","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Robot harus pulang ke Rumah 🏠. Manakah urutan perintah yang aman agar tidak menabrak Pohon 🌳 atau masuk ke Air 🌊?","answer":"A. Bawah, Bawah, Kanan, Kanan","options":["Bawah, Bawah, Kanan, Kanan","Kanan, Kanan, Bawah, Bawah","Bawah, Kanan, Bawah, Kanan"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-02","audience":"Junior","stage":"Stage 1A","number":2,"kind":"scored","focus":"Pola","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Badan ulat ini terus bertambah panjang! 🟢 🟡 🟢 🟢 🟡 🟢 🟢 🟢 🟡 ... Apa DUA warna badannya yang selanjutnya?","answer":"A. Hijau lalu Hijau","options":["Hijau lalu Hijau","Kuning lalu Hijau","Hijau lalu Kuning"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-03","audience":"Junior","stage":"Stage 1A","number":3,"kind":"scored","focus":"Kondisi","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Mesin Jus: JIKA buahnya Merah ➔ Jus Manis. JIKA Kuning ➔ Jus Asam. JIKA Hijau ➔ Jus Pahit. Budi memasukkan Apel 🍎 lalu Lemon 🍋. Apa rasa jusnya berurutan?","answer":"A. Manis lalu Asam","options":["Manis lalu Asam","Asam lalu Manis","Manis lalu Pahit"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-04","audience":"Junior","stage":"Stage 1A","number":4,"kind":"scored","focus":"Looping","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Mesin Pembuat Kue Otomatis sedang menyala! Mesin diprogram untuk mengulang 2 KALI: mencetak 1 Kue Bintang ⭐ lalu 2 Kue Bulan 🌙. Urutan kue mana yang akan keluar di piring?","answer":"A. ⭐️ 🌙 🌙 ⭐️ 🌙 🌙","options":["⭐️ 🌙 🌙 ⭐️ 🌙 🌙","⭐️ ⭐️ 🌙 🌙 🌙 🌙","⭐️ 🌙 ⭐️ 🌙 ⭐️ 🌙"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-05","audience":"Junior","stage":"Stage 1A","number":5,"kind":"scored","focus":"Debugging","pillar":"Logika","difficulty":"hard","activityType":"multiple choice","prompt":"Budi ingin membuat roti isi selai dengan urutan yang benar (Selai berada di DALAM roti). Tapi Budi malah melakukan: (1) Taruh Roti, (2) Tutup dengan Roti lagi, (3) Baru Oles Selai di atasnya. Kenapa urutan ini salah?","answer":"A. Langkah 2 dan 3 Terbalik","options":["Langkah 2 dan 3 Terbalik","Langkah 1 dan 4 Terbalik","Semua urutan sudah benar"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-06","audience":"Junior","stage":"Stage 1A","number":6,"kind":"scored","focus":"Prediksi Visual","pillar":"Kreativitas","difficulty":"basic","activityType":"multiple choice","prompt":"Robot sedang direkam untuk animasi. Frame 1: Robot jongkok. Frame 2: Robot melompat tinggi. Apa yang harus terjadi di Frame 3 agar gerakannya tampak natural?","answer":"A. Mendarat kembali di tanah","options":["Mendarat kembali di tanah","Terbang ke luar angkasa","Langsung tidur","Menghilang tiba-tiba"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-07","audience":"Junior","stage":"Stage 1A","number":7,"kind":"scored","focus":"Layering","pillar":"Kreativitas","difficulty":"basic","activityType":"multiple choice","prompt":"Kamu membuat gambar karakter berlapis. Layer 1 (paling bawah): Wajah Kuning. Layer 2: Mata. Layer 3: Kacamata Hitam. Jika \"Kacamata\" digeser ke Layer 1, apa yang terjadi?","answer":"A. Kacamata tertutup oleh wajah kuning","options":["Kacamata tertutup oleh wajah kuning","Kacamata menjadi sangat besar","Mata ikut turun ke bawah","Kacamata tetap ada di depan wajah"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-08","audience":"Junior","stage":"Stage 1A","number":8,"kind":"scored","focus":"Estetika Warna","pillar":"Kreativitas","difficulty":"basic","activityType":"multiple choice","prompt":"Kamu menulis judul \"SELAMAT DATANG\" di atas gambar pemandangan laut yang sangat gelap. Agar tulisan paling mudah dibaca (kontras), warna teks apa yang harus dipakai?","answer":"A. Putih Terang","options":["Putih Terang","Hitam Pekat","Biru Tua","Abu-abu Gelap"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-09","audience":"Junior","stage":"Stage 1A","number":9,"kind":"scored","focus":"Animasi Frame","pillar":"Kreativitas","difficulty":"basic","activityType":"dnd","prompt":"Urutkan proses membuat karakter game dari awal sampai siap dimainkan! Seret kartu ke kotak bernomor.","answer":"Urutan benar: Sketsa bentuk karakter di kertas → Gambar dan warnai di komputer → Tambahkan kode agar bisa bergerak → Karakter siap dimainkan","options":[],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-10","audience":"Junior","stage":"Stage 1A","number":10,"kind":"scored","focus":"Layout UI","pillar":"Kreativitas","difficulty":"hard","activityType":"dnd","prompt":"Bantu susun layar menu utama game ini agar mudah dipakai oleh pemain baru (dari paling atas ke bawah)!","answer":"Urutan benar: Judul Game yang besar dan keren → Gambar Karakter Utama di tengah layar → Tombol PLAY dengan warna terang → Tombol Settings (Kecil di bawah)","options":[],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-11","audience":"Junior","stage":"Stage 1A","number":11,"kind":"scored","focus":"Rotasi","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Sebuah mobil mainan sedang menghadap ke arah KANAN. Jika mobil itu diputar berbalik arah (180 derajat), ke arah mana mobil itu menghadap sekarang?","answer":"A. Kiri (Berbalik arah)","options":["Kiri (Berbalik arah)","Kanan (Tidak berubah)","Atas (Maju lurus)","Bawah (Mundur)"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-12","audience":"Junior","stage":"Stage 1A","number":12,"kind":"scored","focus":"Perspektif","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Burung elang terbang sangat tinggi dan melihat sebuah rumah dari atas langit. Jika dilihat dari atas (Top-Down View), gambar rumah mana yang paling tepat?","answer":"A. Hanya terlihat atapnya saja","options":["Hanya terlihat atapnya saja","Terlihat atap dan pintu depan","Hanya terlihat jendela","Terlihat semua sisi rumah"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-13","audience":"Junior","stage":"Stage 1A","number":13,"kind":"scored","focus":"Koordinat","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Robot berada di titik (0, 0). Ia berjalan 3 langkah ke KANAN, lalu 2 langkah ke ATAS. Di manakah titik akhir robot sekarang?","answer":"A. Titik (3, 2)","options":["Titik (3, 2)","Titik (2, 3)","Titik (0, 5)","Titik (5, 0)"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-14","audience":"Junior","stage":"Stage 1A","number":14,"kind":"scored","focus":"Bangun Ruang","pillar":"Spasial","difficulty":"hard","activityType":"multiple choice","prompt":"Kamu punya kardus kubus besar. Kamu ingin mengisinya dengan kubus mainan kecil. Kardus itu muat 2 kubus mendatar, 2 kubus ke belakang, dan 2 kubus ke atas. Berapa total kubus mainan yang muat?","answer":"A. 8 Kotak kecil","options":["8 Kotak kecil","4 Kotak kecil","6 Kotak kecil","10 Kotak kecil"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-15","audience":"Junior","stage":"Stage 1A","number":15,"kind":"scored","focus":"Relasi","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Agar karakter dalam game tidak menembus dinding batu, pembuat game memasang area batas di dinding tersebut. Apa namanya?","answer":"A. Hitbox / Bounding Box","options":["Hitbox / Bounding Box","Portal Rahasia","Lem / Sticky Trap","Angin Penolak (Wind Area)"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-16","audience":"Junior","stage":"Stage 1A","number":16,"kind":"scored","focus":"Hardware & Input","pillar":"Literasi Digital","difficulty":"basic","activityType":"multiple choice","prompt":"Agar kamu bisa menggerakkan kursor (tanda panah) di layar dan mengklik tombol Start, alat/perangkat apa yang paling kamu butuhkan?","answer":"A. Mouse / Touchpad","options":["Mouse / Touchpad","Keyboard saja","Printer","Speaker"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-17","audience":"Junior","stage":"Stage 1A","number":17,"kind":"scored","focus":"Ikon UI","pillar":"Literasi Digital","difficulty":"basic","activityType":"multiple choice","prompt":"Saat kamu melihat ikon yang bentuknya seperti Roda Gigi (Gir) ⚙️ di sebuah aplikasi, menu apa yang biasanya akan terbuka saat ikon itu diklik?","answer":"A. Settings / Pengaturan","options":["Settings / Pengaturan","Save / Simpan File","Play Game","Keluar Aplikasi"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-18","audience":"Junior","stage":"Stage 1A","number":18,"kind":"scored","focus":"Struktur Data","pillar":"Literasi Digital","difficulty":"basic","activityType":"multiple choice","prompt":"Sebuah FOLDER ibarat tas untuk menyimpan banyak File. Manakah di bawah ini yang merupakan sebuah File Gambar yang biasanya berisi foto liburanmu?","answer":"A. foto_liburan.jpg","options":["foto_liburan.jpg","folder_baru","laporan.docx","game.exe"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-19","audience":"Junior","stage":"Stage 1A","number":19,"kind":"scored","focus":"Troubleshooting","pillar":"Literasi Digital","difficulty":"basic","activityType":"multiple choice","prompt":"Tiba-tiba layar komputermu tidak mau bergerak sama sekali saat mouse-nya digeser. Apa langkah PERTAMA yang paling masuk akal untuk kamu periksa?","answer":"A. Periksa sambungan kabel/USB Mouse","options":["Periksa sambungan kabel/USB Mouse","Bongkar layar monitor","Langsung mematikan listrik rumah","Mengganti mesin komputer"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1a-20","audience":"Junior","stage":"Stage 1A","number":20,"kind":"scored","focus":"File System","pillar":"Literasi Digital","difficulty":"hard","activityType":"multiple choice","prompt":"Kamu baru saja mengunduh (download) gambar robot dari internet. Biasanya, gambar tersebut akan otomatis tersimpan di dalam folder apa di komputermu?","answer":"A. Folder Downloads","options":["Folder Downloads","Folder Recycle Bin (Tempat Sampah)","Folder Music","Folder Fonts"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-01","audience":"Junior","stage":"Stage 1B","number":1,"kind":"scored","focus":"Rute Bersyarat","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Kelinci harus mengambil KUNCI KUNING terlebih dahulu agar pintu gerbang menuju wortel bisa terbuka. Rute mana yang benar?","answer":"A. Kunci → Pintu → Wortel","options":["Kunci → Pintu → Wortel","Pintu → Kunci → Wortel","Wortel → Kunci → Pintu","Pintu → Wortel → Kunci"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-02","audience":"Junior","stage":"Stage 1B","number":2,"kind":"scored","focus":"Pola Matriks","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Perhatikan pola grid warna 2x2 ini. Posisi warna Biru dan Kuning berpindah setiap langkah. Grid ke-3 harusnya seperti apa?","answer":"A. Kembali seperti bentuk grid pertama","options":["Kembali seperti bentuk grid pertama","Bentuknya sama seperti grid kedua","Semua kotak berubah menjadi warna biru","Semua kotak berubah menjadi warna kuning"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-03","audience":"Junior","stage":"Stage 1B","number":3,"kind":"scored","focus":"Looping Lanjut","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Program menyuruh: \"Maju 2 kotak, lalu belok kanan\". Jika kamu MENGULANGI perintah tersebut sebanyak 3 kali berturut-turut, rute akhirnya membentuk apa?","answer":"A. Membentuk sudut huruf U ke bawah","options":["Membentuk sudut huruf U ke bawah","Garis Lurus terus sebanyak 6 kotak","Hanya berputar-putar di tempat yang sama","Membentuk sebuah kotak tertutup penuh"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-04","audience":"Junior","stage":"Stage 1B","number":4,"kind":"scored","focus":"Debugging 2.0","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Robot jatuh ke lubang dan mengumpulkan koin palsu! Terdapat DUA langkah yang salah di program ini. Bagian mana yang harus diperbaiki?","answer":"A. Langkah 2 dan Langkah 3 salah semua","options":["Langkah 2 dan Langkah 3 salah semua","Hanya Langkah 1 yang perlu diperbaiki","Hanya Langkah 4 yang salah","Programnya sudah benar tidak perlu diubah"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-05","audience":"Junior","stage":"Stage 1B","number":5,"kind":"scored","focus":"Sorting Dasar","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Bisakah kamu mengurutkan tinggi 4 beruang ini dari yang PALING PENDEK hingga yang PALING TINGGI (Ascending)?","answer":"A. Beruang A, C, B, D","options":["Beruang A, C, B, D","Beruang D, B, C, A","Beruang C, A, B, D","Beruang A, B, C, D"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-06","audience":"Junior","stage":"Stage 1B","number":6,"kind":"scored","focus":"Sinkronisasi","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Dalam game interaktif, saat karakter Kucing melompat, Anjing harus bereaksi dengan menggonggong. Pilihan mana yang menunjukkan waktu (timing) paling pas dan seru?","answer":"A. Anjing menggonggong BERSAMAAN saat kucing lompat","options":["Anjing menggonggong BERSAMAAN saat kucing lompat","Anjing malah tertidur","Anjing diam dan pergi makan","Anjing menggonggong 1 jam kemudian"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-07","audience":"Junior","stage":"Stage 1B","number":7,"kind":"scored","focus":"State Change","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Biji bunga matahari (Tahap 1) telah disiram air, kemudian tumbuh daun (Tahap 2). Bentuk visual selanjutnya di Tahap 3 yang paling masuk akal adalah apa?","answer":"A. Bunga matahari mekar besar","options":["Bunga matahari mekar besar","Tanaman tiba-tiba menjadi layu","Mengecil kembali menjadi biji","Berubah wujud menjadi kaktus"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-08","audience":"Junior","stage":"Stage 1B","number":8,"kind":"scored","focus":"Visual Hierarchy","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Kamar ini berantakan. Tempatkan Mainan, Buku, dan Baju ke perabot yang sesuai agar kamarnya rapi dan mudah dicari!","answer":"A. Mainan ke Kotak, Buku ke Rak, Baju ke Lemari","options":["Mainan ke Kotak, Buku ke Rak, Baju ke Lemari","Buku ke Lemari, Baju ke Kotak","Baju ke Rak, Mainan ke Lemari","Dibiarkan saja semuanya di lantai"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-09","audience":"Junior","stage":"Stage 1B","number":9,"kind":"scored","focus":"Emosi Berantai","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Susun 3 ekspresi wajah ini agar menjadi sebuah cerita urut: Karakter awalnya merasa Senang, tiba-tiba Kaget, lalu menjadi Sedih.","answer":"A. Senang → Kaget → Sedih","options":["Senang → Kaget → Sedih","Sedih → Senang → Kaget","Kaget → Sedih → Senang","Senang → Sedih → Senang lagi"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-10","audience":"Junior","stage":"Stage 1B","number":10,"kind":"scored","focus":"Estetika Maju","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Dinding kamar digambar dengan warna MERAH TERANG. Pilih warna Karpet yang TIDAK bertabrakan/menyakitkan mata, dan membuat desain ruangan tetap nyaman dilihat.","answer":"A. Karpet A: Putih Lembut (Netral & Aman)","options":["Karpet A: Putih Lembut (Netral & Aman)","Karpet B: Merah Terang (Menyatu tanpa tekstur)","Karpet C: Hijau Neon (Bertabrakan drastis)","Karpet Hitam Gelap total"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-11","audience":"Junior","stage":"Stage 1B","number":11,"kind":"scored","focus":"Rotasi 2 Sumbu","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Putar Balok: Sebuah balok dengan gambar bintang diputar 90 derajat ke KANAN, lalu diputar 90 derajat ke BAWAH. Pilih hasil akhirnya.","answer":"A. Sisi bergambar bintang bergeser, dan menampakkan sisi bawah balok","options":["Sisi bergambar bintang bergeser, dan menampakkan sisi bawah balok","Balok kembali persis ke posisi semula","Bintang berpindah menghadap ke atas","Bintang berpindah menghadap ke bawah lantai"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-12","audience":"Junior","stage":"Stage 1B","number":12,"kind":"scored","focus":"Pandangan 3D","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Cari Mainan Tersembunyi: Dilihat dari DEPAN, mainan Bola tertutup penuh oleh Kotak. Jika kamu terbang dan melihat dari posisi ATAS (Bird Eye View), di manakah bola berada?","answer":"A. Bola ada tepat di belakang kotak","options":["Bola ada tepat di belakang kotak","Bola ada di depan kotak","Bola hilang menyatu dengan kotak","Kotak hilang tertimpa bola"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-13","audience":"Junior","stage":"Stage 1B","number":13,"kind":"scored","focus":"Grup Objek","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Tarik Gerbong: Lokomotif di depan terhubung ke gerbong di belakangnya. Jika lokomotif maju ke depan, gerbong mana yang ikut tertarik?","answer":"A. Semua gerbong yang tersambung akan ikut terbawa","options":["Semua gerbong yang tersambung akan ikut terbawa","Hanya lokomotif depan yang jalan sendiri","Hanya gerbong paling belakang yang bergerak","Rantai akan terputus"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-14","audience":"Junior","stage":"Stage 1B","number":14,"kind":"scored","focus":"Volume Ruang","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Isi Penuh: Jika kamu ingin menyusun blok Lego menjadi tangga padat seperti gambar, berapa total balok kecil yang dibutuhkan?","answer":"A. 6 balok (1+2+3)","options":["6 balok (1+2+3)","4 balok saja","9 balok penuh kotak","8 balok melingkar"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-15","audience":"Junior","stage":"Stage 1B","number":15,"kind":"scored","focus":"Proporsi Skala","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Membesar Proporsional: Jika robot ini diperbesar (Scale) secara proposional sebanyak 2 kali lipat, pilih hasil gambar yang benar dan tidak gepeng!","answer":"A. Robot membesar proporsional (tinggi dan lebar seimbang)","options":["Robot membesar proporsional (tinggi dan lebar seimbang)","Robot melebar ke samping menjadi gendut","Robot tertarik ke atas menjadi kurus tinggi","Robot mengecil 2x lipat"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-16","audience":"Junior","stage":"Stage 1B","number":16,"kind":"scored","focus":"Presisi Input","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Ketik Cepat: Ketik urutan 3 huruf yang muncul di layar dengan benar. Hurufnya adalah A - P - I.","answer":"A. Tekan A, lalu P, lalu I secara berurutan","options":["Tekan A, lalu P, lalu I secara berurutan","Tekan I, lalu P, lalu A","Tekan P, lalu I, lalu A","Tekan P, lalu A, lalu I"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-17","audience":"Junior","stage":"Stage 1B","number":17,"kind":"scored","focus":"Navigasi Jauh","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Cari Tombol Tersembunyi: Kamu diminta mencari tombol \"Mulai\" berwarna merah bata di paling bawah halaman. Apa aksi yang harus kamu lakukan?","answer":"A. Scroll halaman terus ke bawah sampai menemukan tombolnya","options":["Scroll halaman terus ke bawah sampai menemukan tombolnya","Tetap berada di atas layar dan diam saja","Tutup halaman tersebut karena tombol tidak ada","Perbesar layar (Zoom In) di bagian atas"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-18","audience":"Junior","stage":"Stage 1B","number":18,"kind":"scored","focus":"Presisi Motorik","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Teknik Komputer: Cara memindahkan objek gambar (bintang) ke dalam kotak kosong menggunakan mouse adalah dengan teknik...","answer":"A. Klik, tahan (Drag), geser ke kotak, lalu lepas (Drop)","options":["Klik, tahan (Drag), geser ke kotak, lalu lepas (Drop)","Mengetik huruf B-I-N-T-A-N-G pada keyboard","Klik kanan satu kali pada bintang","Scroll mouse ke arah bawah secara terus menerus"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-19","audience":"Junior","stage":"Stage 1B","number":19,"kind":"scored","focus":"Ikon Spesifik","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Ikon Suara: Dari keempat gambar tombol di bawah ini, mana ikon yang biasa digunakan untuk mengatur keras/kecilnya SUARA (Volume)?","answer":"A. Ikon Speaker/Toa (Suara)","options":["Ikon Speaker/Toa (Suara)","Ikon Rumah (Home)","Ikon Tempat Sampah (Delete)","Ikon Roda Gigi (Settings)"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-20","audience":"Junior","stage":"Stage 1B","number":20,"kind":"scored","focus":"Aksi Hardware","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Menu Rahasia: Jika kamu ingin memunculkan menu rahasia atau \"Pilihan Lainnya\" pada sebuah folder komputer, tombol mouse bagian mana yang harus kamu tekan?","answer":"A. Klik Kanan (Right-Click)","options":["Klik Kanan (Right-Click)","Klik Kiri biasa (Left-Click)","Klik dua kali (Double Click) di klik kiri","Menekan kuat tombol tengah (Scroll Wheel)"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-1b-21","audience":"Junior","stage":"Stage 1B","number":21,"kind":"preference","focus":"Preferensi","pillar":"Minat","difficulty":"non-scored","activityType":"interest","prompt":"Satu pertanyaan terakhir! Dari dua hal di bawah ini, mana yang lebih mendeskripsikan dirimu?","answer":"Tidak ada jawaban benar atau salah.","options":["Aku sangat suka MAIN GAME dan ingin tahu cara membuat game impianku sendiri! → Game Maker","Aku suka MEMECAHKAN MASALAH dan membuat sistem atau aplikasi yang berguna! → Problem Solver"],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage1"},{"id":"junior-stage-2-01","audience":"Junior","stage":"Stage 2","number":1,"kind":"scored","focus":"Klasifikasi","pillar":"Coding","difficulty":"Easy","activityType":"interactive","prompt":"Lengkapi Data Hewan: pasangkan gambar hewan, jumlah kaki, dan cirinya pada blok yang benar.","answer":"Kucing — 4 kaki — Kumis; Lebah — 6 kaki — Sengat; Siput — 0 kaki — Cangkang; Bebek — 2 kaki — Paruh.","options":[],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage2"},{"id":"junior-stage-2-02","audience":"Junior","stage":"Stage 2","number":2,"kind":"scored","focus":"Algoritma Rute","pillar":"Coding","difficulty":"Intermediate","activityType":"interactive","prompt":"Bantu Kucing mencapai ikan dengan menyusun maksimal 5 blok program pada jalur aman.","answer":"Salah satu solusi: Maju 2 → Belok kanan → Maju 2 → Belok kiri → Maju 2.","options":[],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage2"},{"id":"junior-stage-2-03","audience":"Junior","stage":"Stage 2","number":3,"kind":"scored","focus":"Debugging","pillar":"Coding","difficulty":"Hard","activityType":"interactive","prompt":"Perbaiki dua blok program Bebek agar mencapai kolam.","answer":"Ganti baris 3 menjadi Belok kiri dan baris 5 menjadi Belok kanan.","options":[],"source":"Sumber: junior-final-placement-test.html · DOCUMENTS.stage2"},{"id":"kids-stage-1a-01","audience":"Kids","stage":"Stage 1A","number":1,"kind":"scored","focus":"Efisiensi","pillar":"Logika","difficulty":"basic","activityType":"sequence builder","prompt":"Robot harus pulang ke Rumah 🏠. Buatlah urutan perintah yang aman agar tidak menabrak Pohon 🌳 atau masuk ke Air 🌊 dengan menekan tombol arah di bawah!","answer":"Bawah → Bawah → Kanan → Kanan","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-02","audience":"Kids","stage":"Stage 1A","number":2,"kind":"scored","focus":"Pola","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Badan ulat ini terus bertambah panjang! 🟢 🟡 🟢 🟢 🟡 🟢 🟢 🟢 🟡 ... Apa DUA warna badannya yang selanjutnya?","answer":"A. Hijau lalu Hijau","options":["Hijau lalu Hijau","Kuning lalu Hijau","Hijau lalu Kuning"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-03","audience":"Kids","stage":"Stage 1A","number":3,"kind":"scored","focus":"Kondisi","pillar":"Logika","difficulty":"basic","activityType":"dnd","prompt":"Tantangan Melawan Boss Robot 🤖","answer":"Laser dipantulkan → Perisai hancur → Robot kalah","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-04","audience":"Kids","stage":"Stage 1A","number":4,"kind":"scored","focus":"Looping","pillar":"Logika","difficulty":"basic","activityType":"dnd","prompt":"DJ Beat Loop 🎵","answer":"Drum → Clap → Bass → Drum → Clap → Bass → Drum → Clap → Bass → Ting","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-05","audience":"Kids","stage":"Stage 1A","number":5,"kind":"scored","focus":"Debugging","pillar":"Logika","difficulty":"hard","activityType":"dnd","prompt":"Robot Cuci Tangan Salah Urutan 🤖🧼","answer":"Basahi tangan → Pakai sabun → Bilas tangan → Keringkan tangan","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-06","audience":"Kids","stage":"Stage 1A","number":6,"kind":"scored","focus":"Prediksi Visual","pillar":"Kreativitas","difficulty":"basic","activityType":"dnd","prompt":"Aduh, sepertinya akan ada yang jatuh! Tarik gambar yang paling pas untuk akhir animasi pendek ini ke kotak kosong.","answer":"Monyet terpeleset","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-07","audience":"Kids","stage":"Stage 1A","number":7,"kind":"scored","focus":"Layering","pillar":"Kreativitas","difficulty":"basic","activityType":"dnd","prompt":"Kamu membuat animasi kucing di taman. Pada akhirnya kucing harus masuk ke balik semak. Susun gambar dari paling belakang ke paling depan agar terlihat benar!","answer":"Background → Kucing → Semak","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-08","audience":"Kids","stage":"Stage 1A","number":8,"kind":"scored","focus":"Estetika Warna","pillar":"Kreativitas","difficulty":"basic","activityType":"color contrast","prompt":"Kamu sedang membuat poster dengan background laut malam yang gelap. Atur tampilan tulisan \"SELAMAT DATANG\" agar paling mudah dibaca.","answer":"Gunakan kombinasi warna dengan rasio kontras minimal 4,5:1 dan aktifkan efek kontras.","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-09","audience":"Kids","stage":"Stage 1A","number":9,"kind":"scored","focus":"Animasi Frame","pillar":"Kreativitas","difficulty":"basic","activityType":"dnd","prompt":"Kamu membuat animasi bola memantul. Agar gerakannya terlihat natural, bola tidak boleh tiba-tiba pindah terlalu jauh. Susun frame dari awal sampai akhir agar bola terlihat jatuh lalu memantul kembali .","answer":"Frame 1 → Frame 2 → Frame 3 → Frame 4 → Frame 5","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-10","audience":"Kids","stage":"Stage 1A","number":10,"kind":"scored","focus":"Layout UI","pillar":"Kreativitas","difficulty":"hard","activityType":"layout grouping","prompt":"Rapikan menu game ini agar mudah dipakai oleh pemain baru. Kelompokkan setiap elemen ke tempat yang paling tepat.","answer":"Paling terlihat: PLAY + Judul Game; Hiasan besar: Karakter Utama; Tambahan kecil: Settings; Belum ditampilkan: Shop + Pop-up Promo.","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-11","audience":"Kids","stage":"Stage 1A","number":11,"kind":"scored","focus":"Rotasi","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Terdapat 3 roda gigi yang saling tersambung berderet. Jika Roda Gigi A berputar Searah Jarum Jam (Ke Kanan), maka ke arah manakah Roda Gigi C akan berputar?","answer":"A. Ke Kanan (Searah jarum jam)","options":["Ke Kanan (Searah jarum jam)","Ke Kiri (Berlawanan jarum jam)"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-12","audience":"Kids","stage":"Stage 1A","number":12,"kind":"scored","focus":"Perspektif","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Perhatikan bentuk balok di bawah ini. Pilih satu potongan yang bisa dipasang agar bentuk akhirnya menjadi kubus utuh.","answer":"A. Potongan A","options":["Potongan A","Potongan B","Potongan C","Potongan D"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-13","audience":"Kids","stage":"Stage 1A","number":13,"kind":"scored","focus":"Koordinat","pillar":"Spasial","difficulty":"basic","activityType":"sequence builder","prompt":"Bantu pelaut menemukan rute ke Peti Emas tanpa menabrak rintangan (Batu atau Buaya) dengan menekan tombol arah di bawah!","answer":"Kanan → Bawah → Kanan → Bawah → Bawah → Kanan","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-14","audience":"Kids","stage":"Stage 1A","number":14,"kind":"scored","focus":"Bangun Ruang","pillar":"Spasial","difficulty":"hard","activityType":"multiple choice","prompt":"Perhatikan susunan balok 3D di bawah ini. Jika susunan solid (tidak ada balok melayang), berapakah total seluruh balok yang ada termasuk yang tersembunyi di dalam?","answer":"D. 22 Balok","options":["18 Balok","19 Balok","20 Balok","22 Balok"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-15","audience":"Kids","stage":"Stage 1A","number":15,"kind":"scored","focus":"Relasi","pillar":"Spasial","difficulty":"basic","activityType":"slide puzzle","prompt":"Mobil MERAH harus keluar melewati pintu di sebelah kanan. Geser balok-balok yang menghalangi agar mobil merah bisa keluar!","answer":"Mobil merah berhasil digeser keluar melalui pintu kanan.","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-16","audience":"Kids","stage":"Stage 1A","number":16,"kind":"scored","focus":"Hardware & Input","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive cable","prompt":"Komputer perlu listrik untuk menyala. Ayo masukkan colokan ke stopkontak!","answer":"Seret colokan ke stopkontak yang cocok.","options":["Ctrl + Z dan Ctrl + Y","Ctrl + C dan Ctrl + V","Ctrl + S dan Ctrl + O","Ctrl + X dan Ctrl + A"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-17","audience":"Kids","stage":"Stage 1A","number":17,"kind":"scored","focus":"Ikon UI","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive refresh","prompt":"Wah, halaman web error dan tidak mau terbuka! Tombol mana yang harus ditekan untuk memperbaikinya?","answer":"Tekan tombol Refresh (↻) atau Muat ulang.","options":["Navigation Menu yang disembunyikan (Drawer)","Tombol Submit Data Form","Refresh Page (Muat Ulang)","Tombol Download File ZIP"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-18","audience":"Kids","stage":"Stage 1A","number":18,"kind":"scored","focus":"Ikon Close","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive close","prompt":"Tugas sudah selesai. Tutup jendela aplikasi dengan menekan tombol Close (X) pada pojok kanan atas.","answer":"Tekan tombol Close (X) di pojok kanan atas.","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-19","audience":"Kids","stage":"Stage 1A","number":19,"kind":"scored","focus":"Login Aman","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive login","prompt":"Masuk ke komputer sekolah. Ketik username dan password target dengan persis—perhatikan huruf besar, angka, dan simbol. Jangan gunakan copy-paste.","answer":"Username: Petualang99; Password: Sk0l@h_Asyik!","options":[],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1a-20","audience":"Kids","stage":"Stage 1A","number":20,"kind":"scored","focus":"File System","pillar":"Literasi Digital","difficulty":"hard","activityType":"interactive filesort","prompt":"Folder Downloads kamu berantakan! Pindahkan setiap file ke folder yang TEPAT berdasarkan jenisnya. Harus benar minimal 6 dari 8!","answer":"liburan.jpg/foto_ultah.png → Foto; tugas.docx/laporan.pdf → Dokumen; lagu_favorit.mp3/podcast.mp3 → Musik; setup_game.exe/antivirus.exe → Aplikasi. Minimal 6 dari 8 benar.","options":["Folder Web","Folder Projects","Folder Admin","Root C:"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1a (script aktif)"},{"id":"kids-stage-1b-01","audience":"Kids","stage":"Stage 1B","number":1,"kind":"scored","focus":"Proses Membuat Layang-layang","pillar":"Logika","difficulty":"2/5","activityType":"multiple choice","prompt":"Jika kamu mau membuat layang-layang, langkah mana yang paling akhir dari prosesnya?","answer":"D. Menerbangkan layang-layang","options":["Membeli bambu di toko","Memotong kertas sesuai bentuk","Mengikat rangka bambu dengan benang","Menerbangkan layang-layang"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · L.02"},{"id":"kids-stage-1b-02","audience":"Kids","stage":"Stage 1B","number":2,"kind":"scored","focus":"Tiga Stempel Tertutup","pillar":"Logika","difficulty":"4/5","activityType":"multiple choice","prompt":"Terdapat tiga stempel tertutup yang diberi label A, B, dan C. Setiap stempel menghasilkan bentuk yang berbeda ketika dicetak: Salah satu menghasilkan lingkaran, satu lagi menghasilkan segitiga, dan satu lagi menghasilkan persegi. Namun bentuknya tidak terlihat sampai dicetak di kertas. Ketika mencoba menggabungkan stempel dua-dua, muncul hasil sebagai berikut: Bentuk apa yang dihasilkan oleh stempel A?","answer":"D. Segiempat","options":["Trapesium","Lingkaran","Segitiga","Segiempat"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · L.06"},{"id":"kids-stage-1b-03","audience":"Kids","stage":"Stage 1B","number":3,"kind":"scored","focus":"Resep Kue Kala","pillar":"Logika","difficulty":"3/5","activityType":"multiple choice","prompt":"Kala akan membuat kue! Menurut resep, arah panah menunjukkan bahan kue yang ditambahkan pada urutan berikutnya. Bahan apakah yang seharusnya dimasukkan pertama kali?","answer":"A. Pilihan A (gambar)","options":["Pilihan A (gambar)","Pilihan B (gambar)","Pilihan C (gambar)","Pilihan D (gambar)"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · L.07"},{"id":"kids-stage-1b-04","audience":"Kids","stage":"Stage 1B","number":4,"kind":"scored","focus":"Kode Angka Terbalik","pillar":"Logika","difficulty":"3/5","activityType":"multiple choice","prompt":"Wah, kotaknya dikunci! Angka yang terlihat adalah 6 4 8 7 3 0 Ternyata urutan angkanya terbalik! Manakah kode yang tepat agar kuncinya dapat terbuka?","answer":"B. 037846","options":["073468","037846","307468","073648","038746"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · F.06"},{"id":"kids-stage-1b-05","audience":"Kids","stage":"Stage 1B","number":5,"kind":"scored","focus":"Pencocokan Sidik Jari","pillar":"Logika","difficulty":"3/5","activityType":"multiple choice","prompt":"Suatu pagi di rumah Tio ada penculikan kucing. Polisi menemukan jejak sidik jari di depan pintu rumah. Ada 5 tersangka yang dicurigai sebagai penculiknya. Ayo kita sesuaikan sidik jarinya!","answer":"B. Tersangka B","options":["Tersangka A","Tersangka B","Tersangka C","Tersangka D"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · L.08"},{"id":"kids-stage-1b-06","audience":"Kids","stage":"Stage 1B","number":6,"kind":"scored","focus":"Mewarnai Peta Yogyakarta","pillar":"Kreativitas","difficulty":"3/5","activityType":"multiple choice","prompt":"Daerah Istimewa Yogyakarta terbagi menjadi 5 wilayah. Tio ingin mewarnai peta dengan syarat wilayah yang bersebelahan tidak boleh diwarnai dengan warna yang sama. Berapa jumlah paling sedikit warna yang dibutuhkan oleh Tio?","answer":"C. 3","options":["1","2","3","4"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · S.02"},{"id":"kids-stage-1b-07","audience":"Kids","stage":"Stage 1B","number":7,"kind":"scored","focus":"Buat Anjing Menggonggong","pillar":"Kreativitas","difficulty":"3/5","activityType":"rule lab","prompt":"Pilih 4 kartu yang benar, lalu susun dari atas ke bawah. Buat urutan agar saat Kucing melompat, pesan LOMPAT dikirim dan Anjing langsung menggonggong.","answer":"Urutan/kombinasi wajib: Saat Kucing melompat → Kirim pesan LOMPAT → Saat Anjing menerima LOMPAT → Anjing menggonggong","options":["🐱 Saat Kucing melompat","📣 Kirim pesan LOMPAT","📥 Saat Anjing menerima LOMPAT","🐶 Anjing menggonggong","😴 Anjing tidur","🕐 Tunggu satu jam"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · kids.html · Creativity: Sinkronisasi"},{"id":"kids-stage-1b-08","audience":"Kids","stage":"Stage 1B","number":8,"kind":"scored","focus":"Pertumbuhan Bunga","pillar":"Kreativitas","difficulty":"3/5","activityType":"command lab","prompt":"Pilih 4 kartu yang benar, lalu susun dari atas ke bawah sesuai urutan pertumbuhan bunga, mulai dari biji disiram sampai bunga matahari mekar.","answer":"Urutan/kombinasi wajib: Biji disiram → Tumbuh tunas → Daun bertambah → Bunga matahari mekar","options":["🌱 Tumbuh tunas","✂️ Tunas dipotong","🌻 Bunga matahari mekar","🌰 Biji disiram","🥀 Bunga layu","🌿 Daun bertambah"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · kids.html · Creativity: State Change"},{"id":"kids-stage-1b-09","audience":"Kids","stage":"Stage 1B","number":9,"kind":"scored","focus":"Menu Game yang Jelas","pillar":"Kreativitas","difficulty":"4/5","activityType":"configuration lab","prompt":"Atur layar menu agar tombol PLAY paling menonjol dan langsung ditemukan.","answer":"Konfigurasi wajib: Letakkan PLAY di tengah; Buat PLAY berukuran besar; Gunakan warna tombol kontras; Buat Settings lebih kecil","options":["🎯 Letakkan PLAY di tengah","🔎 Buat PLAY berukuran besar","🟡 Gunakan warna tombol kontras","⚙️ Buat Settings lebih kecil","↘️ Sembunyikan PLAY di pojok","🟰 Semua tombol sama dominan"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · kids.html · Creativity: Visual Hierarchy"},{"id":"kids-stage-1b-10","audience":"Kids","stage":"Stage 1B","number":10,"kind":"scored","focus":"Warna Kotak JUARA","pillar":"Kreativitas","difficulty":"3/5","activityType":"multiple choice","prompt":"Perhatikan gambar berikut Warna apakah kotak dengan tulisan JUARA?","answer":"B. Coklat","options":["Hitam","Coklat","Merah","Orange","Hijau"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · F.05"},{"id":"kids-stage-1b-11","audience":"Kids","stage":"Stage 1B","number":11,"kind":"scored","focus":"Kertas Lipat Berlubang","pillar":"Spasial","difficulty":"3/5","activityType":"multiple choice","prompt":"Sebuah kertas persegi dilipat dua kali. Sebuah lubang kecil dipotong. Berapa banyak lubang saat dibuka?","answer":"D. 4","options":["1","2","3","4"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · S.01"},{"id":"kids-stage-1b-12","audience":"Kids","stage":"Stage 1B","number":12,"kind":"scored","focus":"Rotasi Obyek 1","pillar":"Spasial","difficulty":"3/5","activityType":"multiple choice","prompt":"Di manakah dari figur di bawah ini yang merupakan hasil rotasi dari obyek yang ada di gambar?","answer":"A. Pilihan A (gambar)","options":["Pilihan A (gambar)","Pilihan B (gambar)","Pilihan C (gambar)","Pilihan D (gambar)"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · S.05"},{"id":"kids-stage-1b-13","audience":"Kids","stage":"Stage 1B","number":13,"kind":"scored","focus":"Potongan Puzzle Nomor 4","pillar":"Spasial","difficulty":"4/5","activityType":"multiple choice","prompt":"Di manakah potongan gambar di bawah ini yang merupakan potongan dari puzzle nomor 4?","answer":"D. Pilihan D (gambar)","options":["Pilihan A (gambar)","Pilihan B (gambar)","Pilihan C (gambar)","Pilihan D (gambar)"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · S.07"},{"id":"kids-stage-1b-14","audience":"Kids","stage":"Stage 1B","number":14,"kind":"scored","focus":"Robot Diperbesar 2×","pillar":"Spasial","difficulty":"3/5","activityType":"configuration lab","prompt":"Perbesar robot dua kali tanpa membuatnya gepeng atau terlalu tinggi.","answer":"Konfigurasi wajib: Scale lebar = 2; Scale tinggi = 2; Kunci proporsi; Periksa hasil robot","options":["↔️ Scale lebar = 2","↕️ Scale tinggi = 2","🔒 Kunci proporsi","🤖 Periksa hasil robot","🤏 Scale tinggi = 0.5","🥞 Lebarkan hanya sumbu X"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · kids.html · Spatial: Proporsi Skala"},{"id":"kids-stage-1b-15","audience":"Kids","stage":"Stage 1B","number":15,"kind":"scored","focus":"Arah Mobil Merah","pillar":"Spasial","difficulty":"3/5","activityType":"multiple choice","prompt":"Mobil berwarna biru sedang berkendara ke arah Timur Laut. Kemanakah arah mobil merah bergerak?","answer":"B. Barat Laut","options":["Barat Daya","Barat Laut","Tenggara","Timur Laut"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · V.04"},{"id":"kids-stage-1b-16","audience":"Kids","stage":"Stage 1B","number":16,"kind":"scored","focus":"Cari Rumah Tujuan","pillar":"Literasi Digital","difficulty":"3/5","activityType":"multiple choice","prompt":"Pergilah ke rumah dengan dinding berwarna kuning, beratap merah dan bernomor 82 Yang mana rumahnya?","answer":"A. Pilihan A (gambar)","options":["Pilihan A (gambar)","Pilihan B (gambar)","Pilihan C (gambar)","Pilihan D (gambar)","Pilihan E (gambar)"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · F.01"},{"id":"kids-stage-1b-17","audience":"Kids","stage":"Stage 1B","number":17,"kind":"scored","focus":"Cari Tombol Mulai","pillar":"Literasi Digital","difficulty":"2/5","activityType":"diagnostic lab","prompt":"Tombol “Mulai” berada di bagian paling bawah halaman yang panjang.","answer":"Urutan/kombinasi wajib: Periksa halaman → Scroll ke bawah → Temukan tombol Mulai merah bata → Konfirmasi tombol","options":["👀 Periksa halaman","👇 Scroll ke bawah","🔴 Temukan tombol Mulai merah bata","✅ Konfirmasi tombol","❌ Tutup halaman","🔍 Zoom bagian paling atas"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · kids.html · Digital: Navigasi Jauh"},{"id":"kids-stage-1b-18","audience":"Kids","stage":"Stage 1B","number":18,"kind":"scored","focus":"Pindahkan Bintang","pillar":"Literasi Digital","difficulty":"2/5","activityType":"configuration lab","prompt":"Pindahkan gambar bintang ke dalam kotak target menggunakan mouse atau sentuhan.","answer":"Urutan/kombinasi wajib: Tekan dan tahan bintang → Geser menuju kotak → Posisikan di dalam target → Lepaskan bintang","options":["👆 Tekan dan tahan bintang","🖱️ Geser menuju kotak","🎯 Posisikan di dalam target","✋ Lepaskan bintang","🖱️ Klik kanan","🛞 Putar scroll wheel"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · kids.html · Digital: Presisi Motorik"},{"id":"kids-stage-1b-19","audience":"Kids","stage":"Stage 1B","number":19,"kind":"scored","focus":"Buka Pilihan Lainnya","pillar":"Literasi Digital","difficulty":"3/5","activityType":"diagnostic lab","prompt":"Tampilkan menu “Pilihan Lainnya” pada sebuah folder komputer.","answer":"Urutan/kombinasi wajib: Arahkan pointer ke folder → Klik tombol kanan mouse → Buka menu konteks → Pilih Pilihan Lainnya","options":["📁 Arahkan pointer ke folder","🖱️ Klik tombol kanan mouse","📋 Buka menu konteks","⋯ Pilih Pilihan Lainnya","👈 Klik kiri biasa","🛞 Tekan scroll wheel"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · kids.html · Digital: Aksi Hardware"},{"id":"kids-stage-1b-20","audience":"Kids","stage":"Stage 1B","number":20,"kind":"scored","focus":"Nomor Telepon Tidak Lengkap","pillar":"Literasi Digital","difficulty":"2/5","activityType":"multiple choice","prompt":"Wah! Nomor teleponnya tidak lengkap. Berapa Nomor Teleponnya?","answer":"E. Pilihan E (gambar)","options":["Pilihan A (gambar)","Pilihan B (gambar)","Pilihan C (gambar)","Pilihan D (gambar)","Pilihan E (gambar)"],"source":"Sumber: kids-final-placement-test.html · embedded-stage1b · new_temp.html · F.03"},{"id":"kids-stage-2-01","audience":"Kids","stage":"Stage 2","number":1,"kind":"scored","focus":"Soal 1 (Level 1)","pillar":"Coding","difficulty":"Level 1","activityType":"blockly","prompt":"Misi mudah: Bawa astronot maju lurus sampai ke roket.","answer":"Capai target (6, 4) tanpa keluar jalur, gunakan Ulangi sampai tujuan, dan jangan melebihi 2 blok.","options":["maju","kanan","kiri","repeat_until"],"source":"Sumber: kids-final-placement-test.html · embedded-stage2"},{"id":"kids-stage-2-02","audience":"Kids","stage":"Stage 2","number":2,"kind":"scored","focus":"Soal 2 (Level 2)","pillar":"Coding","difficulty":"Level 2","activityType":"blockly","prompt":"Misi mudah: Naiki jalan tangga menuju roket.","answer":"Capai target (5, 2) tanpa keluar jalur, gunakan Ulangi sampai tujuan, dan jangan melebihi 5 blok.","options":["maju","kanan","kiri","repeat_until"],"source":"Sumber: kids-final-placement-test.html · embedded-stage2"},{"id":"kids-stage-2-03","audience":"Kids","stage":"Stage 2","number":3,"kind":"scored","focus":"Soal 3 (Level 3)","pillar":"Coding","difficulty":"Level 3","activityType":"blockly","prompt":"Misi mudah: Maju, lalu belok untuk mencapai roket.","answer":"Capai target (5, 1) tanpa keluar jalur, gunakan Ulangi sampai tujuan, dan jangan melebihi 5 blok.","options":["maju","kanan","kiri","repeat_until"],"source":"Sumber: kids-final-placement-test.html · embedded-stage2"},{"id":"kids-stage-2-04","audience":"Kids","stage":"Stage 2","number":4,"kind":"scored","focus":"Soal 4 (Level 4)","pillar":"Coding","difficulty":"Level 4","activityType":"blockly","prompt":"Misi menengah: Ikuti jalan yang berliku. Gunakan blok IF di dalam Ulangi.","answer":"Capai target (3, 4) tanpa keluar jalur, gunakan Ulangi sampai tujuan + Jika jalan di depan, dan jangan melebihi 4 blok.","options":["maju","kanan","kiri","repeat_until","if_ahead"],"source":"Sumber: kids-final-placement-test.html · embedded-stage2"},{"id":"kids-stage-2-05","audience":"Kids","stage":"Stage 2","number":5,"kind":"scored","focus":"Soal 5 (Level 5)","pillar":"Coding","difficulty":"Level 5","activityType":"blockly","prompt":"Misi sulit: Jalan terus tetapi ada banyak belokan. Cek jalan di depanmu!","answer":"Capai target (5, 6) tanpa keluar jalur, gunakan Ulangi sampai tujuan + Jika jalan di depan, dan jangan melebihi 9 blok.","options":["maju","kanan","kiri","repeat_until","if_ahead"],"source":"Sumber: kids-final-placement-test.html · embedded-stage2"},{"id":"kids-stage-2-06","audience":"Kids","stage":"Stage 2","number":6,"kind":"scored","focus":"Soal 6 (Level 6)","pillar":"Coding","difficulty":"Level 6","activityType":"blockly","prompt":"Misi sulit: Kali ini ada percabangan. Gunakan blok Jika / Jika Tidak.","answer":"Capai target (0, 3) tanpa keluar jalur, gunakan Ulangi sampai tujuan + Jika / Jika Tidak, dan jangan melebihi 6 blok.","options":["maju","kanan","kiri","repeat_until","if_ahead","ifelse_ahead"],"source":"Sumber: kids-final-placement-test.html · embedded-stage2"},{"id":"kids-stage-2-07","audience":"Kids","stage":"Stage 2","number":7,"kind":"scored","focus":"Soal 7 (Level 7)","pillar":"Coding","difficulty":"Level 7","activityType":"blockly","prompt":"Misi tersulit: Tantangan labirin terakhir. Manfaatkan blok IF-ELSE dengan baik.","answer":"Capai target (4, 1) tanpa keluar jalur, gunakan Ulangi sampai tujuan + Jika / Jika Tidak, dan jangan melebihi 9 blok.","options":["maju","kanan","kiri","repeat_until","if_ahead","ifelse_ahead"],"source":"Sumber: kids-final-placement-test.html · embedded-stage2"},{"id":"teens-stage-1a-01","audience":"Teens","stage":"Stage 1A","number":1,"kind":"scored","focus":"Efisiensi","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Robot mulai dari START dan harus mencapai FINISH tanpa melewati blok merah. Ketik sendiri urutan perintah yang paling efisien.","answer":"Contoh rute valid 7 langkah: bawah() ×3, lalu kanan() ×4.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-02","audience":"Teens","stage":"Stage 1A","number":2,"kind":"scored","focus":"Pola","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Perhatikan dua pola sekaligus: perubahan jumlah langkah dan arah belok. Lengkapi Baris 5 dengan mengetikkan dua instruksi yang tepat.","answer":"move(16) lalu turnRight()","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-03","audience":"Teens","stage":"Stage 1A","number":3,"kind":"scored","focus":"Kondisi","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Lengkapi satu kondisi yang hilang agar login hanya berhasil ketika username, password, dan OTP semuanya benar.","answer":"Isi kondisi passwordBenar dan status Login berhasil.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-04","audience":"Teens","stage":"Stage 1A","number":4,"kind":"scored","focus":"Looping","pillar":"Logika","difficulty":"basic","activityType":"multiple choice","prompt":"Sebuah program menjalankan loop berikut. Berapa nilai akhir variabel score setelah loop selesai?","answer":"14","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-05","audience":"Teens","stage":"Stage 1A","number":5,"kind":"scored","focus":"Debugging","pillar":"Logika","difficulty":"hard","activityType":"multiple choice","prompt":"Lengkapi flowchart checkout berikut. Ketik isi setiap simbol agar keputusan dan prosesnya berjalan logis dari awal sampai selesai.","answer":"Mulai → Pilih Produk → Stok tersedia?; jika tidak: Tampilkan Stok Habis; jika ya: Isi Alamat → Alamat valid? → Proses Pembayaran → Pembayaran berhasil? → Kirim Pesanan → Selesai.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-06","audience":"Teens","stage":"Stage 1A","number":6,"kind":"scored","focus":"Hierarki Visual","pillar":"Kreativitas","difficulty":"basic","activityType":"multiple choice","prompt":"Susun elemen poster Festival Coding agar memiliki hierarki visual yang jelas. Tentukan apa yang dilihat pertama, visual pendukung, tombol aksi, informasi acara, dan bagian footer.","answer":"FESTIVAL CODING 2026 → Ilustrasi → DAFTAR SEKARANG → 24 Agustus · Bandung → Didukung Kalananti.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-07","audience":"Teens","stage":"Stage 1A","number":7,"kind":"scored","focus":"Layering","pillar":"Kreativitas","difficulty":"basic","activityType":"multiple choice","prompt":"Perbaiki modal agar pengguna fokus pada peringatan dan tidak dapat menekan halaman di belakangnya. Atur overlay, kunci background, dan posisi modal lalu uji hasilnya.","answer":"Opacity overlay 55–75% (contoh 65%), background dikunci, posisi modal di tengah.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-08","audience":"Teens","stage":"Stage 1A","number":8,"kind":"scored","focus":"Kontras Aksesibel","pillar":"Kreativitas","difficulty":"basic","activityType":"multiple choice","prompt":"Gunakan color picker untuk membuat banner yang nyaman dibaca. Atur warna teks dan background, lalu capai rasio kontras WCAG minimal 4.5:1.","answer":"Kombinasi warna apa pun dengan rasio kontras minimal 4,5:1; contoh teks #111827 pada background #FFFF00.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-09","audience":"Teens","stage":"Stage 1A","number":9,"kind":"scored","focus":"Animasi Frame","pillar":"Kreativitas","difficulty":"basic","activityType":"dnd","prompt":"Dalam animasi UI, susun urutan perubahan gerak dari awal hingga objek berhenti dengan halus.","answer":"Mulai dengan kecepatan tinggi → melambat → sangat pelan mendekati akhir → berhenti tanpa memantul.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-10","audience":"Teens","stage":"Stage 1A","number":10,"kind":"scored","focus":"Layout UI","pillar":"Kreativitas","difficulty":"hard","activityType":"dnd","prompt":"Susun hierarki informasi Landing Page SaaS dari prioritas visual tertinggi (paling atas/mencolok) ke terendah.","answer":"Value Proposition → Primary CTA → Social Proof → Footer Links.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-11","audience":"Teens","stage":"Stage 1A","number":11,"kind":"scored","focus":"Rotasi","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Arahkan bagian depan karakter (cone biru) hingga tepat menghadap beacon merah di sumbu +X. Masukkan angka rotasi pada Inspector, lalu uji arah hadap karakter. Kamu hanya memiliki 3 kesempatan.","answer":"Rotation X=0°, Y=90°, Z=0°.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-12","audience":"Teens","stage":"Stage 1A","number":12,"kind":"scored","focus":"Kamera 3D","pillar":"Spasial","difficulty":"hard","activityType":"multiple choice","prompt":"Geser arah kamera 3D sampai sisi kiri dan kanan bangunan terlihat seimbang seperti TARGET ISOMETRIK. Kamera dan ketinggiannya sudah diatur otomatis—kamu hanya perlu menemukan sudut horizontal yang tepat.","answer":"Kamera Orthographic, azimuth sekitar 45° (diterima 41–49°), elevation 35°.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-13","audience":"Teens","stage":"Stage 1A","number":13,"kind":"scored","focus":"Koordinat","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Terbangkan pesawat dari BASE menuju LINGKARAN PORTAL berwarna cyan. Baca petunjuk arah sumbu, masukkan koordinat X, Y, dan Z tujuan, lalu tekan TERBANGKAN PESAWAT. Kamu harus masuk ke lingkaran portal agar dapat lanjut.","answer":"X=4, Y=2, Z=−3.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-14","audience":"Teens","stage":"Stage 1A","number":14,"kind":"scored","focus":"Bangun Ruang","pillar":"Spasial","difficulty":"hard","activityType":"multiple choice","prompt":"Bounding box adalah batas tak terlihat yang menentukan kapan karakter menyentuh objek lain. Buat bounding box cyan yang membungkus karakter dengan rapat—tidak memotong tubuh dan tidak terlalu longgar. Setelah box terasa pas, hitung volumenya dan ketik hasilnya.","answer":"Width=2, Height=4, Depth=2; volume=16 unit³.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-15","audience":"Teens","stage":"Stage 1A","number":15,"kind":"scored","focus":"Jarak 3D","pillar":"Spasial","difficulty":"basic","activityType":"multiple choice","prompt":"Hitung jarak tiga kristal dari BASE menggunakan koordinat 3D. Isi nilai jarak kuadrat setiap kristal, lalu susun urutannya dari yang paling dekat sampai paling jauh.","answer":"Cyan d²=9 → Ungu d²=17 → Kuning d²=26.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-16","audience":"Teens","stage":"Stage 1A","number":16,"kind":"scored","focus":"Hardware & Input","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive cable","prompt":"Komputer perlu listrik untuk menyala. Ayo masukkan colokan ke stopkontak!","answer":"Seret colokan ke stopkontak yang cocok.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-17","audience":"Teens","stage":"Stage 1A","number":17,"kind":"scored","focus":"Ikon UI","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive refresh","prompt":"Wah, halaman web error dan tidak mau terbuka! Tombol mana yang harus ditekan untuk memperbaikinya?","answer":"Tekan Refresh (↻) atau Muat ulang.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-18","audience":"Teens","stage":"Stage 1A","number":18,"kind":"scored","focus":"Ikon Close","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive close","prompt":"Tugas sudah selesai. Tutup jendela aplikasi dengan menekan tombol Close (X) pada pojok kanan atas.","answer":"Tekan tombol Close (X).","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-19","audience":"Teens","stage":"Stage 1A","number":19,"kind":"scored","focus":"Login Aman","pillar":"Literasi Digital","difficulty":"basic","activityType":"interactive login","prompt":"Masuk ke komputer sekolah. Ketik username dan password target dengan persis—perhatikan huruf besar, angka, dan simbol. Jangan gunakan copy-paste.","answer":"Username: Petualang99; Password: Sk0l@h_Asyik!","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1a-20","audience":"Teens","stage":"Stage 1A","number":20,"kind":"scored","focus":"File System","pillar":"Literasi Digital","difficulty":"hard","activityType":"interactive filesort","prompt":"Folder Downloads kamu berantakan! Pindahkan setiap file ke folder yang TEPAT berdasarkan jenisnya. Harus benar minimal 6 dari 8!","answer":"liburan.jpg/foto_ultah.png → Foto; tugas.docx/laporan.pdf → Dokumen; lagu_favorit.mp3/podcast.mp3 → Musik; setup_game.exe/antivirus.exe → Aplikasi. Minimal 6/8 benar.","options":[],"source":"Sumber: teens.html · stage1Questions"},{"id":"teens-stage-1b-01","audience":"Teens","stage":"Stage 1B","number":1,"kind":"scored","focus":"Rute Bersyarat","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Cari rute matriks yang melewati 2 checkpoint (C1 dan C2) sebelum mencapai Finish dengan menghindari rintangan (X).","answer":"A. Rute B: Melewati C1 dan C2 tanpa menabrak rintangan X","options":["Rute B: Melewati C1 dan C2 tanpa menabrak rintangan X","Rute A: Efisien namun menabrak X","Rute C: Langsung ke Finish mengabaikan C2","Semua rute akan menemui jalan buntu (Dead End)"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-02","audience":"Teens","stage":"Stage 1B","number":2,"kind":"scored","focus":"Pola Matriks","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Jika variabel dideklarasikan: X = 5, lalu Y = X + 3, kemudian nilai X diubah menjadi 2. Berapa nilai yang tersimpan di Y saat diprint?","answer":"A. 8, karena Y dihitung saat X masih bernilai 5 (Pass by Value)","options":["8, karena Y dihitung saat X masih bernilai 5 (Pass by Value)","5, karena Y secara otomatis menyesuaikan X yang baru","2, karena nilai X menimpa nilai Y","Error, karena Y tidak di-update setelah deklarasi"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-03","audience":"Teens","stage":"Stage 1B","number":3,"kind":"scored","focus":"Looping Lanjut","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Perhatikan blok kode Looping berikut. Terdapat variabel basket = 0, lalu diulang 4 kali proses penambahan. Berapa total isi akhir variabel basket?","answer":"A. 8","options":["8","6","4","2"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-04","audience":"Teens","stage":"Stage 1B","number":4,"kind":"scored","focus":"Debugging 2.0","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Alur sistem Login ini memiliki celah keamanan (Logical Error). Jika kamu membaca baris aturannya, baris ke berapa yang menyebabkan celah tersebut?","answer":"A. Baris 3, karena password salah tidak seharusnya memberi akses ke dashboard","options":["Baris 3, karena password salah tidak seharusnya memberi akses ke dashboard","Baris 1, karena pengecekan Username tidak diperlukan","Baris 2, karena password kosong tidak apa-apa","Baris 4, karena kondisi tersebut tidak logis"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-05","audience":"Teens","stage":"Stage 1B","number":5,"kind":"scored","focus":"Sorting Dasar","pillar":"Logika","difficulty":"advanced","activityType":"multiple choice","prompt":"Diberikan deret [4, 1, 3, 2]. Algoritma ini membandingkan sepasang angka bersebelahan dan menukarnya jika angka di kiri lebih besar. Setelah berjalan TEPAT 1 PUTARAN dari kiri ke kanan, bagaimana bentuk deretnya?","answer":"A. [1, 3, 2, 4]","options":["[1, 3, 2, 4]","[1, 4, 3, 2]","[4, 1, 2, 3]","[1, 2, 3, 4]"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-06","audience":"Teens","stage":"Stage 1B","number":6,"kind":"scored","focus":"Sinkronisasi","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Karakter A mengirimkan sinyal \"Malam\". Apa yang harus dilakukan Karakter B ketika menerima sinyal tersebut?","answer":"A. Menjalankan animasi Muncul dan Terbang (Active State)","options":["Menjalankan animasi Muncul dan Terbang (Active State)","Mengabaikan sinyal karena beda karakter","Mengubah skor Game Over","Menghapus karakter A dari memori"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-07","audience":"Teens","stage":"Stage 1B","number":7,"kind":"scored","focus":"State Change","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Jika skor pemain mencapai 100, perubahan kostum apa yang paling baik untuk menunjukkan status \"Menang\"?","answer":"A. Mengubah ke kostum Selebrasi/Victory + Confetti","options":["Mengubah ke kostum Selebrasi/Victory + Confetti","Mengubah ke kostum Idle / Diam menunggu","Mengubah ke kostum Kekalahan (Game Over)","Menyembunyikan karakter dari layar"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-08","audience":"Teens","stage":"Stage 1B","number":8,"kind":"scored","focus":"Visual Hierarchy","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Sebagai Desainer UI/UX, di manakah kamu harus meletakkan Tombol PLAY (Call-to-Action) di layar Menu Game agar paling menonjol dan langsung diklik oleh User?","answer":"A. Posisi B: Di tengah layar, ukuran besar, kontras warna tinggi","options":["Posisi B: Di tengah layar, ukuran besar, kontras warna tinggi","Posisi A: Di pojok kiri atas, kecil dan tidak mencolok","Posisi C: Di pojok kanan bawah, membaur dengan background","Di mana saja asal tombolnya bisa ditekan"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-09","audience":"Teens","stage":"Stage 1B","number":9,"kind":"scored","focus":"Emosi Berantai","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Diberikan 3 opsi transisi frame untuk animasi bola memantul. Pilihan frame rate mana yang akan menghasilkan pergerakan visual paling halus dan profesional?","answer":"A. Opsi A: Transisi antar frame berurutan dan berjarak konsisten","options":["Opsi A: Transisi antar frame berurutan dan berjarak konsisten","Opsi B: Mengurangi jumlah frame agar animasi cepat selesai","Opsi C: Mengacak frame agar terlihat seperti efek glitch","Hanya menggunakan 1 Frame statis saja"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-10","audience":"Teens","stage":"Stage 1B","number":10,"kind":"scored","focus":"Estetika Maju","pillar":"Kreativitas","difficulty":"advanced","activityType":"multiple choice","prompt":"Kamu sedang mendesain UI game bertema luar angkasa. Set aset mana yang paling konsisten?","answer":"A. Set A (Roket, Planet, Bintang): Memiliki tema Sci-Fi yang kuat dan seragam","options":["Set A (Roket, Planet, Bintang): Memiliki tema Sci-Fi yang kuat dan seragam","Set B (Roket, Burger, Headset): Campuran acak aset komedi","Set C (Gear, Home, Trash): Ikon generik tanpa tema naratif","Setiap ikon menggunakan style garis dan warna yang sama sekali berbeda"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-11","audience":"Teens","stage":"Stage 1B","number":11,"kind":"scored","focus":"Rotasi 2 Sumbu","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"XYZ Transform: Geser sebuah objek statis di dunia 3D ke posisi koordinat X=5, Y=10, Z=-2. Di manakah posisi akhir objek tersebut relatif terhadap titik nol dunia?","answer":"A. Pindah ke titik koordinat absolut ruang (5, 10, -2)","options":["Pindah ke titik koordinat absolut ruang (5, 10, -2)","Pindah ke koordinat terbalik (-5, -10, 2)","Tetap berada di titik Origin (0,0,0)","Objek terus bergerak tiada henti"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-12","audience":"Teens","stage":"Stage 1B","number":12,"kind":"scored","focus":"Pandangan 3D","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Camera FOV (Field of View): Berdasarkan sudut dan posisi letak kamera pengawas (CCTV), manakah area yang dapat direkam dan mana yang menjadi area Blank Spot?","answer":"A. Area A & B terlihat dalam radius FOV; Area C menjadi Blank Spot","options":["Area A & B terlihat dalam radius FOV; Area C menjadi Blank Spot","Hanya Area C yang terlihat jelas oleh lensa","Semua Area (A, B, C) pasti ter-render karena berada di satu ruangan","Kamera hanya mendeteksi pergerakan (Motion Tracking)"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-13","audience":"Teens","stage":"Stage 1B","number":13,"kind":"scored","focus":"Grup Objek","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Parent-Child Hierarchy: Gelas menjadi child dari Meja. Apa yang terjadi ketika Meja diputar?","answer":"A. Gelas akan ikut berputar mengikuti transformasi relatif Meja","options":["Gelas akan ikut berputar mengikuti transformasi relatif Meja","Gelas tetap diam (Absolute Transform) tidak terpengaruh rotasi","Gelas otomatis terhapus karena objek bertumpuk","Ukuran Meja dan Gelas akan mengecil setengahnya"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-14","audience":"Teens","stage":"Stage 1B","number":14,"kind":"scored","focus":"Volume Ruang","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Constructive Solid Geometry (CSG): Jika sebuah bangun kubus (Cube) padat DIPOTONG secara operasi Boolean menggunakan bentuk tabung (Cylinder) di tengahnya, bagaimanakah bentuk objek 3D akhir yang dihasilkan?","answer":"A. Opsi A: Kubus dengan lubang berbentuk tabung di tengahnya","options":["Opsi A: Kubus dengan lubang berbentuk tabung di tengahnya","Opsi B: Hanya menyisakan bentuk tabung silinder saja","Opsi C: Kubus tetap utuh solid tanpa ada yang terpotong","Error, kedua bentuk hancur dan terhapus"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-15","audience":"Teens","stage":"Stage 1B","number":15,"kind":"scored","focus":"Proporsi Skala","pillar":"Spasial","difficulty":"advanced","activityType":"multiple choice","prompt":"Scaling Vector: Sebuah objek Part berdimensi awal [2, 2, 2]. Kemudian diterapkan perubahan Scale Vector [X=1, Y=0.5, Z=1]. Bagaimana bentuk proporsi geometri objek tersebut sekarang?","answer":"A. Menjadi dimensi [2, 1, 2]","options":["Menjadi dimensi [2, 1, 2]","Menjadi dimensi [1, 2, 1]","Tetap [2, 2, 2]","Menjadi [4, 4, 4]"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-16","audience":"Teens","stage":"Stage 1B","number":16,"kind":"scored","focus":"Presisi Input","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Shortcut Kombinasi: Secara logis sistem operasi, tindakan apa yang terjadi jika kamu menyeleksi sebuah teks, menekan Ctrl + C, kemudian berpindah dokumen lalu menekan Ctrl + V?","answer":"A. Menyalin (Copy) teks ke clipboard, lalu menempelkannya (Paste) ke dokumen baru","options":["Menyalin (Copy) teks ke clipboard, lalu menempelkannya (Paste) ke dokumen baru","Memotong (Cut) teks asli sehingga hilang, lalu menempelkannya ke tempat baru","Membatalkan (Undo) aksi sebelumnya lalu melakukan Redo","Menyimpan (Save) dokumen saat ini lalu mencetaknya (Print)"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-17","audience":"Teens","stage":"Stage 1B","number":17,"kind":"scored","focus":"Navigasi Jauh","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Absolute Pathing: Jika aset tersimpan di C:\\Users\\Admin\\Documents\\Game\\assets\\hero.png, urutan folder mana yang harus dibuka?","answer":"A. Buka Drive C: → folder Users → Admin → Documents → Game → assets → hero.png","options":["Buka Drive C: → folder Users → Admin → Documents → Game → assets → hero.png","Buka Game → folder Documents → Users → C: → hero.png","Buka Drive C: → folder Game → assets → hero.png","Cari saja \"hero.png\" di Google Image lalu download ulang"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-18","audience":"Teens","stage":"Stage 1B","number":18,"kind":"scored","focus":"Presisi Motorik","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Advanced Search Operators: Sintaks pencarian mana yang paling efektif untuk mencari PDF tentang Modul Python?","answer":"A. \"Modul Python\" filetype:pdf","options":["\"Modul Python\" filetype:pdf","Tolong carikan modul python yang formatnya pdf","Modul Python dokumen site:pdf","filetype: Modul Python pdf document"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-19","audience":"Teens","stage":"Stage 1B","number":19,"kind":"scored","focus":"Ikon Spesifik","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Network Troubleshooting: Ikon jaringan WiFi di pojok kanan bawah layarmu menampilkan tanda seru (!) berwarna kuning. Apa indikasi masalah teknis ini?","answer":"A. Perangkat terhubung ke router WiFi secara lokal, tetapi tidak mendapatkan akses internet dari ISP","options":["Perangkat terhubung ke router WiFi secara lokal, tetapi tidak mendapatkan akses internet dari ISP","Kartu jaringan (Network Adapter) di laptop rusak secara hardware","Ada hacker yang mencoba meretas koneksi WiFi milikmu","Koneksi internet sangat stabil dan cepat maksimal"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-20","audience":"Teens","stage":"Stage 1B","number":20,"kind":"scored","focus":"Aksi Hardware","pillar":"Literasi Digital","difficulty":"advanced","activityType":"multiple choice","prompt":"Data Archiving: Kamu baru saja mengunduh aset proyek dalam format .zip. Apa langkah yang benar sebelum digunakan?","answer":"A. Mengekstrak (Extract/Unzip) file tersebut ke direktori lokal menggunakan WinRAR/7-Zip","options":["Mengekstrak (Extract/Unzip) file tersebut ke direktori lokal menggunakan WinRAR/7-Zip","Mengganti nama ekstensinya secara manual (Rename) menjadi .png atau .fbx","Langsung meng-import file .zip tersebut tanpa mengubah apapun (Drag & Drop)","Menghapus file tersebut lalu mendownload satu persatu filenya"],"source":"Sumber: teens.html · stage1AdvancedQuestions"},{"id":"teens-stage-1b-21","audience":"Teens","stage":"Stage 1B","number":21,"kind":"preference","focus":"Preferensi","pillar":"Minat","difficulty":"non-scored","activityType":"interest","prompt":"Satu pertanyaan terakhir! Dari dua hal di bawah ini, mana yang lebih mendeskripsikan dirimu?","answer":"Tidak ada jawaban benar atau salah.","options":["Aku sangat suka MAIN GAME dan ingin tahu cara membuat game impianku sendiri! → Game Maker","Aku suka MEMECAHKAN MASALAH dan membuat sistem atau aplikasi yang berguna! → Problem Solver"],"source":"Sumber: teens.html · interestQuestion"},{"id":"teens-stage-2-01","audience":"Teens","stage":"Stage 2","number":1,"kind":"scored","focus":"Urutan Menyalakan Robot","pillar":"Coding","difficulty":"VERY EASY","activityType":"pseudocode","prompt":"Susun langkah dasar dengan urutan yang masuk akal. Robot harus menyala, memeriksa baterai, lalu mulai bergerak. Tulis ulang tiga langkah pseudocode di bawah dalam urutan yang benar. Starter: MULAI BERGERAK NYALAKAN ROBOT PERIKSA BATERAI","answer":"Solusi dinyatakan benar jika semua pemeriksaan lolos: Robot dinyalakan lebih dulu; Baterai diperiksa setelah menyala; Robot bergerak paling akhir.","options":["Pemeriksaan: Robot dinyalakan lebih dulu","Pemeriksaan: Baterai diperiksa setelah menyala","Pemeriksaan: Robot bergerak paling akhir"],"source":"Sumber: teens.html · pythonChallenges"},{"id":"teens-stage-2-02","audience":"Teens","stage":"Stage 2","number":2,"kind":"scored","focus":"Ulangi Langkah Robot","pillar":"Coding","difficulty":"EASY","activityType":"pseudocode","prompt":"Gunakan pola pengulangan untuk membuat robot maju empat kali. Tuliskan pseudocode yang mengulangi perintah MAJU 1 LANGKAH sebanyak 4 KALI . Tidak perlu mengetahui sintaks Python. Starter: ULANGI ... KALI ... SELESAI","answer":"Solusi dinyatakan benar jika semua pemeriksaan lolos: Ada instruksi pengulangan; Diulang empat kali; Perintah maju berada di dalam pola.","options":["Pemeriksaan: Ada instruksi pengulangan","Pemeriksaan: Diulang empat kali","Pemeriksaan: Perintah maju berada di dalam pola"],"source":"Sumber: teens.html · pythonChallenges"},{"id":"teens-stage-2-03","audience":"Teens","stage":"Stage 2","number":3,"kind":"scored","focus":"Gerbang Usia","pillar":"Coding","difficulty":"HIGH FOUNDATIONAL","activityType":"pseudocode","prompt":"Buat keputusan sederhana berdasarkan umur pengguna. Tulis pseudocode: JIKA UMUR minimal 13 , tampilkan BOLEH MASUK . Jika tidak, tampilkan BELUM BOLEH . Starter: JIKA UMUR ... 13 TAMPILKAN ... JIKA TIDAK TAMPILKAN ...","answer":"Solusi dinyatakan benar jika semua pemeriksaan lolos: Ada kondisi JIKA; Batas usia termasuk 13; Menangani dua kemungkinan.","options":["Pemeriksaan: Ada kondisi JIKA","Pemeriksaan: Batas usia termasuk 13","Pemeriksaan: Menangani dua kemungkinan"],"source":"Sumber: teens.html · pythonChallenges"},{"id":"teens-stage-2-04","audience":"Teens","stage":"Stage 2","number":4,"kind":"scored","focus":"Repair the Score Function","pillar":"Coding","difficulty":"EARLY BASIC","activityType":"python","prompt":"Debug fungsi agar menghitung poin bonus dengan benar untuk semua input. Setiap bintang bernilai 10 poin. Jika jumlah bintang minimal 5, tambahkan bonus 20. Fungsi harus mengembalikan total, bukan hanya mencetaknya. Starter: def calculate_score(stars): score = stars * 10 if stars > 5: score + 20 print(score) print(calculate_score(5))","answer":"Solusi dinyatakan benar jika semua pemeriksaan lolos: Menggunakan parameter stars; Bonus berlaku mulai 5; Score diperbarui; Fungsi return nilai.","options":["Pemeriksaan: Menggunakan parameter stars","Pemeriksaan: Bonus berlaku mulai 5","Pemeriksaan: Score diperbarui","Pemeriksaan: Fungsi return nilai"],"source":"Sumber: teens.html · pythonChallenges"},{"id":"teens-stage-2-05","audience":"Teens","stage":"Stage 2","number":5,"kind":"scored","focus":"Filter Sensor Data","pillar":"Coding","difficulty":"HIGH BASIC","activityType":"python","prompt":"Buat fungsi reusable untuk membersihkan data sensor. Fungsi valid_readings(values) mengembalikan list baru berisi angka 0–100 (inklusif). Contoh: [-2, 0, 45, 101] menjadi [0, 45] . Starter: def valid_readings(values): result = [] # lengkapi logika return result print(valid_readings([-2, 0, 45, 101]))","answer":"Solusi dinyatakan benar jika semua pemeriksaan lolos: Loop seluruh values; Batas 0–100 inklusif; Append nilai valid; Return list baru.","options":["Pemeriksaan: Loop seluruh values","Pemeriksaan: Batas 0–100 inklusif","Pemeriksaan: Append nilai valid","Pemeriksaan: Return list baru"],"source":"Sumber: teens.html · pythonChallenges"},{"id":"teens-stage-2-06","audience":"Teens","stage":"Stage 2","number":6,"kind":"scored","focus":"Inventory Frequency","pillar":"Coding","difficulty":"ADVANCED EVIDENCE","activityType":"python","prompt":"Bangun penghitung frekuensi tanpa bergantung pada data contoh. Fungsi count_items(items) harus mengembalikan dictionary jumlah setiap item. Contoh [\"bolt\",\"gear\",\"bolt\"] → {\"bolt\": 2, \"gear\": 1} . Starter: def count_items(items): counts = {} # tulis solusi reusable return counts","answer":"Solusi dinyatakan benar jika semua pemeriksaan lolos: Iterasi semua item; Tangani key baru; Tambah key yang sudah ada; Return dictionary.","options":["Pemeriksaan: Iterasi semua item","Pemeriksaan: Tangani key baru","Pemeriksaan: Tambah key yang sudah ada","Pemeriksaan: Return dictionary"],"source":"Sumber: teens.html · pythonChallenges"},{"id":"teens-stage-2-07","audience":"Teens","stage":"Stage 2","number":7,"kind":"scored","focus":"Shortest Route Cost","pillar":"Coding","difficulty":"HIGHEST EVIDENCE","activityType":"python","prompt":"Implementasikan algoritma untuk memilih total biaya rute termurah. Fungsi cheapest_route(routes) menerima list berisi list biaya. Jumlahkan tiap rute dan kembalikan total terkecil. Harus aman untuk berbagai data uji, tanpa hardcode. Starter: def cheapest_route(routes): # contoh routes: [[4, 2, 8], [3, 3, 2]] pass","answer":"Solusi dinyatakan benar jika semua pemeriksaan lolos: Memproses setiap rute; Menjumlahkan biaya rute; Membandingkan minimum; Mengembalikan hasil.","options":["Pemeriksaan: Memproses setiap rute","Pemeriksaan: Menjumlahkan biaya rute","Pemeriksaan: Membandingkan minimum","Pemeriksaan: Mengembalikan hasil"],"source":"Sumber: teens.html · pythonChallenges"}]</script>
+  <script>
+    const RAW_ITEMS = JSON.parse(document.getElementById("rawData").textContent);
+
+    const focusSkills = {
+      "efisiensi": "memilih urutan instruksi yang aman dan efisien untuk mencapai tujuan",
+      "pola": "mengenali pola, perubahan berulang, dan memprediksi elemen berikutnya",
+      "kondisi": "menerapkan aturan jika–maka dan menghubungkan kondisi dengan hasil",
+      "looping": "memahami pengulangan instruksi serta memprediksi hasil akhirnya",
+      "debugging": "menemukan langkah atau blok yang salah lalu menentukan koreksinya",
+      "prediksi visual": "memprediksi kelanjutan visual yang logis dari sebuah kejadian",
+      "layering": "memahami urutan lapisan visual dan dampaknya terhadap objek yang terlihat",
+      "estetika warna": "memilih kombinasi warna yang kontras, nyaman, dan mudah dibaca",
+      "animasi frame": "menyusun perubahan frame agar gerak atau proses terlihat runtut",
+      "layout ui": "mengatur hierarki dan posisi elemen antarmuka agar mudah dipahami",
+      "rotasi": "membayangkan perubahan arah atau orientasi setelah objek diputar",
+      "perspektif": "membaca bentuk dari sudut pandang yang berbeda",
+      "koordinat": "menerjemahkan gerak atau posisi ke dalam koordinat dan arah",
+      "bangun ruang": "memahami susunan, volume, dan bagian tersembunyi pada objek 3D",
+      "relasi": "memahami hubungan ruang dan batas interaksi antarobjek",
+      "hardware & input": "memilih serta menggunakan perangkat input yang sesuai",
+      "ikon ui": "mengenali fungsi ikon antarmuka yang umum",
+      "struktur data": "membedakan file, folder, dan jenis data digital",
+      "troubleshooting": "memilih langkah pemeriksaan awal yang masuk akal ketika perangkat bermasalah",
+      "ikon close": "mengenali dan menggunakan kontrol untuk menutup jendela aplikasi",
+      "login aman": "memasukkan kredensial dengan teliti serta menjaga keamanan data login",
+      "file system": "menemukan, memilah, dan mengelola file berdasarkan lokasi atau jenisnya",
+      "rute bersyarat": "merencanakan rute dengan prasyarat dan urutan kondisi",
+      "pola matriks": "melacak perubahan nilai atau posisi dalam pola bertingkat",
+      "looping lanjut": "menelusuri pengulangan bertingkat dan perubahan variabel secara akurat",
+      "debugging 2.0": "mendeteksi logical error dan menjelaskan bagian yang perlu diperbaiki",
+      "sorting dasar": "mengurutkan data dan menelusuri satu langkah algoritma sorting",
+      "sinkronisasi": "menghubungkan event, pesan, waktu, dan reaksi antarobjek",
+      "state change": "memilih perubahan visual yang tepat untuk menunjukkan perubahan keadaan",
+      "visual hierarchy": "menentukan prioritas visual agar aksi utama mudah ditemukan",
+      "hierarki visual": "menentukan urutan perhatian dan prioritas informasi dalam desain",
+      "emosi berantai": "menyusun transisi ekspresi atau gerak agar cerita visual konsisten",
+      "estetika maju": "menjaga konsistensi tema, harmoni warna, dan bahasa visual",
+      "rotasi 2 sumbu": "menalar transformasi posisi atau orientasi objek pada ruang 3D",
+      "pandangan 3d": "memprediksi objek yang terlihat atau tersembunyi dari sudut kamera tertentu",
+      "kamera 3d": "mengatur sudut kamera dan memahami proyeksi ruang 3D",
+      "grup objek": "memahami relasi parent–child dan transformasi kelompok objek",
+      "volume ruang": "menghitung atau memprediksi hasil operasi bentuk dan volume 3D",
+      "proporsi skala": "mengubah ukuran objek dengan proporsi yang tetap benar",
+      "jarak 3d": "menghitung dan membandingkan jarak antartitik dalam ruang 3D",
+      "presisi input": "memasukkan urutan karakter atau shortcut secara tepat",
+      "navigasi jauh": "menavigasi halaman atau struktur folder hingga target tertentu",
+      "presisi motorik": "melakukan drag-and-drop atau pencarian digital secara terarah",
+      "ikon spesifik": "mengenali indikator teknis dan menentukan maknanya",
+      "aksi hardware": "menggunakan menu konteks atau menangani berkas digital dengan prosedur yang tepat",
+      "kontras aksesibel": "membuat kombinasi warna yang memenuhi keterbacaan aksesibel",
+      "preferensi": "menyatakan ketertarikan pribadi; respons ini tidak mengukur benar atau salah"
+    };
+
+    const specialSkills = {
+      "proses membuat layang-layang": "mengurutkan tahapan sebuah proses dari awal sampai hasil akhir",
+      "tiga stempel tertutup": "menarik kesimpulan dari petunjuk bentuk dan eliminasi pilihan",
+      "resep kue kala": "membaca hubungan urutan dan simbol arah dalam sebuah resep visual",
+      "kode angka terbalik": "membalik urutan data dengan teliti tanpa kehilangan elemen",
+      "pencocokan sidik jari": "membandingkan detail visual dan menemukan kecocokan yang presisi",
+      "mewarnai peta yogyakarta": "menyelesaikan masalah desain dengan batasan wilayah dan warna",
+      "buat anjing menggonggong": "menyusun event, broadcast, dan respons antar-karakter",
+      "pertumbuhan bunga": "menyusun perubahan keadaan secara kronologis dan masuk akal",
+      "menu game yang jelas": "mengatur ukuran, posisi, dan kontras agar tombol utama paling menonjol",
+      "warna kotak juara": "mengidentifikasi warna target di tengah informasi visual",
+      "kertas lipat berlubang": "membayangkan simetri dan hasil transformasi setelah lipatan dibuka",
+      "rotasi obyek 1": "melakukan rotasi mental untuk mencocokkan orientasi objek",
+      "potongan puzzle nomor 4": "mencocokkan detail potongan dengan struktur gambar utuh",
+      "robot diperbesar 2×": "menggunakan skala proporsional pada dua dimensi",
+      "arah mobil merah": "membaca orientasi relatif dan arah mata angin",
+      "cari rumah tujuan": "mengikuti beberapa atribut sekaligus untuk menemukan target",
+      "cari tombol mulai": "menggunakan scroll dan konfirmasi visual untuk menemukan kontrol",
+      "pindahkan bintang": "melakukan drag, mengarahkan objek, dan melepasnya pada target",
+      "buka pilihan lainnya": "menggunakan klik kanan dan menu konteks secara tepat",
+      "nomor telepon tidak lengkap": "melengkapi informasi visual yang hilang melalui pola dan ketelitian",
+      "klasifikasi": "mengelompokkan data visual dan mencocokkan setiap objek dengan atributnya",
+      "algoritma rute": "menyusun instruksi gerak, membaca arah, dan menguji rute aman",
+      "soal 1 (level 1)": "menggunakan pengulangan untuk menyederhanakan gerak lurus",
+      "soal 2 (level 2)": "menggabungkan pengulangan dengan perubahan arah pada rute",
+      "soal 3 (level 3)": "menyusun urutan gerak dan belokan sampai mencapai target",
+      "soal 4 (level 4)": "menempatkan kondisi di dalam pengulangan untuk mengikuti jalan",
+      "soal 5 (level 5)": "memeriksa kondisi jalan berulang kali sebelum mengambil aksi",
+      "soal 6 (level 6)": "menggunakan percabangan jika/jika tidak pada situasi bercabang",
+      "soal 7 (level 7)": "menerapkan loop dan if–else secara konsisten pada labirin kompleks",
+      "urutan menyalakan robot": "menulis algoritma dasar dengan urutan yang logis",
+      "ulangi langkah robot": "menuliskan pseudocode pengulangan dengan jumlah iterasi yang tepat",
+      "gerbang usia": "menuliskan kondisi inklusif dan menangani dua kemungkinan hasil",
+      "repair the score function": "membaca fungsi Python, memperbaiki kondisi, memperbarui nilai, dan mengembalikan hasil",
+      "filter sensor data": "membuat fungsi, melakukan iterasi, memfilter rentang nilai, dan mengembalikan list baru",
+      "inventory frequency": "menggunakan dictionary untuk menghitung frekuensi setiap item",
+      "shortest route cost": "memproses data bertingkat dan memilih total biaya rute paling kecil"
+    };
+
+    const pillarFallback = {
+      "Logika": "menyusun urutan, menerapkan aturan, dan memecahkan masalah secara logis",
+      "Kreativitas": "mengembangkan solusi visual yang jelas, konsisten, dan sesuai tujuan",
+      "Spasial": "memahami posisi, arah, bentuk, dan transformasi ruang",
+      "Literasi Digital": "mengoperasikan perangkat, antarmuka, dan data digital secara mandiri",
+      "Coding": "merancang, menjalankan, dan memperbaiki solusi komputasional"
+    };
+
+    function normalized(value) {
+      return String(value || "").toLowerCase().trim();
+    }
+
+    function skillFor(item) {
+      const key = normalized(item.focus);
+      return specialSkills[key] || focusSkills[key] || pillarFallback[item.pillar] || "menyelesaikan aktivitas sesuai tujuan dan kriteria yang diberikan";
+    }
+
+    function reportSignal(item, skill) {
+      if (item.kind === "preference") {
+        return "Simpan sebagai preferensi awal saja. Jangan menaikkan skor pilar, Assigned Module, Potential Module, atau level.";
+      }
+      if (item.stage === "Stage 1A") {
+        return "Bukti dasar untuk profil " + item.pillar + ". Gabungkan dengan soal lain pada pilar yang sama sebelum memilih kekuatan atau area perkembangan.";
+      }
+      if (item.stage === "Stage 1B") {
+        return "Bukti penguat untuk " + item.pillar + " dan potensi modul. Gunakan bersama hasil Stage 1A serta aturan validator usia/modul.";
+      }
+      return "Bukti batas penguasaan praktis. Catat first submission, final submission, attempts, dan challenge trail; keputusan level tetap mengikuti routing adaptif.";
+    }
+
+    const ANALYSIS_DATA = RAW_ITEMS.map((item) => {
+      const skill = skillFor(item);
+      const preference = item.kind === "preference";
+      return {
+        ...item,
+        skill,
+        successMeaning: preference
+          ? "Pilihan menunjukkan ketertarikan siswa pada jenis aktivitas tertentu, bukan kemampuan yang lebih tinggi atau lebih rendah."
+          : "Ada bukti bahwa siswa mampu " + skill + " pada tingkat kesulitan soal ini.",
+        developmentMeaning: preference
+          ? "Tidak ada jawaban salah. Respons kosong hanya berarti preferensi belum terkonfirmasi."
+          : "Bukti kemampuan belum terlihat pada percobaan ini; siswa perlu latihan bertahap untuk " + skill + ".",
+        reportSignal: reportSignal(item, skill)
+      };
+    });
+
+    window.REPORT_SUMMARY_DATA = ANALYSIS_DATA;
+
+    const state = { search: "", audience: "", stage: "", pillar: "" };
+    const rows = document.getElementById("analysisRows");
+    const resultCount = document.getElementById("resultCount");
+    const emptyState = document.getElementById("emptyState");
+    const pillarFilter = document.getElementById("pillarFilter");
+    const toast = document.getElementById("toast");
+
+    [...new Set(ANALYSIS_DATA.map((item) => item.pillar))].sort().forEach((pillar) => {
+      const option = document.createElement("option");
+      option.value = pillar;
+      option.textContent = pillar;
+      pillarFilter.appendChild(option);
+    });
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+    }
+
+    function answerDetails(item) {
+      const options = item.options.length
+        ? "<ol>" + item.options.map((option) => "<li>" + escapeHtml(option) + "</li>").join("") + "</ol>"
+        : "";
+      return `<details><summary>Lihat target jawaban / kriteria</summary><div class="answer-box"><b>Target:</b> ${escapeHtml(item.answer)}${options}</div></details>`;
+    }
+
+    function rowTemplate(item) {
+      const preference = item.kind === "preference";
+      return `<tr>
+        <td><div class="identity">
+          <span class="badge audience">${escapeHtml(item.audience)}</span>
+          <span class="badge stage">${escapeHtml(item.stage)} · #${item.number}</span>
+          <small>${escapeHtml(item.difficulty)} · ${escapeHtml(item.activityType)}</small>
+        </div></td>
+        <td>
+          <h3 class="focus">${escapeHtml(item.focus)}</h3>
+          <p class="prompt">${escapeHtml(item.prompt)}</p>
+          ${answerDetails(item)}
+        </td>
+        <td>
+          <span class="badge ${preference ? "preference" : "pillar"}">${escapeHtml(item.pillar)}</span>
+          <p class="skill">${escapeHtml(item.skill)}</p>
+        </td>
+        <td><div class="signal ${preference ? "interest" : "good"}"><span class="mark">${preference ? "♥" : "✓"}</span><p>${escapeHtml(item.successMeaning)}</p></div></td>
+        <td><div class="signal ${preference ? "interest" : "grow"}"><span class="mark">${preference ? "i" : "↗"}</span><p>${escapeHtml(item.developmentMeaning)}</p></div></td>
+        <td><div class="report-copy">${escapeHtml(item.reportSignal)}</div></td>
+      </tr>`;
+    }
+
+    function filteredItems() {
+      const query = normalized(state.search);
+      return ANALYSIS_DATA.filter((item) => {
+        if (state.audience && item.audience !== state.audience) return false;
+        if (state.stage && item.stage !== state.stage) return false;
+        if (state.pillar && item.pillar !== state.pillar) return false;
+        if (!query) return true;
+        return normalized([
+          item.audience, item.stage, item.focus, item.pillar, item.prompt,
+          item.answer, item.skill, item.successMeaning, item.developmentMeaning
+        ].join(" ")).includes(query);
+      });
+    }
+
+    function render() {
+      const filtered = filteredItems();
+      rows.innerHTML = filtered.map(rowTemplate).join("");
+      resultCount.textContent = "Menampilkan " + filtered.length + " dari " + ANALYSIS_DATA.length + " aktivitas";
+      emptyState.style.display = filtered.length ? "none" : "block";
+      document.querySelector(".table-scroll").style.display = filtered.length ? "block" : "none";
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function csvCell(value) {
+      return '"' + String(value ?? "").replace(/"/g, '""') + '"';
+    }
+
+    function downloadCsv() {
+      const headers = ["id","jenjang","stage","nomor","pilar","fokus","soal","target_jawaban","yang_diuji","jika_memenuhi","jika_belum","sinyal_report","sumber"];
+      const lines = [headers.map(csvCell).join(",")];
+      filteredItems().forEach((item) => {
+        lines.push([
+          item.id, item.audience, item.stage, item.number, item.pillar, item.focus,
+          item.prompt, item.answer, item.skill, item.successMeaning,
+          item.developmentMeaning, item.reportSignal, item.source
+        ].map(csvCell).join(","));
+      });
+      const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "placement-test-question-analysis.csv";
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showToast("CSV berhasil dibuat dari data yang sedang difilter.");
+    }
+
+    async function copyJson() {
+      const payload = JSON.stringify(filteredItems(), null, 2);
+      try {
+        await navigator.clipboard.writeText(payload);
+        showToast("JSON analisis berhasil disalin.");
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = payload;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+        showToast("JSON analisis berhasil disalin.");
+      }
+    }
+
+    document.getElementById("searchInput").addEventListener("input", (event) => {
+      state.search = event.target.value;
+      render();
+    });
+    document.getElementById("audienceFilter").addEventListener("change", (event) => {
+      state.audience = event.target.value;
+      render();
+    });
+    document.getElementById("stageFilter").addEventListener("change", (event) => {
+      state.stage = event.target.value;
+      render();
+    });
+    pillarFilter.addEventListener("change", (event) => {
+      state.pillar = event.target.value;
+      render();
+    });
+    document.getElementById("csvButton").addEventListener("click", downloadCsv);
+    document.getElementById("jsonButton").addEventListener("click", copyJson);
+
+    render();
+  </script>
+</body>
+</html>
