@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Report - Kalananti Academics</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Space+Grotesk:wght@500;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================================
+           GLOBAL & SCREEN VIEWPORT STYLES
+           ========================================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background-color: #cbd5e1;
+            font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+            color: #17324f;
+            line-height: 1.4;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 0;
+            gap: 24px;
+        }
+
+        /* =========================================================
+           A4 FULL PAGE FLEXIBLE CONTAINER SPECIFICATION
+           Lebar Tetap Ukuran A4 (210mm), Tinggi Fleksibel (Auto)
+           ========================================================= */
+        .a4-container {
+            width: 210mm;
+            min-height: 297mm;
+            height: auto;
+            background: #e8f2ff;
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.18), 0 3px 8px rgba(15, 23, 42, 0.08);
+            border-radius: 6px;
+            padding: 16mm 18mm 18mm 18mm;
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow: hidden;
+            background-clip: padding-box;
+            margin: 0 auto;
+        }
+
+        .report-footer {
+            width: 100%;
+            text-align: center;
+            color: rgba(38, 94, 155, 0.62);
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 750;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding-top: 14px;
+            border-top: 1px dashed rgba(38, 94, 155, 0.25);
+            margin-top: 12px;
+            flex-shrink: 0;
+        }
+
+        /* =========================================================
+           HEADER SECTION
+           ========================================================= */
+        .teen-report-head {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            padding: 18px 22px 20px;
+            border: 1.5px solid rgba(255, 255, 255, 0.42);
+            border-radius: 20px;
+            background: #173f73;
+            color: #ffffff;
+            text-align: center;
+            box-shadow: 0 14px 28px -20px rgba(16, 52, 92, 0.62);
+        }
+
+        .teen-report-head > *:not(.report-space-art) {
+            position: relative;
+            z-index: 2;
+        }
+
+        .report-space-art {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .report-space-art svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .report-art-planet {
+            position: absolute;
+            left: -20px;
+            bottom: -30px;
+            width: 105px;
+            opacity: 0.92;
+            filter: drop-shadow(0 8px 16px rgba(5, 24, 49, 0.28));
+        }
+
+        .report-art-planet-right {
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 110px;
+            opacity: 0.92;
+            filter: drop-shadow(0 8px 16px rgba(5, 24, 49, 0.28));
+            pointer-events: none;
+        }
+
+        .teen-report-brand {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .teen-report-brand img {
+            margin: 0 !important;
+            padding: 6px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 6px 16px rgba(4, 26, 55, 0.15);
+            height: 38px;
+        }
+
+        .teen-report-meta {
+            font-size: 0.74rem;
+            color: #eaf4ff;
+            text-align: right;
+            font-weight: 700;
+            line-height: 1.35;
+            letter-spacing: 0.03em;
+        }
+
+        .teen-report-status {
+            display: inline-block;
+            margin: 0 0 6px;
+            padding: 4px 12px;
+            border: 1px solid #a3d9d3;
+            border-radius: 999px;
+            background: #eef8f5;
+            color: #287d73;
+            font-size: 0.65rem;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .teen-report-head h1 {
+            max-width: 720px;
+            margin: 4px auto 6px;
+            color: #ffffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.38rem;
+            font-weight: 800;
+            line-height: 1.2;
+            text-shadow: 0 2px 8px rgba(4, 26, 55, 0.3);
+        }
+
+        .report-student-name {
+            display: inline-block;
+            max-width: 100%;
+            margin: 2px auto 10px;
+            padding: 4px 18px;
+            border-radius: 999px;
+            background: rgba(249, 192, 19, 0.18);
+            border: 1.5px solid rgba(249, 192, 19, 0.5);
+            color: #f9c013;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(4, 26, 55, 0.3);
+            word-break: break-word;
+        }
+
+        .teen-report-placement {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 6px 0 8px;
+        }
+
+        .teen-report-placement span {
+            padding: 6px 14px;
+            border-radius: 11px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 900;
+        }
+
+        .teen-module {
+            border: 2px solid #bfdbfe;
+            background: #eaf4ff;
+            color: #265e9b;
+        }
+
+        .teen-level {
+            border: 0;
+            background: linear-gradient(135deg, #f9c013, #e5ab00);
+            color: #5a3f00;
+        }
+
+        .teen-report-head .subtitle {
+            max-width: 700px;
+            margin: 0 auto;
+            color: #eaf4ff;
+            font-size: 0.76rem;
+            line-height: 1.36;
+        }
+
+        /* =========================================================
+           SECTIONS & CARDS STYLES
+           ========================================================= */
+        .teen-section {
+            padding: 14px 16px;
+            border: 1.5px solid rgba(38, 94, 155, 0.18);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.96);
+            color: #17324f;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .teen-section h2 {
+            display: block;
+            margin: 0 0 8px;
+            padding: 0 0 5px;
+            border-bottom: 2px solid rgba(38, 94, 155, 0.1);
+            color: #17324f;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.25;
+            font-weight: 800;
+        }
+
+        .teen-profile-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .teen-profile-chart {
+            width: 100%;
+            max-width: 540px;
+            height: 240px;
+            margin: 0 auto 4px;
+        }
+
+        .teen-pillar-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .teen-pillar {
+            padding: 10px 12px;
+            border: 1px solid #c8ddf2;
+            border-radius: 14px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .teen-pillar:nth-child(1) { background: #eef6ff; border-top: 2.5pt solid #3979bd; }
+        .teen-pillar:nth-child(2) { background: #fff8df; border-top: 2.5pt solid #e3aa00; }
+        .teen-pillar:nth-child(3) { background: #edf9f6; border-top: 2.5pt solid #32988d; }
+        .teen-pillar:nth-child(4) { background: #fff1f5; border-top: 2.5pt solid #db6d91; }
+
+        .teen-pillar-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .teen-pillar-head strong {
+            color: #17324f;
+            font-size: 0.84rem;
+            font-weight: 850;
+        }
+
+        .teen-band {
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-size: 0.62rem;
+            font-weight: 900;
+        }
+
+        .teen-pillar .pillar-body {
+            margin: 0;
+            color: #365d83;
+            font-size: 0.72rem;
+            line-height: 1.32;
+        }
+
+        .teen-pillar .pillar-item {
+            margin-bottom: 4px;
+        }
+
+        .teen-pillar .pillar-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .teen-pillar .tag-good {
+            color: #1e615b;
+            font-weight: 750;
+        }
+
+        .teen-pillar .tag-grow {
+            color: #866200;
+            font-weight: 750;
+        }
+
+        /* =========================================================
+           SECTION DIVIDER BANNER & TWO-COL STYLES
+           ========================================================= */
+        .teen-print-continuation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            min-height: 52px;
+            padding: 10px 18px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #102d56 0%, #173f73 60%, #2d8fb5 100%);
+            color: #ffffff;
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            box-shadow: 0 10px 24px rgba(16, 52, 92, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .report-continuation-art {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .report-continuation-art svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .teen-print-continuation strong {
+            color: #ffffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.96rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .teen-print-continuation span {
+            color: #d9eaff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+
+        .teen-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .teen-two-col .teen-section:nth-child(1) {
+            background: #eff6ff;
+            border-color: #9fc5ea;
+        }
+
+        .teen-two-col .teen-section:nth-child(2) {
+            background: #fff8e1;
+            border-color: #efd06b;
+        }
+
+        .teen-section p,
+        .teen-section li {
+            font-size: 0.75rem;
+            line-height: 1.38;
+            color: #17324f;
+        }
+
+        .teen-priority {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .teen-priority li {
+            margin-bottom: 4px;
+        }
+
+        /* LEARNING PATH SECTION */
+        .teen-path-name {
+            display: table;
+            margin: 2px auto 8px;
+            padding: 6px 18px;
+            border: 2px solid #f0b400;
+            border-radius: 12px;
+            background: #fff7d6;
+            box-shadow: 0 6px 16px rgba(240, 180, 0, 0.18);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            color: #265e9b;
+            text-align: center;
+        }
+
+        .teen-current-module {
+            display: flex;
+            width: max-content;
+            max-width: 100%;
+            align-items: center;
+            gap: 6px;
+            margin: 0 auto 10px;
+            padding: 4px 12px;
+            border: 1.5px solid #f0b400;
+            border-radius: 999px;
+            background: #fff9d8;
+            color: #704f00;
+            font-size: 0.72rem;
+            font-weight: 850;
+        }
+
+        .teen-current-module strong {
+            color: #17324f;
+        }
+
+        .teen-track {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 4px 0 8px;
+        }
+
+        .teen-track-step {
+            position: relative;
+            flex: 1 1 0;
+            min-width: 0;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border: 2px solid #7f96ad;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #17324f;
+            text-align: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.76rem;
+            font-weight: 850;
+        }
+
+        .teen-track-step.is-assigned {
+            border-color: #f0a800;
+            background: linear-gradient(135deg, #ffe45c, #f9c013);
+            color: #4b3500;
+            box-shadow: 0 8px 20px rgba(240, 168, 0, 0.28);
+        }
+
+        .teen-track-step.is-assigned::after {
+            content: '✓';
+            position: absolute;
+            top: -7px;
+            right: 12px;
+            display: grid;
+            width: 22px;
+            height: 22px;
+            place-items: center;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            background: #22a06b;
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 900;
+            box-shadow: 0 4px 8px rgba(34, 160, 107, 0.25);
+        }
+
+        .teen-track-arrow {
+            flex: 0 0 auto;
+            color: #7f96ad;
+            font-size: 1.1rem;
+            font-weight: 900;
+        }
+
+        .teen-report-note {
+            display: block;
+            margin-top: 6px;
+            padding-top: 5px;
+            border-top: 1px dashed #cbd5e1;
+            font-size: 0.65rem;
+            line-height: 1.25;
+            color: #475569;
+        }
+
+        /* =========================================================
+           PRINT STYLES FOR FULL A4 OUTPUT
+           ========================================================= */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            body {
+                background: none !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+
+            .a4-container {
+                width: 210mm !important;
+                min-height: 297mm !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 14mm 16mm 16mm 16mm !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         SINGLE CONTINUOUS A4 CONTAINER (RINGKAS & SINGKAT)
+         ========================================================= -->
+    <div class="a4-container" id="reportPaper">
+        
+        <!-- HEADER SECTION -->
+        <header class="teen-report-head">
+            <div class="report-space-art" aria-hidden="true">
+                <svg viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="teensReportSky" x1="0" y1="0" x2="1" y2="1">
+                            <stop stop-color="#102d56"/>
+                            <stop offset=".58" stop-color="#265e9b"/>
+                            <stop offset="1" stop-color="#2d8fb5"/>
+                        </linearGradient>
+                        <pattern id="teensReportStars" width="92" height="92" patternUnits="userSpaceOnUse">
+                            <circle cx="12" cy="18" r="2" fill="#fff" opacity=".68"/>
+                            <circle cx="70" cy="36" r="1.4" fill="#f9c013" opacity=".9"/>
+                            <circle cx="42" cy="76" r="1.2" fill="#fff" opacity=".48"/>
+                        </pattern>
+                    </defs>
+                    <rect width="1000" height="420" fill="url(#teensReportSky)"/>
+                    <rect width="1000" height="420" fill="url(#teensReportStars)"/>
+                    <circle cx="850" cy="34" r="170" fill="#74c9d7" opacity=".13"/>
+                    <circle cx="910" cy="70" r="105" fill="#f9c013" opacity=".10"/>
+                    <path d="M0 360 C230 300 410 420 650 350 C800 308 900 310 1000 270 V420 H0Z" fill="#0b274d" opacity=".34"/>
+                </svg>
+                <img class="report-art-planet" src="https://cdn-web-2.ruangguru.com/landing-pages/assets/e77f536b-e591-4ba8-b5b8-f5b2a3d3b33b.png" alt="">
+                <img class="report-art-planet-right" src="https://cdn-web-2.ruangguru.com/landing-pages/assets/5f93f855-0466-47b3-ba85-bbaabbad7a2e.png" alt="">
+            </div>
+            
+            <div class="teen-report-brand">
+                <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo">
+                <span class="teen-report-meta" id="reportMeta">PLACEMENT REPORT - TEENS 16–18<br>27 Juli 2026 · USIA 18 TAHUN</span>
+            </div>
+            
+            <span class="teen-report-status" id="reportStatus">STATUS: DIREKOMENDASIKAN UNTUK MEMBANGUN FONDASI</span>
+            
+            <h1>Profil Potensi dan Rekomendasi Belajar</h1>
+            
+            <div class="report-student-name" id="studentName">Budi Pratama</div>
+            
+            <div class="teen-report-placement">
+                <span class="teen-module" id="assignedModule">Python</span>
+                <span class="teen-level" id="assignedLevel">FOUNDATIONAL — Lv1</span>
+            </div>
+            
+            <p class="subtitle" id="mainSubtitle">
+                Budi Pratama direkomendasikan memulai Python pada FOUNDATIONAL — Lv1.<br>Kekuatan utama terlihat pada pilar Logika, dengan area perkembangan berikutnya pada Kreativitas.
+            </p>
+        </header>
+
+        <!-- SECTION 1: PROFIL KEMAMPUAN -->
+        <section class="teen-section">
+            <h2 id="sectionSkillTitle">Profil Kemampuan Siswa</h2>
+            <div class="teen-profile-layout">
+                <!-- DYNAMIC SPIDER / RADAR CHART SVG CONTAINER -->
+                <div class="teen-profile-chart" id="radarChartContainer">
+                    <!-- Rendered by JavaScript -->
+                </div>
+
+                <!-- 4 PILLARS GRID WITH DYNAMIC CONCISE STRENGTHS & GROWTH AREAS -->
+                <div class="teen-pillar-grid" id="pillarGridContainer">
+                    <!-- Rendered by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2 BANNER: REKOMENDASI & LEARNING PATH -->
+        <div class="teen-print-continuation">
+            <div class="report-continuation-art" aria-hidden="true">
+                <svg viewBox="0 0 1000 120" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="teensPageTwoSky" x1="0" x2="1">
+                            <stop stop-color="#102d56"/>
+                            <stop offset=".58" stop-color="#265e9b"/>
+                            <stop offset="1" stop-color="#2d8fb5"/>
+                        </linearGradient>
+                        <pattern id="teensPageTwoStars" width="85" height="85" patternUnits="userSpaceOnUse">
+                            <circle cx="15" cy="22" r="2" fill="#fff" opacity=".55"/>
+                            <circle cx="61" cy="52" r="1.5" fill="#f9c013" opacity=".9"/>
+                        </pattern>
+                    </defs>
+                    <rect width="1000" height="120" fill="url(#teensPageTwoSky)"/>
+                    <rect width="1000" height="120" fill="url(#teensPageTwoStars)"/>
+                </svg>
+            </div>
+            <strong id="continuationTitle">Rekomendasi &amp; Learning Path Siswa</strong>
+            <span>KALANANTI ACADEMICS</span>
+        </div>
+
+        <!-- TWO COLUMNS GRID -->
+        <div class="teen-two-col">
+            <section class="teen-section">
+                <h2>Mengapa Mulai dari Level Ini?</h2>
+                <p id="whyLevelText">Rekomendasi ini bertujuan memperkuat fondasi logika &amp; algoritma dasar secara bertahap sebelum masuk ke proyek pemrograman yang lebih kompleks.</p>
+            </section>
+
+            <section class="teen-section">
+                <h2>Fokus Perkembangan Awal</h2>
+                <ul class="teen-priority" id="focusAreaList">
+                    <!-- Rendered by JavaScript -->
+                </ul>
+            </section>
+        </div>
+
+        <!-- LEARNING PATH SECTION -->
+        <section class="teen-section">
+            <h2 id="learningPathTitle">Learning Path Siswa</h2>
+            <div class="teen-path-name" id="pathName">Interactive Creator Path</div>
+            <div class="teen-current-module">
+                <span aria-hidden="true">✦</span>
+                <span>Rekomendasi modul saat ini: <strong id="currentModuleText">Python</strong></span>
+            </div>
+            <div class="teen-track" id="learningTrackContainer">
+                <!-- Rendered by JavaScript -->
+            </div>
+        </section>
+
+        <!-- DIRECTION & INTEREST SECTION -->
+        <section class="teen-section" style="background:#eef8f5; border-color:#8bcfc5;">
+            <h2>Arah Belajar Berdasarkan Minat</h2>
+            <p id="interestAlignmentText">Jalur belajar disesuaikan dengan minat siswa pada proyek interaktif.</p>
+            <p style="margin-top: 6px;" id="studentReasonContainer"><strong>Alasan siswa:</strong> <span id="studentReasonText">Belum diisi.</span></p>
+            <p class="teen-report-note">Hasil placement ini digunakan sebagai rekomendasi titik mulai belajar. Perkembangan siswa tetap dipantau melalui proses belajar dan umpan balik mentor.</p>
+        </section>
+
+        <!-- REPORT FOOTER -->
+        <footer class="report-footer">
+            CREATED BY KALANANTI ACADEMICS · © 2026
+        </footer>
+
+    </div>
+
+    <!-- =========================================================
+         DYNAMIC CONCISE SKILL & QUESTION ANALYSIS ENGINE
+         ========================================================= -->
+    <script>
+        (function initDynamicPlacementReport() {
+            'use strict';
+
+            const SKILL_MAP = {
+                logic: {
+                    label: 'Logika',
+                    skills: {
+                        'Efisiensi': { strong: 'menyusun urutan efisien', grow: 'efisiensi langkah' },
+                        'Pola': { strong: 'mengenali pola logika', grow: 'pola logika' },
+                        'Kondisi': { strong: 'logika percabangan', grow: 'logika percabangan' },
+                        'Looping': { strong: 'perulangan (looping)', grow: 'instruksi looping' },
+                        'Debugging': { strong: 'debugging & perbaikan kode', grow: 'debugging alur error' }
+                    }
+                },
+                creativity: {
+                    label: 'Kreativitas',
+                    skills: {
+                        'Prediksi Visual': { strong: 'prediksi alur visual', grow: 'prediksi alur visual' },
+                        'Layering': { strong: 'struktur layering', grow: 'penataan susunan layer' },
+                        'Estetika Warna': { strong: 'kombinasi kontras warna', grow: 'pemilihan kontras warna' },
+                        'Animasi Frame': { strong: 'alur gerakan frame', grow: 'penyusunan frame animasi' },
+                        'Layout UI': { strong: 'layout UI terstruktur', grow: 'tata letak antarmuka' }
+                    }
+                },
+                spatial: {
+                    label: 'Spasial',
+                    skills: {
+                        'Rotasi': { strong: 'rotasi & arah objek', grow: 'visualisasi rotasi' },
+                        'Perspektif': { strong: 'sudut pandang 3D', grow: 'perspektif 3D' },
+                        'Koordinat': { strong: 'titik koordinat X-Y', grow: 'pemetaan koordinat' },
+                        'Bangun Ruang': { strong: 'susunan ruang 3D', grow: 'volume & ruang 3D' },
+                        'Relasi': { strong: 'relasi & batas area', grow: 'relasi antar-objek' }
+                    }
+                },
+                digital: {
+                    label: 'Literasi Digital',
+                    skills: {
+                        'Hardware & Input': { strong: 'penggunaan mouse/keyboard', grow: 'perangkat keras input' },
+                        'Ikon UI': { strong: 'pengenalan ikon & simbol UI', grow: 'simbol & ikon antarmuka' },
+                        'Struktur Data': { strong: 'organisasi file & folder', grow: 'struktur file & folder' },
+                        'Troubleshooting': { strong: 'troubleshooting mandiri', grow: 'penanganan kendala teknis' },
+                        'File System': { strong: 'navigasi sistem penyimpanan', grow: 'navigasi direktori' }
+                    }
+                }
+            };
+
+            const DEFAULT_DATA = {
+                studentName: 'Budi Pratama',
+                age: 16,
+                reportDate: '27 Juli 2026',
+                assignedModule: 'Python',
+                level: 'FOUNDATIONAL — Lv1',
+                lv3Candidate: false,
+                pathName: 'Interactive Creator Path',
+                learningModules: ['Scratch', 'Roblox Studio', 'Python'],
+                studentReason: 'Suka membuat program game dan ingin mendalami logika coding Python.',
+                questionResults: [
+                    { pillar: 'logic', focus: 'Efisiensi', isCorrect: true },
+                    { pillar: 'logic', focus: 'Pola', isCorrect: true },
+                    { pillar: 'logic', focus: 'Kondisi', isCorrect: true },
+                    { pillar: 'logic', focus: 'Debugging', isCorrect: true },
+                    { pillar: 'logic', focus: 'Looping', isCorrect: false },
+
+                    { pillar: 'creativity', focus: 'Prediksi Visual', isCorrect: true },
+                    { pillar: 'creativity', focus: 'Estetika Warna', isCorrect: true },
+                    { pillar: 'creativity', focus: 'Layering', isCorrect: false },
+                    { pillar: 'creativity', focus: 'Animasi Frame', isCorrect: false },
+                    { pillar: 'creativity', focus: 'Layout UI', isCorrect: false },
+
+                    { pillar: 'spatial', focus: 'Rotasi', isCorrect: true },
+                    { pillar: 'spatial', focus: 'Perspektif', isCorrect: true },
+                    { pillar: 'spatial', focus: 'Koordinat', isCorrect: true },
+                    { pillar: 'spatial', focus: 'Relasi', isCorrect: true },
+                    { pillar: 'spatial', focus: 'Bangun Ruang', isCorrect: false },
+
+                    { pillar: 'digital', focus: 'Hardware & Input', isCorrect: true },
+                    { pillar: 'digital', focus: 'Ikon UI', isCorrect: true },
+                    { pillar: 'digital', focus: 'Troubleshooting', isCorrect: true },
+                    { pillar: 'digital', focus: 'Struktur Data', isCorrect: false },
+                    { pillar: 'digital', focus: 'File System', isCorrect: false }
+                ]
+            };
+
+            function getReportData() {
+                const params = new URLSearchParams(window.location.search);
+                const custom = window.reportData || window.PlacementReportData || {};
+
+                const studentName = custom.studentName || params.get('name') || DEFAULT_DATA.studentName;
+                const age = custom.age || params.get('age') || DEFAULT_DATA.age;
+                const reportDate = custom.reportDate || params.get('date') || DEFAULT_DATA.reportDate;
+                const assignedModule = custom.assignedModule || params.get('module') || DEFAULT_DATA.assignedModule;
+                const level = custom.level || params.get('level') || DEFAULT_DATA.level;
+                const pathName = custom.pathName || params.get('path') || DEFAULT_DATA.pathName;
+                const studentReason = custom.studentReason || params.get('reason') || DEFAULT_DATA.studentReason;
+                const lv3Candidate = Boolean(custom.lv3Candidate || params.get('lv3') === 'true');
+
+                let questionResults = custom.questionResults || DEFAULT_DATA.questionResults;
+                let scores = {};
+                let pillarBreakdown = {};
+
+                if (Array.isArray(questionResults) && questionResults.length > 0) {
+                    ['logic', 'creativity', 'spatial', 'digital'].forEach(p => {
+                        const items = questionResults.filter(q => q.pillar === p);
+                        const correctItems = items.filter(q => q.isCorrect);
+                        const wrongItems = items.filter(q => !q.isCorrect);
+                        const total = items.length || 1;
+                        const ratio = correctItems.length / total;
+
+                        const strongSkills = correctItems.map(q => SKILL_MAP[p]?.skills[q.focus]?.strong || q.focus);
+                        const growthSkills = wrongItems.map(q => SKILL_MAP[p]?.skills[q.focus]?.grow || q.focus);
+
+                        scores[p] = Math.max(0, Math.min(1, ratio));
+                        pillarBreakdown[p] = {
+                            score: scores[p],
+                            strongSkills: [...new Set(strongSkills)],
+                            growthSkills: [...new Set(growthSkills)]
+                        };
+                    });
+                } else {
+                    const parseScore = (val, fallback) => {
+                        let num = Number(val);
+                        if (!Number.isFinite(num)) return fallback;
+                        if (num > 1) num = num / 100;
+                        return Math.max(0, Math.min(1, num));
+                    };
+
+                    scores = {
+                        logic: parseScore(custom.scores?.logic ?? params.get('logic'), 0.8),
+                        creativity: parseScore(custom.scores?.creativity ?? params.get('creativity'), 0.4),
+                        spatial: parseScore(custom.scores?.spatial ?? params.get('spatial'), 0.8),
+                        digital: parseScore(custom.scores?.digital ?? params.get('digital'), 0.6)
+                    };
+
+                    ['logic', 'creativity', 'spatial', 'digital'].forEach(p => {
+                        const score = scores[p];
+                        const allPillarSkills = Object.values(SKILL_MAP[p].skills);
+                        pillarBreakdown[p] = {
+                            score,
+                            strongSkills: [allPillarSkills[0].strong],
+                            growthSkills: [allPillarSkills[1].grow]
+                        };
+                    });
+                }
+
+                return {
+                    studentName,
+                    age,
+                    reportDate,
+                    assignedModule,
+                    level,
+                    lv3Candidate,
+                    scores,
+                    pillarBreakdown,
+                    pathName,
+                    learningModules: custom.learningModules || DEFAULT_DATA.learningModules,
+                    studentReason
+                };
+            }
+
+            function renderRadarChart(l, c, s, d) {
+                const cx = 360, cy = 265, r = 195;
+                const pL = `${cx},${cy - r * l}`;
+                const pC = `${cx + r * c},${cy}`;
+                const pS = `${cx},${cy + r * s}`;
+                const pD = `${cx - r * d},${cy}`;
+
+                return `
+                <svg width="100%" height="100%" viewBox="0 0 720 535" style="display:block; margin: 0 auto; filter: drop-shadow(0 12px 18px rgba(38,94,155,0.12)); max-width: 650px;">
+                    <polygon points="${cx},${cy-r} ${cx+r},${cy} ${cx},${cy+r} ${cx-r},${cy}" fill="rgba(255,255,255,0.9)" stroke="#cbd5e1" stroke-width="2"/>
+                    <polygon points="${cx},${cy-r*0.75} ${cx+r*0.75},${cy} ${cx},${cy+r*0.75} ${cx-r*0.75},${cy}" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>
+                    <polygon points="${cx},${cy-r*0.5} ${cx+r*0.5},${cy} ${cx},${cy+r*0.5} ${cx-r*0.5},${cy}" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>
+                    <polygon points="${cx},${cy-r*0.25} ${cx+r*0.25},${cy} ${cx},${cy+r*0.25} ${cx-r*0.25},${cy}" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,6"/>
+                    <line x1="${cx}" y1="${cy-r}" x2="${cx}" y2="${cy+r}" stroke="#cbd5e1" stroke-width="2"/>
+                    <line x1="${cx-r}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="#cbd5e1" stroke-width="2"/>
+                    <polygon points="${pL} ${pC} ${pS} ${pD}" fill="rgba(38,94,155,0.25)" stroke="#265e9b" stroke-width="3.5" stroke-linejoin="round"/>
+                    <circle cx="${cx}" cy="${cy - r*l}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+                    <circle cx="${cx + r*c}" cy="${cy}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+                    <circle cx="${cx}" cy="${cy + r*s}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+                    <circle cx="${cx - r*d}" cy="${cy}" r="7" fill="#f9c013" stroke="#fff" stroke-width="2.5"/>
+                    <text x="${cx}" y="${cy - r - 16}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">LOGIKA</text>
+                    <text x="${cx + r + 16}" y="${cy + 5}" text-anchor="start" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">KREATIVITAS</text>
+                    <text x="${cx}" y="${cy + r + 30}" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">SPASIAL</text>
+                    <text x="${cx - r - 16}" y="${cy + 5}" text-anchor="end" font-family="'Orbitron', sans-serif" font-size="16" font-weight="800" fill="#17324f">DIGITAL</text>
+                </svg>`;
+            }
+
+            function getBand(ratio) {
+                if (ratio >= 0.8) return { label: 'Kekuatan Utama', bg: '#eaf8f3', color: '#1e615b' };
+                if (ratio >= 0.65) return { label: 'Berkembang Baik', bg: '#eff6ff', color: '#265e9b' };
+                if (ratio >= 0.45) return { label: 'Sedang Bertumbuh', bg: '#fff8e1', color: '#866200' };
+                return { label: 'Perlu Pendampingan', bg: '#fff1f2', color: '#9f1239' };
+            }
+
+            function renderReport() {
+                const data = getReportData();
+
+                document.getElementById('reportMeta').innerHTML = 
+                    `PLACEMENT REPORT - TEENS 16–18<br>${data.reportDate} · USIA ${data.age} TAHUN`;
+
+                document.getElementById('reportStatus').textContent = data.lv3Candidate
+                    ? 'KANDIDAT REVIEW EMERGING — Lv3'
+                    : data.level.startsWith('FOUNDATIONAL')
+                        ? 'STATUS: DIREKOMENDASIKAN UNTUK MEMBANGUN FONDASI'
+                        : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK';
+
+                document.getElementById('studentName').textContent = data.studentName;
+                document.getElementById('assignedModule').textContent = data.assignedModule;
+                document.getElementById('assignedLevel').textContent = data.level;
+
+                const sortedPillars = Object.entries(data.scores).sort((a, b) => b[1] - a[1]);
+                const topPillarKey = sortedPillars[0][0];
+                const bottomPillarKey = sortedPillars[sortedPillars.length - 1][0];
+
+                const topPillarName = SKILL_MAP[topPillarKey].label;
+                const bottomPillarName = SKILL_MAP[bottomPillarKey].label;
+
+                // CONCISE SUBTITLE (NO LONG WORDY PARAGRAPHS)
+                document.getElementById('mainSubtitle').innerHTML = 
+                    `${data.studentName} direkomendasikan memulai <strong>${data.assignedModule}</strong> pada <strong>${data.level}</strong>.<br>` +
+                    `Kekuatan utama terlihat pada pilar <strong>${topPillarName}</strong>, dengan fokus perkembangan berikutnya pada <strong>${bottomPillarName}</strong>.`;
+
+                document.getElementById('sectionSkillTitle').textContent = `Profil Kemampuan ${data.studentName}`;
+
+                document.getElementById('radarChartContainer').innerHTML = renderRadarChart(
+                    data.scores.logic,
+                    data.scores.creativity,
+                    data.scores.spatial,
+                    data.scores.digital
+                );
+
+                // CONCISE 4 PILLARS
+                const pillarContainer = document.getElementById('pillarGridContainer');
+                pillarContainer.innerHTML = Object.entries(data.scores).map(([key, score]) => {
+                    const info = SKILL_MAP[key];
+                    const breakdown = data.pillarBreakdown[key];
+                    const band = getBand(score);
+
+                    const strongList = breakdown.strongSkills.length > 0
+                        ? breakdown.strongSkills.join(', ')
+                        : 'Pemahaman konsep dasar';
+
+                    const growthList = breakdown.growthSkills.length > 0
+                        ? breakdown.growthSkills.join(', ')
+                        : 'Pengembangan tingkat lanjut';
+
+                    return `
+                        <article class="teen-pillar">
+                            <div class="teen-pillar-head">
+                                <strong>${info.label}</strong>
+                                <span class="teen-band" style="background:${band.bg}; color:${band.color}; border: 1px solid ${band.color};">${band.label}</span>
+                            </div>
+                            <div class="pillar-body">
+                                <div class="pillar-item">
+                                    <span class="tag-good">✓ Kekuatan:</span> ${strongList}.
+                                </div>
+                                <div class="pillar-item" style="margin-top:3px;">
+                                    <span class="tag-grow">⚡ Area Latihan:</span> ${growthList}.
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+                document.getElementById('continuationTitle').textContent = `Rekomendasi & Learning Path ${data.studentName}`;
+
+                // CONCISE WHY LEVEL
+                document.getElementById('whyLevelText').textContent = data.level.startsWith('FOUNDATIONAL')
+                    ? `Rekomendasi ini bertujuan memperkuat fondasi logika & algoritma dasar pilar ${bottomPillarName} sebelum masuk ke proyek ${data.assignedModule} yang lebih kompleks.`
+                    : `Siswa telah siap untuk level BASIC. Fokus berikutnya adalah mengembangkan solusi mandiri pada proyek ${data.assignedModule}.`;
+
+                // CONCISE FOCUS LIST
+                const focusList = document.getElementById('focusAreaList');
+                let allGrowthSkills = [];
+                Object.values(data.pillarBreakdown).forEach(p => {
+                    if (p.growthSkills && p.growthSkills.length > 0) {
+                        allGrowthSkills.push(...p.growthSkills);
+                    }
+                });
+
+                if (allGrowthSkills.length === 0) {
+                    allGrowthSkills = [
+                        'Algoritma & pseudocode terstruktur',
+                        'Variabel, kondisi, & perulangan',
+                        'Debugging mandiri'
+                    ];
+                }
+
+                focusList.innerHTML = allGrowthSkills.slice(0, 3).map(skill => {
+                    const formatted = skill.charAt(0).toUpperCase() + skill.slice(1);
+                    return `<li>${formatted}.</li>`;
+                }).join('');
+
+                // LEARNING PATH
+                document.getElementById('learningPathTitle').textContent = `Learning Path ${data.studentName}`;
+                document.getElementById('pathName').textContent = data.pathName;
+                document.getElementById('currentModuleText').textContent = data.assignedModule;
+
+                const trackContainer = document.getElementById('learningTrackContainer');
+                trackContainer.innerHTML = data.learningModules.map((mod, idx) => {
+                    const isAssigned = mod === data.assignedModule;
+                    const arrow = idx > 0 ? `<span class="teen-track-arrow" aria-hidden="true">→</span>` : '';
+                    const assignedClass = isAssigned ? ' is-assigned' : '';
+                    return `
+                        ${arrow}
+                        <div class="teen-track-step${assignedClass}">${idx + 1}. ${mod}</div>
+                    `;
+                }).join('');
+
+                // CONCISE DIRECTION & INTEREST
+                document.getElementById('interestAlignmentText').textContent = 
+                    `Jalur belajar ${data.pathName} disesuaikan dengan minat siswa pada proyek interaktif.`;
+
+                document.getElementById('studentReasonText').textContent = data.studentReason || 'Belum diisi.';
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', renderReport);
+            } else {
+                renderReport();
+            }
+        })();
+    </script>
+</body>
+</html>
