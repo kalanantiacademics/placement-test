@@ -719,34 +719,17 @@
           </div>
         </div>
 
-        <!-- CARD 2: LOGIN DASHBOARD CABANG -->
+        <!-- CARD 2: LOGIN DASHBOARD -->
         <div class="portal-card">
           <div class="card-header">
             <div class="badge-icon icon-dashboard">📊</div>
             <h2 class="card-title">Lihat Hasil Placement Test</h2>
-            <p class="card-subtitle">Masuk untuk melihat daftar hasil placement test khusus cabang Anda.</p>
+            <p class="card-subtitle">Masuk menggunakan email terdaftar untuk melihat seluruh hasil placement test.</p>
           </div>
 
           <div id="loginAlertBox" class="alert-box"></div>
 
           <form id="loginForm" onsubmit="handleLoginSubmit(event)">
-            <!-- Branch Selector -->
-            <div class="form-group">
-              <label class="form-label">Pilih Cabang / Online</label>
-              <div class="custom-select-container" id="branchSelectContainer">
-                <div class="custom-select-trigger" onclick="toggleCustomSelect()">
-                  <span id="selectedBranchText" class="placeholder">Pilih Cabang (cth: Online / Jakarta Selatan)</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="custom-select-dropdown">
-                  <input type="text" class="custom-select-search" id="branchSearchInput" placeholder="Cari cabang..." oninput="filterBranchOptions()">
-                  <div class="custom-select-options" id="branchOptionsList">
-                    <!-- Options populated via JS -->
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <!-- Email Input -->
             <div class="form-group">
               <label class="form-label">Email Terdaftar di Akademik</label>
@@ -848,8 +831,8 @@
   <div class="modal-overlay" id="requestModal">
     <div class="modal-box">
       <button class="modal-close" onclick="closeRequestModal()"><i class="fa-solid fa-xmark"></i></button>
-      <h3 class="modal-title">Request Akses Cabang</h3>
-      <p class="modal-desc">Isi form di bawah untuk meminta akses ke dashboard cabang Anda.</p>
+      <h3 class="modal-title">Request Akses Dashboard</h3>
+      <p class="modal-desc">Isi form di bawah untuk meminta akses ke dashboard placement test.</p>
 
       <div id="modalAlertBox" class="alert-box"></div>
 
@@ -862,11 +845,6 @@
         <div class="form-group">
           <label class="form-label">Email Akademik</label>
           <input type="email" id="reqEmail" class="input-field" placeholder="Masukkan email akademik..." required>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Cabang Terpilih</label>
-          <input type="text" id="reqBranch" class="input-field" readonly style="background: #f0f5fa;">
         </div>
 
         <div class="form-group">
@@ -887,8 +865,8 @@
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYga6HmAaTkAjVnwMX-AVJ7shYdg8JWeiLfcExhV0Lv1y6lxL0qr0oQIvYQkaLRznh/exec';
     
-    let availableBranches = ["Online"];
-    let selectedBranch = "";
+    let availableBranches = ["All Access"];
+    let selectedBranch = "All Access";
     let selectedRole = "BM";
     let rawDashboardData = [];
     let currentSession = null;
@@ -1011,11 +989,6 @@
 
     // Request Access Modal
     function openRequestModal() {
-      if (!selectedBranch) {
-        showAlert('loginAlertBox', 'Pilih cabang terlebih dahulu sebelum meminta akses.', 'error');
-        return;
-      }
-      document.getElementById('reqBranch').value = selectedBranch;
       document.getElementById('modalAlertBox').className = 'alert-box';
       document.getElementById('modalAlertBox').style.display = 'none';
       document.getElementById('requestModal').classList.add('active');
@@ -1035,10 +1008,9 @@
       e.preventDefault();
       const name = document.getElementById('reqName').value.trim();
       const email = document.getElementById('reqEmail').value.trim();
-      const branch = document.getElementById('reqBranch').value.trim();
       const submitBtn = document.getElementById('reqSubmitBtn');
 
-      if (!name || !email || !branch) {
+      if (!name || !email) {
         showAlert('modalAlertBox', 'Semua field wajib diisi.', 'error');
         return;
       }
@@ -1051,7 +1023,7 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'request_dashboard_access',
-          branch: branch,
+          branch: 'All Access',
           name: name,
           email: email,
           role: selectedRole
@@ -1085,10 +1057,6 @@
       const email = document.getElementById('loginEmailInput').value.trim();
       const loginBtn = document.getElementById('loginBtn');
 
-      if (!selectedBranch) {
-        showAlert('loginAlertBox', 'Silakan pilih cabang terlebih dahulu.', 'error');
-        return;
-      }
       if (!email) {
         showAlert('loginAlertBox', 'Silakan masukkan email terdaftar.', 'error');
         return;
@@ -1102,7 +1070,7 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'login_dashboard',
-          branch: selectedBranch,
+          branch: 'All Access',
           email: email
         })
       })

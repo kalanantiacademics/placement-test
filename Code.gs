@@ -897,11 +897,11 @@ function recordAccessRequest_(spreadsheet, branch, name, email, role, status) {
 }
 
 function loginDashboard_(operation) {
-  const branch = String(operation.branch || '').trim();
+  const branch = String(operation.branch || 'All Access').trim();
   const email = String(operation.email || '').trim().toLowerCase();
 
-  if (!branch || !email) {
-    throw new Error('Cabang dan Email wajib diisi.');
+  if (!email) {
+    throw new Error('Email wajib diisi.');
   }
 
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
