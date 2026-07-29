@@ -2015,7 +2015,7 @@
         }
       });
     } catch (error) {
-      console.error('[Placement PDF] Lampiran visual belum siap; email tidak dikirim dan akan dicoba ulang.', error);
+      console.error('[Placement PDF] Lampiran visual belum siap; laporan PDF belum dapat disinkronkan dan akan dicoba ulang.', error);
       localStorage.setItem('pt_pdf_generation_error_v1', JSON.stringify({
         message: String(error?.message || error),
         recordedAt: new Date().toISOString()

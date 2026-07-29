@@ -4,6 +4,18 @@ All notable changes, bug fixes, visual improvements, and architectural updates t
 
 ---
 
+## [Unreleased] - 2026-07-29
+
+### 33. Updated Parent Email Delivery Flow to Default 'Not Sent' & Added Manual Spreadsheet / Dashboard Dropdown Trigger
+
+#### **What Was Fixed & Goal**
+- **Default 'Not Sent' Email Status**: Updated [`Code.gs`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/Code.gs#L243) so test completion (`finalize`) no longer sends parent emails automatically. PDF reports are generated and safely linked in Google Drive, while `email_status` is initialized to `'not sent'`.
+- **Spreadsheet Column AF `onEdit(e)` Trigger**: Added `onEdit(e)` trigger in [`Code.gs`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/Code.gs#L305). Changing Column AF (`email_status`) to `Sent` in the Google Sheet automatically triggers parent email delivery via `sendParentEmail_()`.
+- **Interactive Branch Dashboard Dropdown**: Replaced static text in [`hasil-placement-test-kalananti.html`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/hasil-placement-test-kalananti.html#L1240) with an interactive `<select>` dropdown (`Not Sent` / `Sent`). Selecting `Sent` calls the Web App API (`action: 'update_email_status'`) to send the PDF email and update session state.
+- **System Synchronization & PRD Update**: Updated `placement-sync.js`, `kids-final-placement-test.html`, `junior-final-placement-test.html`, `teens.html`, and [`PRD-placement-test.md`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/PRD-placement-test.md#L1650).
+
+---
+
 ## [Unreleased] - 2026-07-27
 
 ### 32. Added Branch Dashboard Portal, Updated PRD Architecture, Fixed Question Timer Skipping & Radar Chart Normalization

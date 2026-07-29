@@ -1650,8 +1650,9 @@ When the test is completely finished, the frontend sends a `finalize` action.
 - **Storage Action:**
   1. The browser renders the approved visual report and converts that report DOM into an A4 PDF attachment.
   2. `Code.gs` validates the browser-generated PDF attachment and saves the exact attachment to the designated Google Drive folder.
-  3. It attempts to email the parent with that same PDF attachment.
-  4. Finally, it updates the **`Sessions`** sheet one last time, changing `session_status` to `'completed'`, and attaching the Google Drive PDF URL and email delivery status to the row.
+  3. It sets `email_status` to `'not sent'` by default (email is **not** automatically sent upon test completion).
+  4. Finally, it updates the **`Sessions`** sheet one last time, changing `session_status` to `'completed'`, and attaching the Google Drive PDF URL to the row.
+  5. Parent email delivery is triggered manually by changing Column AF (`email_status`) to `Sent` in the Google Sheet (via `onEdit(e)`) or via the Branch Dashboard dropdown selector (`action: 'update_email_status'`).
 
 `Code.gs` is not the active visual report renderer. The active visual PDF must come from the browser through `payload.pdfAttachment`. The legacy `buildPdfHtml_()` helper may still exist in the backend source, but it is not the source of truth for the approved Junior, Kids, or Teens report layout.
 

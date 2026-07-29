@@ -111,6 +111,9 @@ function doPost(event) {
     } else if (action === 'get_branch_results') {
       const result = getBranchResults_(operation);
       return json_({ ok: true, ...result });
+    } else if (action === 'update_email_status') {
+      const result = updateEmailStatus_(operation);
+      return json_({ ok: true, ...result });
     } else if (action === 'logout_dashboard') {
       const result = logoutDashboard_(operation);
       return json_({ ok: true, ...result });
@@ -241,22 +244,12 @@ function finalize_(operation) {
   if (!hasVisualPdf) throw new Error('missing_visual_pdf_attachment');
 
   const pdf = createResultPdf_(operation.submissionId, row, payload);
-  let emailStatus = 'sent';
-  let emailSentAt = new Date().toISOString();
-  let emailError = '';
-  try {
-    MailApp.sendEmail({
-      to: parentEmail,
-      subject: `Hasil Placement Test Kalananti - ${row.student_name || 'Siswa'}`,
-      htmlBody: buildEmailBody_(row, pdf.url, payload),
-      attachments: [pdf.blob],
-      name: 'Kalananti Placement Test'
-    });
-  } catch (error) {
-    emailStatus = 'failed';
-    emailSentAt = '';
-    emailError = String(error.message || error);
-  }
+  
+  // Note: Email is NOT sent automatically upon test completion.
+  // Default status is 'not sent' until triggered via Spreadsheet Column AF or Dashboard dropdown.
+  const emailStatus = 'not sent';
+  const emailSentAt = '';
+  const emailError = '';
 
   upsertSession_(sheet, found, {
     session_status: 'completed',
@@ -277,6 +270,88 @@ function finalize_(operation) {
     emailStatus,
     pdfSource: 'browser_attachment'
   };
+}
+
+function sendParentEmail_(sheet, rowNumber) {
+  const row = sessionObject_(sheet, rowNumber);
+  const parentEmail = String(row.parent_email || '').trim();
+  if (!parentEmail) {
+    upsertSession_(sheet, { row: rowNumber, exists: true }, {
+      email_status: 'failed',
+      last_error: 'missing_parent_email',
+      updated_at: new Date().toISOString()
+    });
+    throw new Error('missing_parent_email');
+  }
+
+  let pdfBlob = null;
+  if (row.pdf_file_id) {
+    try {
+      pdfBlob = DriveApp.getFileById(row.pdf_file_id).getBlob();
+    } catch (e) {
+      console.warn('Failed to retrieve PDF file by ID: ' + e);
+    }
+  }
+
+  const pdfUrl = row.pdf_file_url || '';
+  const emailBody = buildEmailBody_(row, pdfUrl, null);
+  const attachments = pdfBlob ? [pdfBlob] : [];
+
+  try {
+    MailApp.sendEmail({
+      to: parentEmail,
+      subject: `Hasil Placement Test Kalananti - ${row.student_name || 'Siswa'}`,
+      htmlBody: emailBody,
+      attachments: attachments,
+      name: 'Kalananti Placement Test'
+    });
+
+    const now = new Date().toISOString();
+    upsertSession_(sheet, { row: rowNumber, exists: true }, {
+      email_status: 'sent',
+      email_sent_at: now,
+      last_error: '',
+      updated_at: now
+    });
+    return { sent: true, emailSentAt: now };
+  } catch (error) {
+    const errorMsg = String(error.message || error);
+    upsertSession_(sheet, { row: rowNumber, exists: true }, {
+      email_status: 'failed',
+      last_error: errorMsg,
+      updated_at: new Date().toISOString()
+    });
+    throw error;
+  }
+}
+
+function onEdit(e) {
+  if (!e || !e.range) return;
+  try {
+    const sheet = e.range.getSheet();
+    if (sheet.getName() !== PLACEMENT_CONFIG.sessionsSheet) return;
+    
+    // Column 32 is 'email_status' (Column AF)
+    const colIndex = SESSION_HEADERS.indexOf('email_status') + 1; // 32
+    if (e.range.getColumn() !== colIndex) return;
+
+    const rowNumber = e.range.getRow();
+    if (rowNumber <= 1) return; // Skip header
+
+    const val = String(e.value || e.range.getValue() || '').trim().toLowerCase();
+    if (val === 'sent' || val === 'send') {
+      sendParentEmail_(sheet, rowNumber);
+    } else if (val === 'not sent' || val === 'not_sent') {
+      upsertSession_(sheet, { row: rowNumber, exists: true }, {
+        email_status: 'not sent',
+        email_sent_at: '',
+        last_error: '',
+        updated_at: new Date().toISOString()
+      });
+    }
+  } catch (err) {
+    console.error('onEdit trigger error: ' + err);
+  }
 }
 
 function createResultPdf_(submissionId, row, payload) {
@@ -1028,7 +1103,7 @@ function getBranchResults_(operation) {
         assigned_level: row[SESSION_HEADERS.indexOf('assigned_level')] || '-',
         final_status: row[SESSION_HEADERS.indexOf('final_status')] || 'in_progress',
         pdf_file_url: row[SESSION_HEADERS.indexOf('pdf_file_url')] || '',
-        email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'pending'
+        email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'not sent'
       });
     }
   }
@@ -1039,6 +1114,60 @@ function getBranchResults_(operation) {
     role: userRole,
     results: filtered
   };
+}
+
+function updateEmailStatus_(operation) {
+  const token = String(operation.token || '').trim();
+  const submissionId = String(operation.submissionId || '').trim();
+  const requestedStatus = String(operation.emailStatus || operation.status || '').trim().toLowerCase();
+
+  if (!token) throw new Error('Token sesi tidak valid. Silakan login kembali.');
+  if (!submissionId) throw new Error('submissionId wajib diisi.');
+
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const sessSheet = spreadsheet.getSheetByName('DashboardSessions');
+  if (!sessSheet || sessSheet.getLastRow() <= 1) throw new Error('Sesi tidak ditemukan. Silakan login kembali.');
+
+  const sessData = sessSheet.getRange(2, 1, sessSheet.getLastRow() - 1, 6).getValues();
+  let isAuthenticated = false;
+
+  for (let i = sessData.length - 1; i >= 0; i--) {
+    const t = String(sessData[i][0] || '').trim();
+    if (t === token) {
+      const expiresAt = new Date(sessData[i][5]).getTime();
+      if (!isNaN(expiresAt) && Date.now() > expiresAt) {
+        throw new Error('Sesi telah kadaluarsa. Silakan login kembali.');
+      }
+      isAuthenticated = true;
+      break;
+    }
+  }
+
+  if (!isAuthenticated) throw new Error('Sesi tidak terautentikasi.');
+
+  const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
+  const found = findSession_(sessionsSheet, submissionId);
+  if (!found.exists) throw new Error(`Submission ID ${submissionId} tidak ditemukan.`);
+
+  if (requestedStatus === 'sent' || requestedStatus === 'send') {
+    const result = sendParentEmail_(sessionsSheet, found.row);
+    return {
+      submissionId,
+      emailStatus: 'sent',
+      emailSentAt: result.emailSentAt
+    };
+  } else {
+    upsertSession_(sessionsSheet, found, {
+      email_status: 'not sent',
+      email_sent_at: '',
+      last_error: '',
+      updated_at: new Date().toISOString()
+    });
+    return {
+      submissionId,
+      emailStatus: 'not sent'
+    };
+  }
 }
 
 function logoutDashboard_(operation) {

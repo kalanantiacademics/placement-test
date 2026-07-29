@@ -624,6 +624,31 @@
       border-color: #ddd;
     }
 
+    .email-status-select {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .email-status-select.is-not-sent {
+      background-color: #f0f4f8;
+      color: #556980;
+      border: 1.5px solid #cbd5e1;
+    }
+    .email-status-select.is-sent {
+      background-color: #e6f9f3;
+      color: #1e7e5a;
+      border: 1.5px solid #a4e9d1;
+    }
+    .email-status-select:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
     .empty-state {
       padding: 48px 24px;
       text-align: center;
@@ -1216,12 +1241,70 @@
               `<span class="btn-pdf-view disabled"><i class="fa-solid fa-clock"></i> Belum Ready</span>`}
           </td>
           <td>
-            <span style="font-size:0.8rem; font-weight:600; color: ${r.email_status === 'sent' ? '#1e7e5a' : '#888'};">
-              ${escapeHtml(r.email_status)}
-            </span>
+            <select class="email-status-select ${String(r.email_status).toLowerCase() === 'sent' ? 'is-sent' : 'is-not-sent'}"
+                    onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this)">
+              <option value="not sent" ${String(r.email_status).toLowerCase() !== 'sent' ? 'selected' : ''}>Not Sent</option>
+              <option value="sent" ${String(r.email_status).toLowerCase() === 'sent' ? 'selected' : ''}>Sent</option>
+            </select>
           </td>
         </tr>
       `).join('');
+    }
+
+    function handleEmailStatusChange(placementId, newStatus, selectEl) {
+      if (!currentSession || !currentSession.token) {
+        alert('Sesi telah habis. Silakan login kembali.');
+        return;
+      }
+
+      const prevStatus = newStatus === 'sent' ? 'not sent' : 'sent';
+      const isSent = newStatus === 'sent';
+
+      if (isSent && !confirm(`Kirim email laporan placement test ke orang tua siswa (${placementId})?`)) {
+        selectEl.value = prevStatus;
+        return;
+      }
+
+      selectEl.disabled = true;
+      const originalText = selectEl.options[selectEl.selectedIndex].text;
+      selectEl.options[selectEl.selectedIndex].text = isSent ? 'Sending...' : 'Updating...';
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'update_email_status',
+          token: currentSession.token,
+          submissionId: placementId,
+          emailStatus: newStatus
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        selectEl.disabled = false;
+        selectEl.options[selectEl.selectedIndex].text = newStatus === 'sent' ? 'Sent' : 'Not Sent';
+
+        if (data.ok) {
+          const item = rawDashboardData.find(row => String(row.placement_id) === String(placementId));
+          if (item) item.email_status = data.emailStatus || newStatus;
+
+          selectEl.className = `email-status-select ${newStatus === 'sent' ? 'is-sent' : 'is-not-sent'}`;
+          if (newStatus === 'sent') {
+            alert(`Email laporan placement test (${placementId}) berhasil dikirim ke orang tua.`);
+          }
+        } else {
+          selectEl.value = prevStatus;
+          selectEl.className = `email-status-select ${prevStatus === 'sent' ? 'is-sent' : 'is-not-sent'}`;
+          alert('Gagal mengupdate status email: ' + (data.error || 'Terjadi kesalahan.'));
+        }
+      })
+      .catch(err => {
+        selectEl.disabled = false;
+        selectEl.value = prevStatus;
+        selectEl.options[selectEl.selectedIndex].text = prevStatus === 'sent' ? 'Sent' : 'Not Sent';
+        selectEl.className = `email-status-select ${prevStatus === 'sent' ? 'is-sent' : 'is-not-sent'}`;
+        alert('Terjadi kesalahan koneksi server saat memperbarui status email.');
+      });
     }
 
     function handleLogout() {
