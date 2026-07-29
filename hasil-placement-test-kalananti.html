@@ -788,7 +788,7 @@
       <div class="controls-bar">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="searchInput" placeholder="Cari nama siswa atau email ortu..." oninput="applyFilters()">
+          <input type="text" id="searchInput" placeholder="Cari nama anak, email ortu, cabang, atau ID..." oninput="applyFilters()">
         </div>
         
         <select id="audienceFilter" class="filter-select" onchange="applyFilters()">
@@ -836,7 +836,7 @@
         </table>
         <div id="emptyTableState" class="empty-state" style="display: none;">
           <i class="fa-solid fa-folder-open"></i>
-          <p>Belum ada data placement test untuk cabang ini.</p>
+          <p>Belum ada data placement test.</p>
         </div>
       </div>
 
@@ -1138,7 +1138,7 @@
       document.getElementById('portalLandingView').style.display = 'none';
       document.getElementById('branchDashboardView').classList.add('active');
 
-      document.getElementById('dashboardBranchName').textContent = `Dashboard ${currentSession.branch}`;
+      document.getElementById('dashboardBranchName').textContent = `Dashboard Placement Test`;
       document.getElementById('dashboardBranchBadge').textContent = currentSession.branch;
       document.getElementById('dashboardUserEmail').textContent = currentSession.email;
       document.getElementById('dashboardUserRole').textContent = currentSession.role;
@@ -1150,7 +1150,7 @@
       if (!currentSession || !currentSession.token) return;
 
       const tbody = document.getElementById('resultsTableBody');
-      tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Memuat data siswa cabang ${escapeHtml(currentSession.branch)}...</p></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Memuat seluruh data siswa placement test...</p></td></tr>`;
       document.getElementById('emptyTableState').style.display = 'none';
 
       fetch(WEB_APP_URL, {
@@ -1185,12 +1185,13 @@
 
       const filtered = rawDashboardData.filter(row => {
         const matchesQuery = !query || 
-          String(row.student_name).toLowerCase().includes(query) || 
-          String(row.parent_email).toLowerCase().includes(query) ||
-          String(row.placement_id).toLowerCase().includes(query);
+          String(row.student_name || '').toLowerCase().includes(query) || 
+          String(row.parent_email || '').toLowerCase().includes(query) ||
+          String(row.branch || '').toLowerCase().includes(query) ||
+          String(row.placement_id || '').toLowerCase().includes(query);
         
-        const matchesAudience = !audience || String(row.audience).toLowerCase() === audience.toLowerCase();
-        const matchesStatus = !status || String(row.final_status).toLowerCase() === status.toLowerCase();
+        const matchesAudience = !audience || String(row.audience || '').toLowerCase() === audience.toLowerCase();
+        const matchesStatus = !status || String(row.final_status || '').toLowerCase() === status.toLowerCase();
 
         return matchesQuery && matchesAudience && matchesStatus;
       });

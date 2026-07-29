@@ -1112,25 +1112,22 @@ function getBranchResults_(operation) {
     const row = data[i];
     const studentBranch = String(row[SESSION_HEADERS.indexOf('branch')] || '').trim();
 
-    // Check branch match (case-insensitive)
-    if (studentBranch.toLowerCase() === authorizedBranch.toLowerCase()) {
-      filtered.push({
-        placement_id: row[SESSION_HEADERS.indexOf('submission_id')] || '-',
-        student_name: row[SESSION_HEADERS.indexOf('student_name')] || '-',
-        student_age: row[SESSION_HEADERS.indexOf('exact_age')] || '-',
-        audience: row[SESSION_HEADERS.indexOf('audience')] || '-',
-        parent_email: row[SESSION_HEADERS.indexOf('parent_email')] || '-',
-        branch: studentBranch || authorizedBranch,
-        child_confirmed: row[SESSION_HEADERS.indexOf('child_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('child_confirmed')] === true,
-        guardian_confirmed: row[SESSION_HEADERS.indexOf('guardian_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('guardian_confirmed')] === true,
-        assigned_module: row[SESSION_HEADERS.indexOf('assigned_module')] || '-',
-        potential_module: row[SESSION_HEADERS.indexOf('potential_module')] || '-',
-        assigned_level: row[SESSION_HEADERS.indexOf('assigned_level')] || '-',
-        final_status: row[SESSION_HEADERS.indexOf('final_status')] || 'in_progress',
-        pdf_file_url: row[SESSION_HEADERS.indexOf('pdf_file_url')] || '',
-        email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'not sent'
-      });
-    }
+    filtered.push({
+      placement_id: row[SESSION_HEADERS.indexOf('submission_id')] || '-',
+      student_name: row[SESSION_HEADERS.indexOf('student_name')] || '-',
+      student_age: row[SESSION_HEADERS.indexOf('exact_age')] || '-',
+      audience: row[SESSION_HEADERS.indexOf('audience')] || '-',
+      parent_email: row[SESSION_HEADERS.indexOf('parent_email')] || '-',
+      branch: studentBranch || 'Online',
+      child_confirmed: row[SESSION_HEADERS.indexOf('child_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('child_confirmed')] === true,
+      guardian_confirmed: row[SESSION_HEADERS.indexOf('guardian_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('guardian_confirmed')] === true,
+      assigned_module: row[SESSION_HEADERS.indexOf('assigned_module')] || '-',
+      potential_module: row[SESSION_HEADERS.indexOf('potential_module')] || '-',
+      assigned_level: row[SESSION_HEADERS.indexOf('assigned_level')] || '-',
+      final_status: row[SESSION_HEADERS.indexOf('final_status')] || 'in_progress',
+      pdf_file_url: row[SESSION_HEADERS.indexOf('pdf_file_url')] || '',
+      email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'not sent'
+    });
   }
 
   return {
