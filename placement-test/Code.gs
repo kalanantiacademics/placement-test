@@ -111,6 +111,9 @@ function doPost(event) {
     } else if (action === 'get_branch_results') {
       const result = getBranchResults_(operation);
       return json_({ ok: true, ...result });
+    } else if (action === 'search_restricted_results') {
+      const result = searchRestrictedResults_(operation);
+      return json_({ ok: true, ...result });
     } else if (action === 'update_email_status') {
       const result = updateEmailStatus_(operation);
       return json_({ ok: true, ...result });
@@ -244,7 +247,7 @@ function finalize_(operation) {
   if (!hasVisualPdf) throw new Error('missing_visual_pdf_attachment');
 
   const pdf = createResultPdf_(operation.submissionId, row, payload);
-  
+
   // Note: Email is NOT sent automatically upon test completion.
   // Default status is 'not sent' until triggered via Spreadsheet Column AF or Dashboard dropdown.
   const emailStatus = 'not sent';
@@ -329,8 +332,29 @@ function onEdit(e) {
   if (!e || !e.range) return;
   try {
     const sheet = e.range.getSheet();
+
+    if (sheet.getName() === 'DROPDOWNS') {
+      const col = e.range.getColumn();
+      const row = e.range.getRow();
+      // Dashboard access columns: E = HQ, F = Branch Manager, G = SA Kids.
+      if (row >= 5 && [5, 6, 7].includes(col)) {
+        const val = String(e.value || e.range.getValue() || '').trim();
+        if (val) {
+          const parsed = parseBranchCellEntries_(val);
+          if (parsed.length > 0) {
+            parsed.forEach(entry => {
+              if (entry.email) {
+                grantFolderAccess_(entry.email);
+              }
+            });
+          }
+        }
+      }
+      return;
+    }
+
     if (sheet.getName() !== PLACEMENT_CONFIG.sessionsSheet) return;
-    
+
     // Column 32 is 'email_status' (Column AF)
     const colIndex = SESSION_HEADERS.indexOf('email_status') + 1; // 32
     if (e.range.getColumn() !== colIndex) return;
@@ -507,7 +531,7 @@ function buildEmailBody_(row, pdfUrl, payload) {
 <body style="margin: 0; padding: 20px 0; background-color: #e8f2ff; font-family: 'Inter', Arial, sans-serif; color: #17324f;">
 
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 640px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 12px 32px rgba(16, 52, 92, 0.12);">
-    
+
     <!-- Top Greeting Banner -->
     <tr>
       <td style="padding: 24px 28px 16px; background-color: #ffffff; text-align: left;">
@@ -530,7 +554,7 @@ function buildEmailBody_(row, pdfUrl, payload) {
     <tr>
       <td style="padding: 0 16px;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #173f73 linear-gradient(135deg, #102d56 0%, #265e9b 60%, #2d8fb5 100%); border-radius: 18px; padding: 32px 24px; text-align: center; color: #ffffff;">
-          
+
           <!-- Logo & Meta Row -->
           <tr>
             <td style="padding-bottom: 16px;">
@@ -813,18 +837,15 @@ function parseBranchCellEntries_(cellText) {
     const part = rawParts[i].trim();
     if (!part) continue;
 
-    const dashIdx = part.lastIndexOf('-');
-    if (dashIdx > 0) {
-      const name = part.substring(0, dashIdx).trim();
-      const email = part.substring(dashIdx + 1).trim();
+    const emailMatch = part.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (emailMatch) {
+      const email = emailMatch[0];
+      let name = part.replace(emailMatch[0], '').trim();
+      // Remove trailing dashes and spaces
+      name = name.replace(/[-–—\s]+$/, '').trim();
       entries.push({ name: name || 'User', email: email });
     } else {
-      const emailMatch = part.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      if (emailMatch) {
-        entries.push({ name: part.replace(emailMatch[0], '').trim() || 'User', email: emailMatch[0] });
-      } else {
-        entries.push({ name: part, email: part });
-      }
+      entries.push({ name: part, email: part });
     }
   }
   return entries;
@@ -841,7 +862,8 @@ function requestDashboardAccess_(operation) {
   }
 
   const isBM = /BM|Branch\s*Manager/i.test(rawRole);
-  const targetCol = isBM ? 5 : 6; // Column E (5) for BM (All Access), Column F (6) for SA Kids (All Access)
+  // Public requests may only create restricted access. HQ (Column E) is manual-only.
+  const targetCol = isBM ? 6 : 7;
   const roleLabel = isBM ? 'Branch Manager (BM)' : 'SA Kids';
 
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
@@ -851,7 +873,7 @@ function requestDashboardAccess_(operation) {
   const lastRow = dropdownSheet.getLastRow();
   const maxSearchRow = Math.max(lastRow, 5);
 
-  // Read target column (Col E or F) starting from row 5
+  // Read the requested restricted-access column (F or G) starting from row 5.
   const colValues = dropdownSheet.getRange(5, targetCol, maxSearchRow - 4, 1).getValues();
   let isAlready = false;
   let firstEmptyRow = -1;
@@ -877,6 +899,7 @@ function requestDashboardAccess_(operation) {
 
   if (isAlready) {
     recordAccessRequest_(spreadsheet, branch || 'All Access', name, email, roleLabel, 'approved');
+    grantFolderAccess_(email);
     return {
       requested: true,
       alreadyRegistered: true,
@@ -884,17 +907,44 @@ function requestDashboardAccess_(operation) {
     };
   }
 
-  // Set formatted entry in the empty cell in Column E/F
+  // Add the user to Column F (BM) or G (SA Kids).
   dropdownSheet.getRange(firstEmptyRow, targetCol).setValue(formattedEntry);
 
   // Record timestamp in AccessRequests sheet
   recordAccessRequest_(spreadsheet, branch || 'All Access', name, email, roleLabel, 'pending_2min');
+
+  grantFolderAccess_(email);
 
   return {
     requested: true,
     alreadyRegistered: false,
     message: 'Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 2 menit, ya.'
   };
+}
+
+function grantFolderAccess_(email) {
+  try {
+    // Coba gunakan Drive API (Advanced Service) jika sudah diaktifkan,
+    // karena bisa menembus peringatan eksternal Google Workspace
+    if (typeof Drive !== 'undefined') {
+      Drive.Permissions.create({
+        role: 'reader',
+        type: 'user',
+        emailAddress: email
+      }, PLACEMENT_CONFIG.pdfFolderId, {
+        sendNotificationEmail: false,
+        supportsAllDrives: true
+      });
+      return true;
+    }
+
+    // Fallback: gunakan DriveApp biasa
+    DriveApp.getFolderById(PLACEMENT_CONFIG.pdfFolderId).addViewer(email);
+    return true;
+  } catch (e) {
+    console.error('Failed to grant folder access to ' + email + ': ' + e);
+    return false;
+  }
 }
 
 function recordAccessRequest_(spreadsheet, branch, name, email, role, status) {
@@ -909,7 +959,6 @@ function recordAccessRequest_(spreadsheet, branch, name, email, role, status) {
 }
 
 function loginDashboard_(operation) {
-  const branch = String(operation.branch || 'All Access').trim();
   const email = String(operation.email || '').trim().toLowerCase();
 
   if (!email) {
@@ -923,97 +972,50 @@ function loginDashboard_(operation) {
   const lastRow = dropdownSheet.getLastRow();
   if (lastRow < 5) throw new Error('Data cabang tidak ditemukan.');
 
-  // Read Columns A through F from Row 5
-  const dropdownData = dropdownSheet.getRange(5, 1, lastRow - 4, 6).getValues();
+  // E = HQ/all access, F = Branch Manager/restricted, G = SA Kids/restricted.
+  const dropdownData = dropdownSheet.getRange(5, 5, lastRow - 4, 3).getValues();
   let userRole = null;
-  let targetBranchName = branch;
+  let accessLevel = null;
   let potentialTypoMatch = null;
 
-  // 1. Check All Access lists (Columns E & F) across all rows 5+
+  // Check access lists across all rows. HQ takes precedence if duplicated.
   for (let i = 0; i < dropdownData.length; i++) {
-    const bmVal = String(dropdownData[i][4] || '').trim(); // Col E
-    const saVal = String(dropdownData[i][5] || '').trim(); // Col F
-
-    const allBmEntries = parseBranchCellEntries_(bmVal);
-    const allSaEntries = parseBranchCellEntries_(saVal);
-
-    for (let j = 0; j < allBmEntries.length; j++) {
-      if (allBmEntries[j].email.toLowerCase() === email) {
-        userRole = 'Branch Manager (BM)';
-        break;
-      }
+    const hqEntries = parseBranchCellEntries_(dropdownData[i][0]);
+    if (hqEntries.some(entry => entry.email.toLowerCase() === email)) {
+      userRole = 'HQ';
+      accessLevel = 'all';
+      break;
     }
-    if (userRole) break;
-
-    for (let j = 0; j < allSaEntries.length; j++) {
-      if (allSaEntries[j].email.toLowerCase() === email) {
-        userRole = 'SA Kids';
-        break;
-      }
-    }
-    if (userRole) break;
   }
 
-  // 2. If not found in All Access, check branch-specific columns B & C for matching branch
   if (!userRole) {
     for (let i = 0; i < dropdownData.length; i++) {
-      const bName = String(dropdownData[i][0] || '').trim();
-      const cleanBName = bName.toLowerCase().replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ');
-      const cleanBranch = branch.toLowerCase().replace(/[\u2013\u2014]/g, '-').replace(/\s+/g, ' ');
-
-      if (cleanBName === cleanBranch) {
-        targetBranchName = bName;
-        const bmCellText = String(dropdownData[i][1] || ''); // Col B
-        const saCellText = String(dropdownData[i][2] || ''); // Col C
-
-        const bmEntries = parseBranchCellEntries_(bmCellText);
-        const saEntries = parseBranchCellEntries_(saCellText);
-
-        for (let j = 0; j < bmEntries.length; j++) {
-          if (bmEntries[j].email.toLowerCase() === email) {
-            userRole = 'Branch Manager (BM)';
-            break;
-          }
-        }
-        if (!userRole) {
-          for (let j = 0; j < saEntries.length; j++) {
-            if (saEntries[j].email.toLowerCase() === email) {
-              userRole = 'SA Kids';
-              break;
-            }
-          }
-        }
-
-        // Check for typo in username
-        if (!userRole) {
-          const inputUsername = email.split('@')[0].trim();
-          for (let j = 0; j < bmEntries.length; j++) {
-            const entryUsername = bmEntries[j].email.split('@')[0].trim().toLowerCase();
-            if (entryUsername && entryUsername === inputUsername) {
-              potentialTypoMatch = { name: bmEntries[j].name, email: bmEntries[j].email, role: 'Branch Manager (BM)' };
-              break;
-            }
-          }
-          if (!potentialTypoMatch) {
-            for (let j = 0; j < saEntries.length; j++) {
-              const entryUsername = saEntries[j].email.split('@')[0].trim().toLowerCase();
-              if (entryUsername && entryUsername === inputUsername) {
-                potentialTypoMatch = { name: saEntries[j].name, email: saEntries[j].email, role: 'SA Kids' };
-                break;
-              }
-            }
-          }
-        }
+      const bmEntries = parseBranchCellEntries_(dropdownData[i][1]);
+      const saEntries = parseBranchCellEntries_(dropdownData[i][2]);
+      if (bmEntries.some(entry => entry.email.toLowerCase() === email)) {
+        userRole = 'Branch Manager (BM)';
+        accessLevel = 'restricted';
         break;
       }
+      if (saEntries.some(entry => entry.email.toLowerCase() === email)) {
+        userRole = 'SA Kids';
+        accessLevel = 'restricted';
+        break;
+      }
+
+      const inputUsername = email.split('@')[0].trim();
+      const possible = bmEntries.concat(saEntries).find(entry =>
+        entry.email.split('@')[0].trim().toLowerCase() === inputUsername
+      );
+      if (!potentialTypoMatch && possible) potentialTypoMatch = possible;
     }
   }
 
   if (!userRole) {
     if (potentialTypoMatch) {
-      throw new Error(`Email "${email}" tidak ditemukan. Di cabang ini terdaftar atas nama ${potentialTypoMatch.name} (${potentialTypoMatch.email}). Apakah kamu salah ketik email atau orang yang berbeda?`);
+      throw new Error(`Email "${email}" tidak ditemukan. Email yang mirip terdaftar atas nama ${potentialTypoMatch.name} (${potentialTypoMatch.email}). Periksa kembali email yang dimasukkan.`);
     } else {
-      throw new Error('Email belum terdaftar untuk cabang ini. Silakan klik "Minta Akses" terlebih dahulu.');
+      throw new Error('Email belum terdaftar. Silakan klik "Minta Akses" terlebih dahulu.');
     }
   }
 
@@ -1047,15 +1049,16 @@ function loginDashboard_(operation) {
   }
 
   // Generate Session Token
-  const token = hash_(`${targetBranchName}:${email}:${Date.now()}:${Math.random()}`);
-  saveDashboardSession_(spreadsheet, token, targetBranchName, email, userRole);
+  const token = hash_(`${accessLevel}:${email}:${Date.now()}:${Math.random()}`);
+  saveDashboardSession_(spreadsheet, token, accessLevel, email, userRole);
 
   return {
     authenticated: true,
     token: token,
-    branch: targetBranchName,
+    branch: accessLevel === 'all' ? 'All Access' : 'Restricted',
     userEmail: email,
-    role: userRole
+    role: userRole,
+    accessLevel: accessLevel
   };
 }
 
@@ -1073,79 +1076,78 @@ function saveDashboardSession_(spreadsheet, token, branch, email, role) {
   sessSheet.appendRow([token, branch, email, role, now.toISOString(), expiresAt]);
 }
 
-function getBranchResults_(operation) {
-  const token = String(operation.token || '').trim();
-  if (!token) throw new Error('Token sesi tidak valid. Silakan login kembali.');
+function requireDashboardSession_(spreadsheet, token) {
+  const cleanToken = String(token || '').trim();
+  if (!cleanToken) throw new Error('Token sesi tidak valid. Silakan login kembali.');
 
-  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
   const sessSheet = spreadsheet.getSheetByName('DashboardSessions');
   if (!sessSheet || sessSheet.getLastRow() <= 1) {
     throw new Error('Sesi tidak ditemukan. Silakan login kembali.');
   }
 
   const sessData = sessSheet.getRange(2, 1, sessSheet.getLastRow() - 1, 6).getValues();
-  let authorizedBranch = null;
-  let userEmail = null;
-  let userRole = null;
-
   for (let i = sessData.length - 1; i >= 0; i--) {
-    const t = String(sessData[i][0] || '').trim();
-    if (t === token) {
-      const expiresAt = new Date(sessData[i][5]).getTime();
-      if (!isNaN(expiresAt) && Date.now() > expiresAt) {
-        throw new Error('Sesi telah kadaluarsa. Silakan login kembali.');
-      }
-      authorizedBranch = String(sessData[i][1] || '').trim();
-      userEmail = String(sessData[i][2] || '').trim();
-      userRole = String(sessData[i][3] || '').trim();
-      break;
+    if (String(sessData[i][0] || '').trim() !== cleanToken) continue;
+    const expiresAt = new Date(sessData[i][5]).getTime();
+    if (!isNaN(expiresAt) && Date.now() > expiresAt) {
+      throw new Error('Sesi telah kadaluarsa. Silakan login kembali.');
     }
+    const accessLevel = String(sessData[i][1] || '').trim() === 'all' ? 'all' : 'restricted';
+    return {
+      accessLevel,
+      branch: accessLevel === 'all' ? 'All Access' : 'Restricted',
+      email: String(sessData[i][2] || '').trim(),
+      role: String(sessData[i][3] || '').trim()
+    };
   }
+  throw new Error('Sesi tidak terautentikasi.');
+}
 
-  if (!authorizedBranch) {
-    throw new Error('Sesi tidak terautentikasi.');
+function dashboardResult_(row) {
+  return {
+    placement_id: row[SESSION_HEADERS.indexOf('submission_id')] || '-',
+    student_name: row[SESSION_HEADERS.indexOf('student_name')] || '-',
+    student_age: row[SESSION_HEADERS.indexOf('exact_age')] || '-',
+    audience: row[SESSION_HEADERS.indexOf('audience')] || '-',
+    parent_email: row[SESSION_HEADERS.indexOf('parent_email')] || '-',
+    test_date: row[SESSION_HEADERS.indexOf('registered_at')] || '',
+    branch: row[SESSION_HEADERS.indexOf('branch')] || '-',
+    child_confirmed: row[SESSION_HEADERS.indexOf('child_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('child_confirmed')] === true,
+    guardian_confirmed: row[SESSION_HEADERS.indexOf('guardian_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('guardian_confirmed')] === true,
+    assigned_module: row[SESSION_HEADERS.indexOf('assigned_module')] || '-',
+    potential_module: row[SESSION_HEADERS.indexOf('potential_module')] || '-',
+    assigned_level: row[SESSION_HEADERS.indexOf('assigned_level')] || '-',
+    final_status: row[SESSION_HEADERS.indexOf('final_status')] || 'in_progress',
+    pdf_file_url: row[SESSION_HEADERS.indexOf('pdf_file_url')] || '',
+    email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'not sent'
+  };
+}
+
+function getBranchResults_(operation) {
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const session = requireDashboardSession_(spreadsheet, operation.token);
+  if (session.accessLevel !== 'all') {
+    throw new Error('Akses terbatas. Gunakan pencarian nama atau email siswa.');
   }
 
   // Read Sessions Sheet
   const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
   if (!sessionsSheet || sessionsSheet.getLastRow() <= 1) {
     return {
-      branch: authorizedBranch,
-      userEmail: userEmail,
-      role: userRole,
+      branch: session.branch,
+      userEmail: session.email,
+      role: session.role,
       results: []
     };
   }
 
   const data = sessionsSheet.getRange(2, 1, sessionsSheet.getLastRow() - 1, SESSION_HEADERS.length).getValues();
-  const filtered = [];
-
-  for (let i = 0; i < data.length; i++) {
-    const row = data[i];
-    const studentBranch = String(row[SESSION_HEADERS.indexOf('branch')] || '').trim();
-
-    filtered.push({
-      placement_id: row[SESSION_HEADERS.indexOf('submission_id')] || '-',
-      student_name: row[SESSION_HEADERS.indexOf('student_name')] || '-',
-      student_age: row[SESSION_HEADERS.indexOf('exact_age')] || '-',
-      audience: row[SESSION_HEADERS.indexOf('audience')] || '-',
-      parent_email: row[SESSION_HEADERS.indexOf('parent_email')] || '-',
-      branch: studentBranch || '-',
-      child_confirmed: row[SESSION_HEADERS.indexOf('child_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('child_confirmed')] === true,
-      guardian_confirmed: row[SESSION_HEADERS.indexOf('guardian_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('guardian_confirmed')] === true,
-      assigned_module: row[SESSION_HEADERS.indexOf('assigned_module')] || '-',
-      potential_module: row[SESSION_HEADERS.indexOf('potential_module')] || '-',
-      assigned_level: row[SESSION_HEADERS.indexOf('assigned_level')] || '-',
-      final_status: row[SESSION_HEADERS.indexOf('final_status')] || 'in_progress',
-      pdf_file_url: row[SESSION_HEADERS.indexOf('pdf_file_url')] || '',
-      email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'not sent'
-    });
-  }
+  const filtered = data.map(dashboardResult_);
 
   return {
-    branch: authorizedBranch,
-    userEmail: userEmail,
-    role: userRole,
+    branch: session.branch,
+    userEmail: session.email,
+    role: session.role,
     results: filtered
   };
 }
@@ -1159,29 +1161,21 @@ function updateEmailStatus_(operation) {
   if (!submissionId) throw new Error('submissionId wajib diisi.');
 
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
-  const sessSheet = spreadsheet.getSheetByName('DashboardSessions');
-  if (!sessSheet || sessSheet.getLastRow() <= 1) throw new Error('Sesi tidak ditemukan. Silakan login kembali.');
-
-  const sessData = sessSheet.getRange(2, 1, sessSheet.getLastRow() - 1, 6).getValues();
-  let isAuthenticated = false;
-
-  for (let i = sessData.length - 1; i >= 0; i--) {
-    const t = String(sessData[i][0] || '').trim();
-    if (t === token) {
-      const expiresAt = new Date(sessData[i][5]).getTime();
-      if (!isNaN(expiresAt) && Date.now() > expiresAt) {
-        throw new Error('Sesi telah kadaluarsa. Silakan login kembali.');
-      }
-      isAuthenticated = true;
-      break;
-    }
-  }
-
-  if (!isAuthenticated) throw new Error('Sesi tidak terautentikasi.');
+  const dashboardSession = requireDashboardSession_(spreadsheet, token);
 
   const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
   const found = findSession_(sessionsSheet, submissionId);
   if (!found.exists) throw new Error(`Submission ID ${submissionId} tidak ditemukan.`);
+  if (dashboardSession.accessLevel !== 'all') {
+    const row = sessionObject_(sessionsSheet, found.row);
+    const suppliedName = normalizeSearchText_(operation.studentName);
+    const suppliedEmail = String(operation.parentEmail || '').trim().toLowerCase();
+    if (!suppliedName || !suppliedEmail
+      || suppliedName !== normalizeSearchText_(row.student_name)
+      || suppliedEmail !== String(row.parent_email || '').trim().toLowerCase()) {
+      throw new Error('Data siswa tidak sesuai dengan hasil pencarian restricted.');
+    }
+  }
 
   if (requestedStatus === 'sent' || requestedStatus === 'send') {
     const result = sendParentEmail_(sessionsSheet, found.row);
@@ -1219,4 +1213,60 @@ function logoutDashboard_(operation) {
     } catch (e) {}
   }
   return { loggedOut: true };
+}
+
+function searchRestrictedResults_(operation) {
+  const token = String(operation.token || '').trim();
+  const query = normalizeSearchText_(operation.query);
+  const testDate = String(operation.testDate || '').trim();
+  if (!token) throw new Error('Token sesi tidak valid. Silakan login kembali.');
+  if (!query || query.length < 3) throw new Error('Masukkan setidaknya 3 karakter untuk melakukan pencarian.');
+
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const session = requireDashboardSession_(spreadsheet, token);
+
+  // Read Sessions Sheet
+  const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
+  if (!sessionsSheet || sessionsSheet.getLastRow() <= 1) {
+    return {
+      branch: session.branch,
+      userEmail: session.email,
+      role: session.role,
+      results: []
+    };
+  }
+
+  const data = sessionsSheet.getRange(2, 1, sessionsSheet.getLastRow() - 1, SESSION_HEADERS.length).getValues();
+  const filtered = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    const studentName = String(row[SESSION_HEADERS.indexOf('student_name')] || '').trim();
+    const parentEmail = String(row[SESSION_HEADERS.indexOf('parent_email')] || '').trim();
+    const registeredAt = String(row[SESSION_HEADERS.indexOf('registered_at')] || '').trim();
+    let rowDate = '';
+    if (registeredAt) {
+      const parsedDate = new Date(registeredAt);
+      if (!isNaN(parsedDate.getTime())) {
+        rowDate = Utilities.formatDate(parsedDate, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      }
+    }
+
+    const identityMatches = normalizeSearchText_(studentName) === query || parentEmail.toLowerCase() === query;
+    if (identityMatches && (!testDate || rowDate === testDate)) {
+      filtered.push(dashboardResult_(row));
+      if (filtered.length >= 10) break;
+    }
+  }
+
+  return {
+    branch: session.branch,
+    userEmail: session.email,
+    role: session.role,
+    results: filtered
+  };
+}
+
+function normalizeSearchText_(value) {
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
