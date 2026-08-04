@@ -30,8 +30,8 @@ Repository ini adalah source production yang ditampilkan melalui:
 
 ## Arsip lokal
 
-Backup, virtualenv, generator lama, output QC, screenshot, PDF hasil, dan repair scripts tidak berada di repository production. Pada 2026-08-04 file tersebut dipindahkan secara lokal ke folder saudara:
+Backup, virtualenv, generator lama, output QC, screenshot, PDF hasil, dan repair scripts tidak masuk repository production. Pada 2026-08-04 file tersebut dikumpulkan secara lokal di:
 
-`../placement-test-local-archive-20260804/`
+`versi-lama-local/`
 
 Backup Git sebelum pembersihan tersedia di tag `backup-pre-cleanup-20260804`.

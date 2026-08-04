@@ -15,6 +15,7 @@ backups/
 legacy_generators/
 scripts/
 pdf-test/
+versi-lama-local/
 
 # One-off local repair and injection tools
 fix_*.py
