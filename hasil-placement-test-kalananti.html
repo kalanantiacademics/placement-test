@@ -789,7 +789,7 @@
           <div class="link-label">Pengerjaan Placement Test (Untuk Anak/Ortu)</div>
           <div class="link-action">
             <a href="https://kalananti.id/placement-test" target="_blank">kalananti.id/placement-test</a>
-            <button class="btn-copy" onclick="navigator.clipboard.writeText('https://kalananti.id/placement-test'); alert('Tautan placement test berhasil disalin!')">
+            <button class="btn-copy" onclick="copyToClipboard('https://kalananti.id/placement-test', 'Tautan placement test berhasil disalin!')">
               <i class="fa-regular fa-copy"></i> Copy
             </button>
           </div>
@@ -800,7 +800,7 @@
           <div class="link-label">Dashboard Hasil (Halaman Ini)</div>
           <div class="link-action">
             <a href="https://kalananti.id/placement-test/hasil" target="_blank">kalananti.id/placement-test/hasil</a>
-            <button class="btn-copy" onclick="navigator.clipboard.writeText('https://kalananti.id/placement-test/hasil'); alert('Tautan dashboard hasil berhasil disalin!')">
+            <button class="btn-copy" onclick="copyToClipboard('https://kalananti.id/placement-test/hasil', 'Tautan dashboard hasil berhasil disalin!')">
               <i class="fa-regular fa-copy"></i> Copy
             </button>
           </div>
@@ -928,7 +928,7 @@
       <!-- Results Table -->
       <div class="table-container">
         <table class="results-table">
-          <thead>
+          <thead id="resultsTableHead">
             <tr>
               <th>Placement ID</th>
               <th>Student Name</th>
@@ -1004,6 +1004,76 @@
     let selectedRole = "BM";
     let rawDashboardData = [];
     let currentSession = null;
+
+    function copyToClipboard(text, successMessage) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert(successMessage || 'Tautan berhasil disalin!');
+        }).catch(() => {
+          fallbackCopyText(text, successMessage);
+        });
+      } else {
+        fallbackCopyText(text, successMessage);
+      }
+    }
+
+    function fallbackCopyText(text, successMessage) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert(successMessage || 'Tautan berhasil disalin!');
+      } catch (err) {
+        alert('Gagal menyalin tautan. Silakan salin secara manual.');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function getColSpan() {
+      return (currentSession && currentSession.accessLevel === 'restricted') ? 5 : 15;
+    }
+
+    function renderTableHeader() {
+      const thead = document.getElementById('resultsTableHead');
+      if (!thead) return;
+      const isRestricted = currentSession && currentSession.accessLevel === 'restricted';
+      if (isRestricted) {
+        thead.innerHTML = `
+          <tr>
+            <th>Student Name</th>
+            <th>Parent Email</th>
+            <th>Result Status</th>
+            <th>Result Report</th>
+            <th>Email Status</th>
+          </tr>
+        `;
+      } else {
+        thead.innerHTML = `
+          <tr>
+            <th>Placement ID</th>
+            <th>Student Name</th>
+            <th>Age</th>
+            <th>Category</th>
+            <th>Parent Email</th>
+            <th>Test Date</th>
+            <th>Branch</th>
+            <th>Student Consent</th>
+            <th>Parent Consent</th>
+            <th>Assigned Module</th>
+            <th>Potential Module</th>
+            <th>Assigned Level</th>
+            <th>Result Status</th>
+            <th>Result Report</th>
+            <th>Email Status</th>
+          </tr>
+        `;
+      }
+    }
 
     // Three.js Canvas Animation
     function initThreeCanvas() {
@@ -1246,6 +1316,8 @@
       document.getElementById('dashboardUserEmail').textContent = currentSession.email;
       document.getElementById('dashboardUserRole').textContent = currentSession.role;
 
+      renderTableHeader();
+
       if (currentSession.accessLevel === 'restricted') {
         document.getElementById('restrictedSearchContainer').style.display = 'block';
         document.querySelector('.controls-bar').style.display = 'none';
@@ -1273,7 +1345,8 @@
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
       const tbody = document.getElementById('resultsTableBody');
-      tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Mencari data...</p></td></tr>`;
+      const colspan = getColSpan();
+      tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Mencari data...</p></td></tr>`;
       document.getElementById('emptyTableState').style.display = 'none';
 
       fetch(WEB_APP_URL, {
@@ -1305,13 +1378,13 @@
           handleLogout();
           alert('Sesi telah habis. Silakan login kembali.');
         } else {
-          tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal mencari data.')}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal mencari data.')}</td></tr>`;
         }
       })
       .catch(() => {
         btn.disabled = false;
         btn.innerHTML = `Cari`;
-        tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
       });
     }
 
@@ -1366,7 +1439,8 @@
       if (!currentSession || !currentSession.token) return;
 
       const tbody = document.getElementById('resultsTableBody');
-      tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Memuat seluruh data siswa placement test...</p></td></tr>`;
+      const colspan = getColSpan();
+      tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Memuat seluruh data siswa placement test...</p></td></tr>`;
       document.getElementById('emptyTableState').style.display = 'none';
 
       fetch(WEB_APP_URL, {
@@ -1386,11 +1460,11 @@
           handleLogout();
           alert('Sesi telah habis. Silakan login kembali.');
         } else {
-          tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal memuat data.')}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal memuat data.')}</td></tr>`;
         }
       })
       .catch(() => {
-        tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
       });
     }
 
@@ -1442,8 +1516,10 @@
     }
 
     function renderTable(data) {
+      renderTableHeader();
       const tbody = document.getElementById('resultsTableBody');
       const emptyState = document.getElementById('emptyTableState');
+      const isRestricted = currentSession && currentSession.accessLevel === 'restricted';
 
       if (!data || data.length === 0) {
         tbody.innerHTML = '';
@@ -1452,47 +1528,74 @@
       }
 
       emptyState.style.display = 'none';
-      tbody.innerHTML = data.map(r => `
-        <tr>
-          <td style="font-family: monospace; font-weight: 700;">${escapeHtml(r.placement_id)}</td>
-          <td style="font-weight: 700; color: var(--k-blue-d);">${escapeHtml(r.student_name)}</td>
-          <td>${escapeHtml(r.student_age)}</td>
-          <td><span class="badge-branch">${escapeHtml(r.audience)}</span></td>
-          <td>${escapeHtml(r.parent_email)}</td>
-          <td>${escapeHtml(formatDateKey(r.test_date) || '-')}</td>
-          <td>${escapeHtml(r.branch)}</td>
-          <td>
-            <span class="consent-tag ${r.child_confirmed ? 'yes' : 'no'}">
-              <i class="fa-solid ${r.child_confirmed ? 'fa-check' : 'fa-xmark'}"></i> ${r.child_confirmed ? 'Ya' : 'Tidak'}
-            </span>
-          </td>
-          <td>
-            <span class="consent-tag ${r.guardian_confirmed ? 'yes' : 'no'}">
-              <i class="fa-solid ${r.guardian_confirmed ? 'fa-check' : 'fa-xmark'}"></i> ${r.guardian_confirmed ? 'Ya' : 'Tidak'}
-            </span>
-          </td>
-          <td style="font-weight: 600;">${escapeHtml(r.assigned_module)}</td>
-          <td>${escapeHtml(r.potential_module)}</td>
-          <td style="font-weight: 700; color: #866200;">${escapeHtml(formatCleanLevel(r.assigned_level))}</td>
-          <td>
-            <span class="status-badge ${r.final_status === 'completed' ? 'status-completed' : 'status-progress'}">
-              ${escapeHtml(r.final_status)}
-            </span>
-          </td>
-          <td>
-            ${r.pdf_file_url ?
-              `<a href="${escapeHtml(r.pdf_file_url)}" target="_blank" class="btn-pdf-view"><i class="fa-solid fa-file-pdf"></i> View PDF</a>` :
-              `<span class="btn-pdf-view disabled"><i class="fa-solid fa-clock"></i> Belum Ready</span>`}
-          </td>
-          <td>
-            <select class="email-status-select ${String(r.email_status).toLowerCase() === 'sent' ? 'is-sent' : 'is-not-sent'}"
-                    onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this, '${escapeJs(r.student_name)}', '${escapeJs(r.parent_email)}')">
-              <option value="not sent" ${String(r.email_status).toLowerCase() !== 'sent' ? 'selected' : ''}>Not Sent</option>
-              <option value="sent" ${String(r.email_status).toLowerCase() === 'sent' ? 'selected' : ''}>Sent</option>
-            </select>
-          </td>
-        </tr>
-      `).join('');
+
+      if (isRestricted) {
+        tbody.innerHTML = data.map(r => `
+          <tr>
+            <td style="font-weight: 700; color: var(--k-blue-d);">${escapeHtml(r.student_name)}</td>
+            <td>${escapeHtml(r.parent_email)}</td>
+            <td>
+              <span class="status-badge ${r.final_status === 'completed' ? 'status-completed' : 'status-progress'}">
+                ${escapeHtml(r.final_status)}
+              </span>
+            </td>
+            <td>
+              ${r.pdf_file_url ?
+                `<a href="${escapeHtml(r.pdf_file_url)}" target="_blank" class="btn-pdf-view"><i class="fa-solid fa-file-pdf"></i> View PDF</a>` :
+                `<span class="btn-pdf-view disabled"><i class="fa-solid fa-clock"></i> Belum Ready</span>`}
+            </td>
+            <td>
+              <select class="email-status-select ${String(r.email_status).toLowerCase() === 'sent' ? 'is-sent' : 'is-not-sent'}"
+                      onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this, '${escapeJs(r.student_name)}', '${escapeJs(r.parent_email)}')">
+                <option value="not sent" ${String(r.email_status).toLowerCase() !== 'sent' ? 'selected' : ''}>Not Sent</option>
+                <option value="sent" ${String(r.email_status).toLowerCase() === 'sent' ? 'selected' : ''}>Sent</option>
+              </select>
+            </td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = data.map(r => `
+          <tr>
+            <td style="font-family: monospace; font-weight: 700;">${escapeHtml(r.placement_id)}</td>
+            <td style="font-weight: 700; color: var(--k-blue-d);">${escapeHtml(r.student_name)}</td>
+            <td>${escapeHtml(r.student_age)}</td>
+            <td><span class="badge-branch">${escapeHtml(r.audience)}</span></td>
+            <td>${escapeHtml(r.parent_email)}</td>
+            <td>${escapeHtml(formatDateKey(r.test_date) || '-')}</td>
+            <td>${escapeHtml(r.branch)}</td>
+            <td>
+              <span class="consent-tag ${r.child_confirmed ? 'yes' : 'no'}">
+                <i class="fa-solid ${r.child_confirmed ? 'fa-check' : 'fa-xmark'}"></i> ${r.child_confirmed ? 'Ya' : 'Tidak'}
+              </span>
+            </td>
+            <td>
+              <span class="consent-tag ${r.guardian_confirmed ? 'yes' : 'no'}">
+                <i class="fa-solid ${r.guardian_confirmed ? 'fa-check' : 'fa-xmark'}"></i> ${r.guardian_confirmed ? 'Ya' : 'Tidak'}
+              </span>
+            </td>
+            <td style="font-weight: 600;">${escapeHtml(r.assigned_module)}</td>
+            <td>${escapeHtml(r.potential_module)}</td>
+            <td style="font-weight: 700; color: #866200;">${escapeHtml(formatCleanLevel(r.assigned_level))}</td>
+            <td>
+              <span class="status-badge ${r.final_status === 'completed' ? 'status-completed' : 'status-progress'}">
+                ${escapeHtml(r.final_status)}
+              </span>
+            </td>
+            <td>
+              ${r.pdf_file_url ?
+                `<a href="${escapeHtml(r.pdf_file_url)}" target="_blank" class="btn-pdf-view"><i class="fa-solid fa-file-pdf"></i> View PDF</a>` :
+                `<span class="btn-pdf-view disabled"><i class="fa-solid fa-clock"></i> Belum Ready</span>`}
+            </td>
+            <td>
+              <select class="email-status-select ${String(r.email_status).toLowerCase() === 'sent' ? 'is-sent' : 'is-not-sent'}"
+                      onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this, '${escapeJs(r.student_name)}', '${escapeJs(r.parent_email)}')">
+                <option value="not sent" ${String(r.email_status).toLowerCase() !== 'sent' ? 'selected' : ''}>Not Sent</option>
+                <option value="sent" ${String(r.email_status).toLowerCase() === 'sent' ? 'selected' : ''}>Sent</option>
+              </select>
+            </td>
+          </tr>
+        `).join('');
+      }
     }
 
     function handleEmailStatusChange(placementId, newStatus, selectEl, studentName, parentEmail) {
