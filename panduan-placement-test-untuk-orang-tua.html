@@ -975,6 +975,91 @@
       border-radius: 4px;
       font-weight: 800;
     }
+
+    /* Quiz Card Styles */
+    .quiz-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(22,63,113,.06);
+    }
+    .quiz-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .quiz-badge {
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .quiz-badge.primary { background: #dbeafe; color: #1e40af; }
+    .quiz-question {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.4;
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .quiz-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 0.82rem;
+      color: #1e293b;
+      line-height: 1.38;
+      transition: all 0.2s ease;
+    }
+    .quiz-option.correct {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #14532d;
+      font-weight: 750;
+    }
+    .quiz-opt-letter {
+      display: grid;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      place-items: center;
+      border-radius: 6px;
+      background: var(--navy);
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    .quiz-option.correct .quiz-opt-letter {
+      background: #16a34a;
+    }
+    .quiz-explanation {
+      margin-top: 4px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      color: #166534;
+      font-size: 0.82rem;
+      line-height: 1.38;
+    }
   </style>
 </head>
 <body>
@@ -1838,6 +1923,94 @@
             <h3>❓ "Bisa coba 1 bulan dulu?"</h3>
             <p><strong>Cara Jawab:</strong><br>
             <em>"Keterampilan koding & logika butuh proses berkelanjutan untuk jadi karya, Bunda. Mengambil paket Learning Path penuh memastikan posisi Ananda di jalur proyek impiannya dan investasinya jauh lebih hemat."</em></p>
+          </article>
+        </div>
+    <!-- SLIDE SECTION BREAK: MINI QUIZ -->
+    <section class="slide section-break" data-title="Mini Quiz — Test Pemahaman Agent">
+      <div class="slide-inner">
+        <span class="section-index">Q</span>
+        <h2>Mini Quiz: Test Pemahaman Agent & EC</h2>
+        <p class="lead">Uji pemahaman Anda tentang konsep Placement Test, pemetaan kognitif, pembacaan result, dan strategi upsell ke orang tua.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE MINI QUIZ PART 1 -->
+    <section class="slide" data-title="Mini Quiz Part 1 (Konsep & Modul)">
+      <div class="slide-inner">
+        <span class="eyebrow">Mini Quiz · Soal 1 & 2</span>
+        <h2>Uji Pemahaman: Konsep & Rekomendasi Modul</h2>
+        <div class="grid-2">
+          <!-- SOAL 1 -->
+          <article class="quiz-card">
+            <div class="quiz-meta"><span class="quiz-badge primary">Soal 1 · Mitos vs Realita</span></div>
+            <div class="quiz-question">Parents bertanya: <em>"Kok tesnya cuma puzzle visual? Kapan dites koding Roblox langsung di software-nya?"</em><br>Mana jawaban EC terbaik?</div>
+            <div class="quiz-options">
+              <div class="quiz-option"><span class="quiz-opt-letter">A</span> Tes ini cuma formalitas administrasi saja, Bunda.</div>
+              <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> PT dibuat universal tanpa hafalan tool agar anak yang belum pernah les tetap bisa menunjukkan kepintaran alaminya tanpa takut/frustrasi.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">C</span> Karena Roblox terlalu susah, jadi kami ganti tesnya pakai gambar.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">D</span> Roblox hanya untuk anak yang nilainya sempurna di Stage 1A.</div>
+            </div>
+            <details class="quiz-explanation">
+              <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
+              <p style="margin-top:6px"><strong>Jawaban B Benar!</strong> PT mengukur potensi kognitif alami secara pasif. Tes software Roblox hanya akan membuat anak pemula takut dan merasa "tidak berbakat".</p>
+            </details>
+          </article>
+
+          <!-- SOAL 2 -->
+          <article class="quiz-card">
+            <div class="quiz-meta"><span class="quiz-badge primary">Soal 2 · Assigned vs Potential</span></div>
+            <div class="quiz-question">Raka (10th) ingin Roblox, tapi hasil tes menetapkan <strong>Assigned Module: Scratch</strong> & <strong>Potential: Roblox</strong>. Apa artinya?</div>
+            <div class="quiz-options">
+              <div class="quiz-option"><span class="quiz-opt-letter">A</span> Raka tidak berbakat Roblox, jadi diturunkan ke Scratch.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">B</span> Raka bebas memilih kelas mana saja hari ini.</div>
+              <div class="quiz-option correct"><span class="quiz-opt-letter">C</span> Scratch adalah titik start nyaman (jembatan) untuk bangun fondasi logika sebelum naik ke impian Roblox-nya.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">D</span> Raka wajib ujian ulang bulan depan untuk ikut Roblox.</div>
+            </div>
+            <details class="quiz-explanation">
+              <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
+              <p style="margin-top:6px"><strong>Jawaban C Benar!</strong> Assigned Module adalah tempat mulai hari ini. Potential Module adalah tujuan akhir di ujung jalur Learning Path.</p>
+            </details>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE MINI QUIZ PART 2 -->
+    <section class="slide" data-title="Mini Quiz Part 2 (Growth Mindset & Upsell)">
+      <div class="slide-inner">
+        <span class="eyebrow">Mini Quiz · Soal 3 & 4</span>
+        <h2>Uji Pemahaman: Bahasa Empatis & Strategy Upsell</h2>
+        <div class="grid-2">
+          <!-- SOAL 3 -->
+          <article class="quiz-card">
+            <div class="quiz-meta"><span class="quiz-badge primary">Soal 3 · Growth Mindset</span></div>
+            <div class="quiz-question">Pada report, pilar <strong>Kreativitas</strong> anak berada di band <em>"Sedang Bertumbuh" (Skor 40%)</em>. Bagaimana EC menjelaskannya?</div>
+            <div class="quiz-options">
+              <div class="quiz-option"><span class="quiz-opt-letter">A</span> Nilai Kreativitas anak jelek dan di bawah rata-rata.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">B</span> Anak kurang berbakat di bidang seni & desain UI.</div>
+              <div class="quiz-option correct"><span class="quiz-opt-letter">C</span> Ini bukan arti tidak mampu, melainkan petunjuk bahwa di kelas nanti Coach akan memberikan porsi latihan visual & proyek UI bertahap.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">D</span> Anak wajib les privat tambahan sebelum mulai kelas.</div>
+            </div>
+            <details class="quiz-explanation">
+              <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
+              <p style="margin-top:6px"><strong>Jawaban C Benar!</strong> Selalu gunakan Growth Mindset. Skor awal adalah potret kebutuhan latihan di kelas, bukan vonis bakat.</p>
+            </details>
+          </article>
+
+          <!-- SOAL 4 -->
+          <article class="quiz-card">
+            <div class="quiz-meta"><span class="quiz-badge primary">Soal 4 · Handling Objection & Upsell</span></div>
+            <div class="quiz-question">Parents bertanya: <em>"Bisa coba 1 bulan les dulu gak? Takut anaknya bosan."</em> Bagaimana cara mereframe (upsell) yang pas?</div>
+            <div class="quiz-options">
+              <div class="quiz-option"><span class="quiz-opt-letter">A</span> Boleh saja Bunda, coba 1 bulan dulu nanti kalau suka baru perpanjang.</div>
+              <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> Koding butuh proses jangka panjang. Paket Learning Path (1-2 Th) memastikan posisi anak di jalur proyek impiannya dan lebih hemat.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">C</span> Di Kalananti wajib 1 tahun Bunda, tidak bisa daftar bulanan.</div>
+              <div class="quiz-option"><span class="quiz-opt-letter">D</span> Kalau 1 bulan nanti anak tidak mendapat sertifikat.</div>
+            </div>
+            <details class="quiz-explanation">
+              <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
+              <p style="margin-top:6px"><strong>Jawaban B Benar!</strong> Juallah "Jalur Impian Anak (Learning Path 1-2 Tahun)", bukan sekadar unit modul bulanan.</p>
+            </details>
           </article>
         </div>
       </div>
