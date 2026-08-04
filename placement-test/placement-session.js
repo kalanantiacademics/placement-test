@@ -136,8 +136,9 @@
       || nativeStorage.getItem(LAST_SESSION_KEY);
   } catch (e) {}
 
-  if (!requestedSession && global.parent && global.parent.PlacementSession) {
+  if (!requestedSession) {
     try {
+      if (!global.parent || global.parent === global || !global.parent.PlacementSession) throw new Error('parent_session_unavailable');
       requestedSession = global.parent.PlacementSession.getActiveSubmissionId();
     } catch (e) {}
   }
