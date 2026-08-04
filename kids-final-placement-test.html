@@ -7040,21 +7040,12 @@ window.PlacementSync?.configure();
                           state.potentialModule = 'Scratch';
                       }
                   } else if (age >= 12 && age <= 15) {
-                      if (s.logic === 5 && validator.logic === 5) {
-                          state.recommendedModule = 'Python';
-                          state.potentialModule = 'Python';
-                      } else if (s.digital >= 4 && s.spatial >= 4) {
+                      if (s.digital >= 4 && s.spatial >= 4) {
                           state.recommendedModule = 'Roblox Studio';
                           state.potentialModule = 'Roblox Studio';
-                      } else if (s.logic <= 2 && s.digital <= 2 && s.spatial >= 4) {
-                          state.recommendedModule = 'Scratch';
-                          state.potentialModule = 'Scratch';
-                      } else if (s.logic <= 2 && s.spatial <= 2 && s.digital <= 2) {
-                          state.recommendedModule = 'Scratch';
-                          state.potentialModule = 'Scratch';
                       } else {
-                          state.recommendedModule = 'Scratch';
-                          state.potentialModule = 'Scratch';
+                          state.recommendedModule = 'Python';
+                          state.potentialModule = 'Python';
                       }
                   } else {
                       state.recommendedModule = 'Scratch';
@@ -10083,8 +10074,8 @@ window.PlacementSync?.configure();
                   } else {
                       const pythonReady = pillarScores.logic >= 0.8 && pillarScores.digital >= 0.6;
                       const robloxReady = pillarScores.spatial >= 0.8 && pillarScores.digital >= 0.6;
-                      state.assignedModule = pythonReady ? 'Python' : robloxReady ? 'Roblox Studio' : 'Scratch';
-                      state.potentialModule = robloxReady ? 'Roblox Studio' : pythonReady ? 'Python' : 'Scratch';
+                      state.assignedModule = robloxReady ? 'Roblox Studio' : 'Python';
+                      state.potentialModule = robloxReady ? 'Roblox Studio' : 'Python';
                   }
                   state.stage2AssessmentId = `stage2-${state.assignedModule.toLowerCase().replace(/\s+/g, '-')}-v1`;
                   state.recommendedModule = state.assignedModule;
@@ -14376,21 +14367,27 @@ window.PlacementSync?.configure();
               "Keira Anindya",
               "Raka Pranata",
             ]);
-          const assignedModule = isKidsUpper
-            ? randomItem(["Scratch", "Roblox Studio", "Python"])
-            : "Scratch";
+          const qcModule = String(params.get("qcModule") || "").trim();
+          const validModules = ["Scratch", "Roblox Studio", "Python"];
+          const assignedModule = validModules.includes(qcModule)
+            ? qcModule
+            : isKidsUpper
+              ? randomItem(validModules)
+              : "Scratch";
           const potentialModule =
             assignedModule === "Scratch"
               ? randomItem(["Scratch", "Roblox Studio"])
               : assignedModule;
-          const confirmedInterest = randomItem([
-            "Scratch",
-            "Roblox Studio",
-            "Python",
-          ]);
+          const qcInterest = String(params.get("qcInterest") || "").trim();
+          const confirmedInterest = validModules.includes(qcInterest)
+            ? qcInterest
+            : randomItem(validModules);
           const scorePool = [0.52, 0.64, 0.73, 0.81, 0.9];
+          const qcLogic = Number(params.get("qcLogic"));
           const combinedPillarScores = {
-            logic: randomItem(scorePool),
+            logic: Number.isFinite(qcLogic) && qcLogic >= 0 && qcLogic <= 1
+              ? qcLogic
+              : randomItem(scorePool),
             creativity: randomItem(scorePool),
             spatial: randomItem(scorePool),
             digital: randomItem(scorePool),
@@ -14594,71 +14591,48 @@ window.PlacementSync?.configure();
               (!selectedPillars.includes("creativity") ||
                 validator.creativity >= 4);
             potentialModule = scratchEvidence ? "Scratch" : "Scratch Jr";
-            if (
-              s.logic === 5 &&
-              s.creativity === 5 &&
-              s.digital === 5 &&
-              validator.logic === 5 &&
-              validator.creativity === 5 &&
-              validator.digital === 5
-            ) {
-              assignedModule = "Scratch";
-              potentialModule = "Scratch";
-            } else
-              fallbackReason =
-                "Belum memenuhi validator sempurna 15/15 untuk lompat ke Scratch.";
+            fallbackReason = "Scratch Jr adalah fondasi yang sesuai untuk usia 5–7 tahun.";
+          } else if (age <= 9) {
+            assignedModule = "Scratch";
+            potentialModule = "Scratch";
+            fallbackReason = "Scratch adalah fondasi utama untuk usia 8–9 tahun.";
           } else if (age <= 11) {
             const robloxPotential =
               s.digital >= 3 &&
-              [s.logic, s.creativity, s.spatial].filter((score) => score >= 4)
-                .length >= 2 &&
-              selectedPillars.some((pillar) => validator[pillar] >= 4);
+              combinedPillarScores.spatial >= 0.6;
             potentialModule = robloxPotential ? "Roblox Studio" : "Scratch";
-            if (
-              s.logic === 5 &&
-              s.creativity === 5 &&
-              s.spatial === 5 &&
-              s.digital === 5 &&
-              validator.logic === 5 &&
-              validator.creativity === 5 &&
-              validator.spatial === 5 &&
-              validator.digital === 5
-            ) {
+            if (robloxPotential && combinedPillarScores.spatial > combinedPillarScores.logic) {
               assignedModule = "Roblox Studio";
               potentialModule = "Roblox Studio";
-            } else
-              fallbackReason =
-                "Belum memenuhi validator sempurna 20/20 untuk lompat ke Roblox Studio.";
+            } else {
+              assignedModule = "Scratch";
+              fallbackReason = "Scratch digunakan sebagai jalur aman usia 10–11; minat Roblox pada Stage 3 tetap dapat mengalihkan rekomendasi ke Roblox Studio Level 1.";
+            }
           } else if (age <= 15) {
             const pythonPotential =
-              s.logic >= 4 &&
-              (validator.logic >= 4 || !selectedPillars.includes("logic"));
+              combinedPillarScores.logic >= 0.6;
             const robloxPotential =
-              s.spatial >= 4 &&
-              s.digital >= 4 &&
-              (validator.spatial >= 4 || !selectedPillars.includes("spatial"));
+              combinedPillarScores.spatial >= 0.6 &&
+              combinedPillarScores.digital >= 0.6;
             potentialModule = robloxPotential
               ? "Roblox Studio"
               : pythonPotential
                 ? "Python"
                 : "Scratch";
-            if (s.digital <= 2) {
-              fallbackReason =
-                "Digital Literacy 0–2/5 memblokir lompatan otomatis; menggunakan jalur aman Scratch.";
-              reviewFlags.push("digital_readiness_support_required");
-            } else if (s.logic === 5 && validator.logic === 5) {
+            if (pythonPotential && combinedPillarScores.logic >= combinedPillarScores.spatial) {
               assignedModule = "Python";
-              potentialModule = robloxPotential ? "Roblox Studio" : "Python";
-            } else if (
-              s.spatial === 5 &&
-              s.digital >= 4 &&
-              validator.spatial === 5
-            ) {
+              potentialModule = "Python";
+            } else if (robloxPotential) {
               assignedModule = "Roblox Studio";
               potentialModule = "Roblox Studio";
-            } else
-              fallbackReason =
-                "Validator kesiapan Python/Roblox belum terpenuhi; menggunakan jalur aman Scratch.";
+            } else {
+              assignedModule = age >= 13 ? "Python" : "Scratch";
+              potentialModule = pythonPotential ? "Python" : assignedModule;
+              fallbackReason = age >= 13
+                ? "Python adalah fallback usia 13–15; hasil Stage 2 menentukan kebutuhan fondasi."
+                : "Usia 12 menggunakan Scratch sebagai fondasi ketika kesiapan Python belum cukup.";
+            }
+            if (s.digital <= 2) reviewFlags.push("digital_readiness_support_required");
           }
           if (fallbackReason) reviewFlags.push("age_policy_fallback");
           const stage1APerfect = stage1A.perfectScore === true,
@@ -14882,14 +14856,53 @@ window.PlacementSync?.configure();
             ? "qc_preview"
             : "under_review";
           save();
-          const assigned = state.stage1.assignedModule || "Scratch",
+          let assigned = state.stage1.assignedModule || "Scratch",
             potential = state.stage1.potentialModule || assigned,
             interest = state.stage3?.confirmedInterest || "Belum ditentukan";
+          const exactAge = Number(state.student?.exactAge || 8);
+          const logicScore = Number(
+            state.stage1.combinedPillarScores?.logic ??
+            ((state.stage1.scores?.logic || 0) / 5),
+          );
+          const moduleBeforeInterest = assigned;
+          let interestOverrideApplied = false;
+
+          // Stage 3 is intentionally last. For the commercially eligible 10–15
+          // audience, confirmed Roblox interest may change the final module. A
+          // module changed after Stage 2 always starts conservatively at Level 1.
+          if (exactAge >= 10 && exactAge <= 15 && interest === "Roblox Studio") {
+            assigned = "Roblox Studio";
+            potential = "Roblox Studio";
+            interestOverrideApplied = moduleBeforeInterest !== assigned;
+          } else if (exactAge >= 12 && exactAge <= 15 && interest !== "Roblox Studio" && logicScore >= 0.6) {
+            assigned = "Python";
+            potential = "Python";
+            interestOverrideApplied = moduleBeforeInterest !== assigned;
+          } else if (exactAge >= 10 && exactAge <= 12 && interest !== "Roblox Studio") {
+            assigned = "Scratch";
+            potential = potential === "Roblox Studio" ? "Scratch" : potential;
+            interestOverrideApplied = moduleBeforeInterest !== assigned;
+          }
+          if (interestOverrideApplied) {
+            state.stage1.assignedModule = assigned;
+            state.stage1.potentialModule = potential;
+            state.stage1.stage2AssessmentId = `stage2-${assigned.toLowerCase().replace(/\s+/g, "-")}-v1`;
+            state.stage1.reviewFlags = Array.from(new Set([
+              ...(state.stage1.reviewFlags || []),
+              "stage3_interest_override",
+              "stage2_module_changed_after_assessment",
+            ]));
+            state.stage1.fallbackReason = interest === "Roblox Studio"
+              ? "Minat Roblox terkonfirmasi pada Stage 3; rekomendasi dialihkan ke Roblox Studio Level 1 karena Stage 2 sebelumnya menguji modul lain."
+              : "Rekomendasi akhir diselaraskan dengan usia, kekuatan logika, dan tidak adanya minat Roblox; modul baru dimulai dari Level 1.";
+          }
           const stage2Valid =
             state.stage2?.assessmentValidity === "valid" ||
-            (!state.stage2?.assessmentValidity && assigned === "Scratch");
-          const candidate = stage2Valid && state.stage2?.lv3Candidate === true;
-          const level = stage2Valid
+            (!state.stage2?.assessmentValidity && moduleBeforeInterest === "Scratch");
+          const candidate = !interestOverrideApplied && stage2Valid && state.stage2?.lv3Candidate === true;
+          const level = interestOverrideApplied
+            ? "Level 1"
+            : stage2Valid
             ? state.stage2?.automaticPlacement || "Level 1"
             : "MENUNGGU ASSESSMENT MODUL";
           const pathTarget =
@@ -15023,7 +15036,6 @@ window.PlacementSync?.configure();
             year: "numeric",
           }).format(new Date());
 
-          const exactAge = Number(state.student?.exactAge || 8);
           shell(`
         <style>
             .kids-report,.kids-report button{font-family:'Inter',sans-serif}
