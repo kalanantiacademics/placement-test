@@ -6,16 +6,16 @@
   <title>Kalananti – Portal Hasil Placement Test Cabang</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-  
+
   <!-- Three.js & GSAP CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <style>
     :root {
       --k-blue: #265E9B;
@@ -590,7 +590,7 @@
     }
     .status-completed { background: #e6f9f3; color: #1e7e5a; border: 1px solid #a4e9d1; }
     .status-progress { background: #fff8e6; color: #9c6c00; border: 1px solid #ffe399; }
-    
+
     .consent-tag {
       display: inline-flex;
       align-items: center;
@@ -671,6 +671,85 @@
     .alert-box.error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; display: block; }
     .alert-box.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; display: block; }
     .alert-box.info { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; display: block; }
+    /* Important Links Section */
+    .important-links-card {
+      background: var(--card);
+      border: 1.5px solid var(--card-b);
+      border-radius: var(--border-radius);
+      padding: 24px 32px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 30px -10px rgba(26, 69, 118, 0.12);
+      backdrop-filter: blur(14px);
+    }
+    .important-links-title {
+      color: var(--k-blue-d);
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .link-box {
+      padding: 16px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .link-box-blue { background: #f0f7ff; border: 1.5px solid #cbe0f7; }
+    .link-box-yellow { background: #fff8e5; border: 1.5px solid #ffe399; }
+    .link-box-green { background: #e6f9f3; border: 1.5px solid #a4e9d1; }
+
+    .link-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .link-box-blue .link-label { color: var(--muted); }
+    .link-box-yellow .link-label { color: #b27a00; }
+    .link-box-green .link-label { color: #186448; }
+
+    .link-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .link-action a {
+      font-weight: 700;
+      text-decoration: none;
+      word-break: break-all;
+      font-size: 0.95rem;
+    }
+    .link-box-blue a { color: var(--k-blue-d); }
+    .link-box-blue a:hover { color: var(--k-blue); text-decoration: underline; }
+    .link-box-yellow a { color: #d99a00; }
+    .link-box-yellow a:hover { color: #b27a00; text-decoration: underline; }
+    .link-box-green a { color: #1e7e5a; }
+    .link-box-green a:hover { color: #186448; text-decoration: underline; }
+
+    .btn-copy {
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .link-box-blue .btn-copy { background: var(--k-blue); color: white; }
+    .link-box-blue .btn-copy:hover { background: var(--k-blue-d); }
+    .link-box-yellow .btn-copy { background: #d99a00; color: white; }
+    .link-box-yellow .btn-copy:hover { background: #b27a00; }
   </style>
 </head>
 <body>
@@ -700,11 +779,49 @@
   </header>
 
   <main class="container">
-    
+
+    <!-- TAUTAN PENTING SECTION -->
+    <div class="important-links-card">
+      <h3 class="important-links-title"><i class="fa-solid fa-link"></i> Tautan Penting Placement Test</h3>
+      <div class="links-grid">
+
+        <!-- Link 1: Pengerjaan Placement Test -->
+        <div class="link-box link-box-blue">
+          <div class="link-label">Pengerjaan Placement Test (Untuk Anak/Ortu)</div>
+          <div class="link-action">
+            <a href="https://kalananti.id/placement-test" target="_blank">kalananti.id/placement-test</a>
+            <button class="btn-copy" onclick="navigator.clipboard.writeText('https://kalananti.id/placement-test'); alert('Tautan placement test berhasil disalin!')">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Link 2: Hasil Placement Test -->
+        <div class="link-box link-box-yellow">
+          <div class="link-label">Dashboard Hasil (Halaman Ini)</div>
+          <div class="link-action">
+            <a href="https://kalananti.id/placement-test/hasil" target="_blank">kalananti.id/placement-test/hasil</a>
+            <button class="btn-copy" onclick="navigator.clipboard.writeText('https://kalananti.id/placement-test/hasil'); alert('Tautan dashboard hasil berhasil disalin!')">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Link 3: Guidance -->
+        <div class="link-box link-box-green">
+          <div class="link-label">Panduan & Guidance Placement Test</div>
+          <div class="link-action">
+            <a href="pitch-deck-placement-test-stakeholder.html" target="_blank">Buka Panduan (Pitch Deck) <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem; margin-left:4px;"></i></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- LANDING PORTAL VIEW -->
     <div id="portalLandingView">
       <div class="portal-grid">
-        
+
         <!-- CARD 1: KERJAKAN PLACEMENT TEST -->
         <div class="portal-card">
           <div class="card-header">
@@ -751,7 +868,7 @@
 
     <!-- DASHBOARD VIEW -->
     <div id="branchDashboardView" class="dashboard-view">
-      
+
       <div class="dashboard-header-bar">
         <div class="dashboard-title-box">
           <h2 id="dashboardBranchName">Dashboard Cabang</h2>
@@ -767,13 +884,28 @@
         </button>
       </div>
 
+      <!-- Restricted Search Bar -->
+      <div id="restrictedSearchContainer" style="display: none; text-align: center; margin: 40px auto; max-width: 600px; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h3 style="margin-bottom:8px; font-size:1.2rem; color:var(--k-blue-d);">Pencarian Data Siswa</h3>
+        <p style="margin-bottom:24px; color:#666; font-size:0.95rem;">Masukkan nama lengkap siswa atau email orang tua. Tanggal tes dapat dipakai untuk mempersempit hasil.</p>
+        <form onsubmit="handleRestrictedSearch(event)" style="display:flex; gap:10px; flex-wrap:wrap;">
+          <input type="text" id="restrictedSearchInput" placeholder="Nama lengkap atau email orang tua" required minlength="3" class="input-field" style="flex:2; min-width:240px;">
+          <input type="date" id="restrictedSearchDate" aria-label="Tanggal placement test" class="input-field" style="flex:1; min-width:170px;">
+          <button type="submit" class="btn-action btn-primary" id="btnRestrictedSearch" style="width:auto; padding:0 24px;">Cari</button>
+        </form>
+        <div id="searchHistoryContainer" style="margin-top:24px; text-align:left; display:none;">
+          <h4 style="font-size:0.9rem; color:#888; margin-bottom:12px;">Riwayat Pencarian Anda</h4>
+          <div id="searchHistoryList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        </div>
+      </div>
+
       <!-- Controls & Filter Bar -->
       <div class="controls-bar">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="text" id="searchInput" placeholder="Cari nama anak, email ortu, cabang, atau ID..." oninput="applyFilters()">
         </div>
-        
+
         <select id="audienceFilter" class="filter-select" onchange="applyFilters()">
           <option value="">Semua Kategori (Audience)</option>
           <option value="Kids">Kids</option>
@@ -786,6 +918,8 @@
           <option value="completed">Completed</option>
           <option value="in_progress">In Progress</option>
         </select>
+
+        <input type="date" id="dateFilter" aria-label="Filter tanggal tes" class="filter-select" onchange="applyFilters()">
 
         <button onclick="loadDashboardData()" class="btn-action btn-secondary" style="width: auto; padding: 10px 16px;">
           <i class="fa-solid fa-rotate-right"></i> Refresh
@@ -802,6 +936,7 @@
               <th>Age</th>
               <th>Category</th>
               <th>Parent Email</th>
+              <th>Test Date</th>
               <th>Branch</th>
               <th>Student Consent</th>
               <th>Parent Consent</th>
@@ -864,7 +999,7 @@
 
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYga6HmAaTkAjVnwMX-AVJ7shYdg8JWeiLfcExhV0Lv1y6lxL0qr0oQIvYQkaLRznh/exec';
-    
+
     let availableBranches = ["All Access"];
     let selectedBranch = "All Access";
     let selectedRole = "BM";
@@ -1084,7 +1219,8 @@
             token: data.token,
             branch: data.branch,
             email: data.userEmail,
-            role: data.role
+            role: data.role,
+            accessLevel: data.accessLevel
           };
           localStorage.setItem('kalananti_branch_session', JSON.stringify(currentSession));
           showDashboardView();
@@ -1111,14 +1247,127 @@
       document.getElementById('dashboardUserEmail').textContent = currentSession.email;
       document.getElementById('dashboardUserRole').textContent = currentSession.role;
 
-      loadDashboardData();
+      if (currentSession.accessLevel === 'restricted') {
+        document.getElementById('restrictedSearchContainer').style.display = 'block';
+        document.querySelector('.controls-bar').style.display = 'none';
+        document.getElementById('emptyTableState').innerHTML = `<i class="fa-solid fa-magnifying-glass"></i><p>Silakan cari nama atau email siswa terlebih dahulu.</p>`;
+        document.getElementById('emptyTableState').style.display = 'block';
+        document.getElementById('resultsTableBody').innerHTML = '';
+        loadSearchHistory();
+      } else {
+        document.getElementById('restrictedSearchContainer').style.display = 'none';
+        document.querySelector('.controls-bar').style.display = 'flex';
+        document.getElementById('emptyTableState').innerHTML = `<i class="fa-solid fa-folder-open"></i><p>Belum ada data placement test.</p>`;
+        loadDashboardData();
+      }
+    }
+
+
+    function handleRestrictedSearch(e) {
+      if(e) e.preventDefault();
+      const query = document.getElementById('restrictedSearchInput').value.trim();
+      const testDate = document.getElementById('restrictedSearchDate').value;
+      if (query.length < 3) return;
+
+      const btn = document.getElementById('btnRestrictedSearch');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+      const tbody = document.getElementById('resultsTableBody');
+      tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Mencari data...</p></td></tr>`;
+      document.getElementById('emptyTableState').style.display = 'none';
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'search_restricted_results',
+          token: currentSession.token,
+          query: query,
+          testDate: testDate
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = `Cari`;
+
+        if (data.ok && Array.isArray(data.results)) {
+          if (data.results.length > 0) {
+            saveSearchHistory(query, testDate);
+            document.getElementById('emptyTableState').style.display = 'none';
+          } else {
+            document.getElementById('emptyTableState').innerHTML = `<i class="fa-solid fa-magnifying-glass"></i><p>Pencarian "${escapeHtml(query)}" tidak ditemukan.</p>`;
+            document.getElementById('emptyTableState').style.display = 'block';
+          }
+          rawDashboardData = data.results;
+          renderTable(data.results);
+        } else if (data.error && data.error.includes('kadaluarsa')) {
+          handleLogout();
+          alert('Sesi telah habis. Silakan login kembali.');
+        } else {
+          tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal mencari data.')}</td></tr>`;
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = `Cari`;
+        tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
+      });
+    }
+
+    function loadSearchHistory() {
+      if (!currentSession || !currentSession.email) return;
+      const key = `kalananti_history_${currentSession.email}`;
+      let history = [];
+      try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e){}
+      const now = Date.now();
+      history = history.filter(item => item && item.expiresAt > now);
+      localStorage.setItem(key, JSON.stringify(history));
+
+      const container = document.getElementById('searchHistoryContainer');
+      const list = document.getElementById('searchHistoryList');
+      if (history.length > 0) {
+        container.style.display = 'block';
+        list.innerHTML = '';
+        history.forEach(item => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'badge-branch';
+          button.style.cssText = 'cursor:pointer;background:#e0f2fe;color:var(--k-blue-d);font-weight:normal;border:0;';
+          button.textContent = `${item.query}${item.testDate ? ` · ${item.testDate}` : ''}`;
+          button.addEventListener('click', () => {
+            document.getElementById('restrictedSearchInput').value = item.query;
+            document.getElementById('restrictedSearchDate').value = item.testDate || '';
+            handleRestrictedSearch();
+          });
+          list.appendChild(button);
+        });
+      } else {
+        container.style.display = 'none';
+      }
+    }
+
+    function saveSearchHistory(query, testDate) {
+      if (!currentSession || !currentSession.email) return;
+      const key = `kalananti_history_${currentSession.email}`;
+      let history = [];
+      try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e){}
+
+      const lower = query.toLowerCase();
+      history = history.filter(item => item && (item.query.toLowerCase() !== lower || item.testDate !== testDate));
+      history.unshift({ query, testDate: testDate || '', expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) });
+      if (history.length > 10) history = history.slice(0, 10);
+
+      localStorage.setItem(key, JSON.stringify(history));
+      loadSearchHistory();
     }
 
     function loadDashboardData() {
       if (!currentSession || !currentSession.token) return;
 
       const tbody = document.getElementById('resultsTableBody');
-      tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Memuat seluruh data siswa placement test...</p></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Memuat seluruh data siswa placement test...</p></td></tr>`;
       document.getElementById('emptyTableState').style.display = 'none';
 
       fetch(WEB_APP_URL, {
@@ -1138,11 +1387,11 @@
           handleLogout();
           alert('Sesi telah habis. Silakan login kembali.');
         } else {
-          tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal memuat data.')}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal memuat data.')}</td></tr>`;
         }
       })
       .catch(() => {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
       });
     }
 
@@ -1150,21 +1399,47 @@
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
       const audience = document.getElementById('audienceFilter').value;
       const status = document.getElementById('statusFilter').value;
+      const testDate = document.getElementById('dateFilter').value;
 
       const filtered = rawDashboardData.filter(row => {
-        const matchesQuery = !query || 
-          String(row.student_name || '').toLowerCase().includes(query) || 
+        const matchesQuery = !query ||
+          String(row.student_name || '').toLowerCase().includes(query) ||
           String(row.parent_email || '').toLowerCase().includes(query) ||
           String(row.branch || '').toLowerCase().includes(query) ||
-          String(row.placement_id || '').toLowerCase().includes(query);
-        
+          String(row.placement_id || '').toLowerCase().includes(query) ||
+          String(row.assigned_module || '').toLowerCase().includes(query) ||
+          String(row.potential_module || '').toLowerCase().includes(query) ||
+          String(row.assigned_level || '').toLowerCase().includes(query);
+
         const matchesAudience = !audience || String(row.audience || '').toLowerCase() === audience.toLowerCase();
         const matchesStatus = !status || String(row.final_status || '').toLowerCase() === status.toLowerCase();
+        const matchesDate = !testDate || formatDateKey(row.test_date) === testDate;
 
-        return matchesQuery && matchesAudience && matchesStatus;
+        return matchesQuery && matchesAudience && matchesStatus && matchesDate;
       });
 
       renderTable(filtered);
+    }
+
+    function formatCleanLevel(levelStr) {
+      if (!levelStr) return '-';
+      const str = String(levelStr).trim();
+      if (!str || str === '-') return '-';
+      if (/(lv1|level\s*1|foundational)/i.test(str)) return 'Level 1';
+      if (/(lv2|level\s*2|basic)/i.test(str)) return 'Level 2';
+      if (/(lv3|level\s*3|intermediate)/i.test(str)) return 'Level 3';
+      if (/(lv4|level\s*4|advanced)/i.test(str)) return 'Level 4';
+      return str.replace(/^(FOUNDATIONAL|BASIC|INTERMEDIATE|ADVANCED)\s*[—\-]\s*/i, '');
+    }
+
+    function formatDateKey(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     function renderTable(data) {
@@ -1185,6 +1460,7 @@
           <td>${escapeHtml(r.student_age)}</td>
           <td><span class="badge-branch">${escapeHtml(r.audience)}</span></td>
           <td>${escapeHtml(r.parent_email)}</td>
+          <td>${escapeHtml(formatDateKey(r.test_date) || '-')}</td>
           <td>${escapeHtml(r.branch)}</td>
           <td>
             <span class="consent-tag ${r.child_confirmed ? 'yes' : 'no'}">
@@ -1198,20 +1474,20 @@
           </td>
           <td style="font-weight: 600;">${escapeHtml(r.assigned_module)}</td>
           <td>${escapeHtml(r.potential_module)}</td>
-          <td style="font-weight: 700; color: #866200;">${escapeHtml(r.assigned_level)}</td>
+          <td style="font-weight: 700; color: #866200;">${escapeHtml(formatCleanLevel(r.assigned_level))}</td>
           <td>
             <span class="status-badge ${r.final_status === 'completed' ? 'status-completed' : 'status-progress'}">
               ${escapeHtml(r.final_status)}
             </span>
           </td>
           <td>
-            ${r.pdf_file_url ? 
-              `<a href="${escapeHtml(r.pdf_file_url)}" target="_blank" class="btn-pdf-view"><i class="fa-solid fa-file-pdf"></i> View PDF</a>` : 
+            ${r.pdf_file_url ?
+              `<a href="${escapeHtml(r.pdf_file_url)}" target="_blank" class="btn-pdf-view"><i class="fa-solid fa-file-pdf"></i> View PDF</a>` :
               `<span class="btn-pdf-view disabled"><i class="fa-solid fa-clock"></i> Belum Ready</span>`}
           </td>
           <td>
             <select class="email-status-select ${String(r.email_status).toLowerCase() === 'sent' ? 'is-sent' : 'is-not-sent'}"
-                    onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this)">
+                    onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this, '${escapeJs(r.student_name)}', '${escapeJs(r.parent_email)}')">
               <option value="not sent" ${String(r.email_status).toLowerCase() !== 'sent' ? 'selected' : ''}>Not Sent</option>
               <option value="sent" ${String(r.email_status).toLowerCase() === 'sent' ? 'selected' : ''}>Sent</option>
             </select>
@@ -1220,7 +1496,7 @@
       `).join('');
     }
 
-    function handleEmailStatusChange(placementId, newStatus, selectEl) {
+    function handleEmailStatusChange(placementId, newStatus, selectEl, studentName, parentEmail) {
       if (!currentSession || !currentSession.token) {
         alert('Sesi telah habis. Silakan login kembali.');
         return;
@@ -1245,7 +1521,9 @@
           action: 'update_email_status',
           token: currentSession.token,
           submissionId: placementId,
-          emailStatus: newStatus
+          emailStatus: newStatus,
+          studentName: studentName,
+          parentEmail: parentEmail
         })
       })
       .then(res => res.json())
@@ -1318,8 +1596,11 @@
       if (saved) {
         try {
           currentSession = JSON.parse(saved);
-          if (currentSession && currentSession.token) {
+          if (currentSession && currentSession.token && ['all', 'restricted'].includes(currentSession.accessLevel)) {
             showDashboardView();
+          } else {
+            currentSession = null;
+            localStorage.removeItem('kalananti_branch_session');
           }
         } catch (e) {
           localStorage.removeItem('kalananti_branch_session');

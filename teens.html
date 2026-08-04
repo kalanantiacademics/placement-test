@@ -162,7 +162,7 @@
     queueKey: 'pt_sync_queue_v1',
     tokenKey: 'pt_sync_token_v1',
     cleanupKey: 'pt_cleanup_after_v1',
-    cleanupDelayMs: 60 * 60 * 1000,
+    cleanupDelayMs: 2 * 60 * 60 * 1000,
     retryDelayMs: 15 * 1000
   };
 
@@ -217,6 +217,7 @@
   }
 
   function queueOperation(action, payload, options = {}) {
+    touchSessionExpiry();
     const submissionId = options.submissionId || getSubmissionId() || payload?.submissionId;
     if (!submissionId) return Promise.resolve({ queued: false, reason: 'missing_submission_id' });
 
@@ -296,6 +297,12 @@
   }
 
   function scheduleCleanup() {
+    const cleanupAt = Date.now();
+    localStorage.setItem(CONFIG.cleanupKey, String(cleanupAt));
+    global.setTimeout(clearCompletedSessionIfDue, 250);
+  }
+
+  function touchSessionExpiry() {
     const cleanupAt = Date.now() + CONFIG.cleanupDelayMs;
     localStorage.setItem(CONFIG.cleanupKey, String(cleanupAt));
     global.setTimeout(clearCompletedSessionIfDue, CONFIG.cleanupDelayMs + 250);
@@ -1650,7 +1657,7 @@
     });
     const assignedModule = String(customData.assignedModule || 'Belum ditentukan');
     const potentialModule = String(customData.potentialModule || '');
-    const level = String(customData.level || 'FOUNDATIONAL — Lv1');
+    const level = String(customData.level || 'Level 1');
     const lv3Candidate = Boolean(customData.lv3Candidate);
     const pathName = String(customData.pathName || 'Interactive Creator Path');
     const learningModules = safeArray(customData.learningModules).length
@@ -4801,7 +4808,7 @@ try {
             // PILAR: SPASIAL & NAVIGASI 3D (5 soal Interactive)
 
             { pillar: 'spatial', focus: 'Rotasi', difficulty: 'basic',
-              text: 'Arahkan bagian depan karakter (cone biru) hingga tepat menghadap beacon merah di sumbu +X. Masukkan angka rotasi pada Inspector, lalu uji arah hadap karakter. Kamu hanya memiliki 3 kesempatan.',
+              text: 'Arahkan bagian depan karakter (cone biru) hingga tepat menghadap beacon merah di sumbu +X. Masukkan angka rotasi pada Inspector, lalu uji arah hadap karakter. Kamu hanya memiliki 2 kesempatan.',
               interactiveHtml: "",
               options: [{text: 'Sumbu +X (Timur)'}, {text: 'Sumbu -X (Barat)'}, {text: 'Sumbu -Z (Selatan)'}, {text: 'Tetap +Z (Utara)'}],
               correctIndex: 0 },
@@ -5343,7 +5350,7 @@ try {
                                 &nbsp;&nbsp;status = "Akses ditolak";<br>
                                 }
                             </div>
-                            <div class="command-error" id="teensConditionError" aria-live="polite">Kesempatan tersisa: 3</div>
+                            <div class="command-error" id="teensConditionError" aria-live="polite">Kesempatan tersisa: 2</div>
                             <div class="inline-code-actions">
                                 <button class="btn-main command-submit" onclick="submitTeensCondition()">PERIKSA KODE</button>
                                 <button class="command-next" id="teensConditionNext" onclick="continueAfterTeensCondition()">LANJUT →</button>
@@ -6157,8 +6164,9 @@ try {
 
             const q = stage1Questions[state.currentQuestionIndex];
             const correctAns = typeof q.correctIndex === 'object' ? q.correctIndex[state.ageGroup] : q.correctIndex;
-            recordTeensStageEvidence('Stage 1A', state.currentQuestionIndex, q, selectedIndex, selectedIndex === correctAns, q.type || 'visual_selection');
-            if (selectedIndex === correctAns) {
+            const isCorrect = selectedIndex === correctAns;
+            recordTeensStageEvidence('Stage 1A', state.currentQuestionIndex, q, selectedIndex, isCorrect, q.type || 'visual_selection');
+            if (isCorrect) {
                 state.scores[q.pillar]++;
             }
             
@@ -6410,7 +6418,7 @@ try {
             const statusAnswer = statusInput.value.trim();
             if (!answer || !statusAnswer) {
                 error.className = 'command-error';
-                error.textContent = `Lengkapi kedua bagian kosong dahulu. Kesempatan tersisa: ${3 - attemptState.attempts}`;
+                error.textContent = `Lengkapi kedua bagian kosong dahulu. Kesempatan tersisa: ${2 - attemptState.attempts}`;
                 (!answer ? input : statusInput).focus();
                 return;
             }
@@ -6428,7 +6436,7 @@ try {
             }
 
             attemptState.attempts++;
-            const remaining = 3 - attemptState.attempts;
+            const remaining = 2 - attemptState.attempts;
             window._teensConditionResult = false;
             nextButton.classList.remove('is-visible');
             error.className = 'command-error';
@@ -6532,7 +6540,7 @@ try {
                     </div>
                 </div>
             </div>
-            <div class="${messageClass}" id="teensFlowchartStatus" aria-live="polite">${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 3 - flow.attempts)}`}</div>
+            <div class="${messageClass}" id="teensFlowchartStatus" aria-live="polite">${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 2 - flow.attempts)}`}</div>
             <div class="flowchart-actions">
                 <button class="flowchart-reset" onclick="resetTeensFlowchart()">↺ Atur Ulang</button>
                 <button class="btn-main command-submit" style="margin:0;" onclick="checkTeensFlowchart()" ${success ? 'disabled' : ''}>PERIKSA FLOWCHART</button>
@@ -6604,7 +6612,7 @@ try {
 
             flow.attempts++;
             flow.wrongFields = wrongFields;
-            const remaining = 3 - flow.attempts;
+            const remaining = 2 - flow.attempts;
             if (remaining > 0) {
                 flow.message = `${wrongFields.length} isian masih belum tepat. Kotak merah menunjukkan bagian yang perlu diperiksa.`;
                 render();
@@ -6686,7 +6694,7 @@ try {
                 </div>
             </div>
             <div class="command-error ${success ? 'is-success' : ''}" id="teensVisualStatus" aria-live="polite">
-                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 3 - builder.attempts)}`}
+                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 2 - builder.attempts)}`}
             </div>
             <div class="flowchart-actions">
                 <button class="flowchart-reset" onclick="resetTeensVisualBuilder()">↺ Atur Ulang</button>
@@ -6766,7 +6774,7 @@ try {
 
             builder.attempts++;
             builder.wrongSlots = wrongSlots;
-            const remaining = 3 - builder.attempts;
+            const remaining = 2 - builder.attempts;
             if (remaining > 0) {
                 builder.message = `${wrongSlots.length} area belum memiliki fungsi visual yang tepat. Perhatikan fokus utama, aksi, dan informasi pendukung.`;
                 render();
@@ -6840,7 +6848,7 @@ try {
                 </div>
             </div>
             <div class="command-error ${success ? 'is-success' : ''}" id="teensModalStatus">
-                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 3 - lab.attempts)}`}
+                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 2 - lab.attempts)}`}
             </div>
             <div class="flowchart-actions">
                 <button class="flowchart-reset" onclick="resetTeensModalLab()">↺ Reset</button>
@@ -6894,7 +6902,7 @@ try {
                 return;
             }
             lab.attempts++;
-            const remaining = 3 - lab.attempts;
+            const remaining = 2 - lab.attempts;
             const feedback = [];
             if (!opacityCorrect) feedback.push('kegelapan overlay');
             if (!lockCorrect) feedback.push('kunci background');
@@ -6966,7 +6974,7 @@ try {
                 </div>
             </div>
             <div class="command-error ${success ? 'is-success' : ''}" id="teensContrastStatus">
-                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 3 - lab.attempts)}`}
+                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 2 - lab.attempts)}`}
             </div>
             <div class="flowchart-actions">
                 <button class="flowchart-reset" onclick="resetTeensContrastLab()">↺ Reset</button>
@@ -7004,7 +7012,7 @@ try {
                 return;
             }
             lab.attempts++;
-            const remaining = 3 - lab.attempts;
+            const remaining = 2 - lab.attempts;
             if (remaining > 0) {
                 lab.message = `Rasio ${ratio.toFixed(2)} : 1 masih terlalu rendah. Jauhkan tingkat terang warna teks dan background.`;
                 render();
@@ -7038,7 +7046,7 @@ try {
                     <div class="pro-rule"><b>3 · Uji arah</b><br><span style="font-size:.8rem;color:#64748b;">Tekan Terapkan Rotasi. Garis biru harus mengenai beacon merah.</span></div>
                 </div>
                 <div style="margin-top:11px;padding:10px 13px;border-radius:11px;background:#fff7ed;border:1.5px solid #fdba74;color:#9a3412;font-weight:800;font-size:.86rem;">
-                    ⚠️ Setiap hasil yang tidak mengenai beacon dihitung 1 kesempatan. Maksimal 3 kesempatan. Reset View hanya mengembalikan posisi karakter dan tidak mengembalikan kesempatan.
+                    ⚠️ Setiap hasil yang tidak mengenai beacon dihitung 1 kesempatan. Maksimal 2 kesempatan. Reset View hanya mengembalikan posisi karakter dan tidak mengembalikan kesempatan.
                 </div>
             </div>
             <div class="engine3d-layout">
@@ -7064,7 +7072,7 @@ try {
                 </aside>
             </div>
             <div class="command-error ${success ? 'is-success' : ''}" id="teens3DStatus">
-                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 3 - lab.attempts)}`}
+                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 2 - lab.attempts)}`}
             </div>
             <button class="command-next ${success ? 'is-visible' : ''}" id="teens3DNext" onclick="continueAfterTeens3DLab()">LANJUT KE SOAL BERIKUTNYA →</button>`;
         }
@@ -7244,7 +7252,7 @@ try {
                         return;
                     }
                     lab.attempts++;
-                    const remaining = 3 - lab.attempts;
+                    const remaining = 2 - lab.attempts;
                     if (remaining > 0) {
                         status.className = 'command-error';
                         status.textContent = `Garis arah belum mengenai beacon. Periksa sumbu rotasinya. Kesempatan tersisa: ${remaining}`;
@@ -7294,7 +7302,7 @@ try {
                     <div class="pro-rule"><b>2 · Cari posisi seimbang</b><br><span style="font-size:.8rem;color:#64748b;">Jika sudah mirip target, tekan Periksa Kamera.</span></div>
                 </div>
                 <div style="margin-top:11px;padding:10px 13px;border-radius:11px;background:#eff6ff;border:1.5px solid #93c5fd;color:#1e3a8a;font-weight:800;font-size:.86rem;">
-                    Bebas menggeser slider. Kesempatan hanya berkurang saat PERIKSA KAMERA ditekan. Maksimal 3 kali.
+                    Bebas menggeser slider. Kesempatan hanya berkurang saat PERIKSA KAMERA ditekan. Maksimal 2 kali.
                 </div>
             </div>
             <div class="engine3d-layout">
@@ -7329,7 +7337,7 @@ try {
                 </aside>
             </div>
             <div class="command-error ${success ? 'is-success' : ''}" id="teens3DCameraStatus">
-                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 3 - lab.attempts)}`}
+                ${message}${success ? '' : `<br>Kesempatan tersisa: ${Math.max(0, 2 - lab.attempts)}`}
             </div>
             <button class="command-next ${success ? 'is-visible' : ''}" id="teens3DCameraNext" onclick="continueAfterTeens3DCameraLab()">LANJUT KE SOAL BERIKUTNYA →</button>`;
         }
@@ -7458,7 +7466,7 @@ try {
             lab.attempts++;
             const clues = [];
             if (!azimuthCorrect) clues.push(lab.azimuth < 41 ? 'kamera masih terlalu ke kanan—geser mendekati tengah' : 'kamera masih terlalu ke kiri—geser kembali mendekati tengah');
-            const remaining = 3 - lab.attempts;
+            const remaining = 2 - lab.attempts;
             if (remaining > 0) {
                 status.className = 'command-error';
                 status.textContent = `Belum cocok: ${clues.join('; ')}. Kesempatan tersisa: ${remaining}`;
@@ -8493,13 +8501,15 @@ try {
         }
 
         window.answerStage1Advanced = function(selectedIndex) {
+            stopQuestionTimer();
             const useAdvancedBank = state.stage1AdvancedQueue && state.stage1AdvancedQueue.length > 0;
             const questions = useAdvancedBank ? state.stage1AdvancedQueue : (legacyModuleQuestions[state.recommendedModule] || legacyModuleQuestions['Scratch']);
             const q = questions[state.currentQuestionIndex];
             const correctAns = useAdvancedBank && typeof q.correctIndex === 'object' ? q.correctIndex[state.ageGroup] : q.correctIndex;
-            recordTeensStageEvidence('Stage 1B', state.currentQuestionIndex, q, selectedIndex, selectedIndex === correctAns, 'visual_selection');
+            const isCorrect = selectedIndex === correctAns;
+            recordTeensStageEvidence('Stage 1B', state.currentQuestionIndex, q, selectedIndex, isCorrect, 'visual_selection');
 
-            if (selectedIndex === correctAns) {
+            if (isCorrect) {
                 state.stage1AdvancedScore++;
                 if (useAdvancedBank && q.pillar) {
                     state.stage1AdvancedPillarScores[q.pillar]++;
@@ -8901,7 +8911,7 @@ try {
             const checks = challenge.validate(code);
             const passed = checks.every(Boolean);
             const isPseudo = challenge.mode === 'pseudocode';
-            const maxAttempts = isPseudo ? 2 : 3;
+            const maxAttempts = 2;
             const attempt = (stage2State.attempts[stage2State.current] || 0) + 1;
             const remaining = maxAttempts - attempt;
             stage2State.attempts[stage2State.current] = attempt;
@@ -8965,7 +8975,7 @@ try {
         function finishPythonStage2() {
             const passedLevels = stage2State.trail.filter(item => item.finalSubmissionCorrect).map(item => item.difficulty);
             const mastery = passedLevels.length ? Math.max(...passedLevels) : 1;
-            const level = mastery <= 3 ? 'FOUNDATIONAL — Lv1' : 'BASIC — Lv2';
+            const level = mastery <= 3 ? 'Level 1' : 'Level 2';
             state.stage2Result = {
                 assignedModule: state.recommendedModule || 'Python',
                 level,
@@ -9126,7 +9136,7 @@ try {
             markTestCompleted();
             const result = state.stage2Result || {
                 assignedModule: state.recommendedModule || 'Python',
-                level: 'FOUNDATIONAL — Lv1',
+                level: 'Level 1',
                 masteryHighest: 1,
                 challengeCount: 0,
                 submissionCount: 0,
@@ -9191,8 +9201,8 @@ try {
             const development=pillarInfo[sortedPillars.at(-1)?.[0]||'digital'].label;
             const assignedModule=result.assignedModule||state.recommendedModule||'Python';
             const whyLevel=result.level.startsWith('FOUNDATIONAL')
-                ? `${studentName} direkomendasikan memulai dari FOUNDATIONAL — Lv1 agar konsep algoritma, struktur program, penggunaan variabel, kondisi, dan debugging dasar dapat dibangun secara bertahap. Fondasi ini penting sebelum mengerjakan proyek ${escapeResultText(assignedModule)} yang lebih kompleks.`
-                : `${studentName} telah menunjukkan kesiapan untuk BASIC — Lv2 melalui challenge praktis. Fokus berikutnya adalah membuat solusi yang reusable, menguji beberapa kemungkinan input, membaca error, dan memperbaiki kode secara mandiri.`;
+                ? `${studentName} direkomendasikan memulai dari Level 1 agar konsep algoritma, struktur program, penggunaan variabel, kondisi, dan debugging dasar dapat dibangun secara bertahap. Fondasi ini penting sebelum mengerjakan proyek ${escapeResultText(assignedModule)} yang lebih kompleks.`
+                : `${studentName} telah menunjukkan kesiapan untuk Level 2 melalui challenge praktis. Fokus berikutnya adalah membuat solusi yang reusable, menguji beberapa kemungkinan input, membaca error, dan memperbaiki kode secara mandiri.`;
             const teenMainCopy=result.lv3Candidate
                 ? `${studentName} menunjukkan performa yang kuat dan konsisten pada assessment Teens. Penempatan yang telah dikonfirmasi saat ini adalah ${result.level} pada ${escapeResultText(assignedModule)}.`
                 : `${studentName} direkomendasikan memulai ${escapeResultText(assignedModule)} pada ${result.level}. Kekuatan paling terlihat berada pada ${strongest}, sementara ${development} menjadi fokus perkembangan berikutnya.`;
@@ -9316,7 +9326,7 @@ try {
                     reportDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
                     assignedModule: state.stage2Result?.assignedModule || state.recommendedModule || 'Python',
                     potentialModule: state.potentialModule || '',
-                    level: state.stage2Result?.level || state.recommendedLevel || 'FOUNDATIONAL — Lv1',
+                    level: state.stage2Result?.level || state.recommendedLevel || 'Level 1',
                     lv3Candidate: state.stage2Result?.lv3Candidate === true,
                     pathName: state.learning_path_name || 'Interactive Creator Path',
                     learningModules: state.learning_path_modules || ['Scratch', 'Roblox Studio', 'Python'],
@@ -9410,9 +9420,9 @@ try {
                 state.exactAge = 16;
                 state.scores = { logic: 4, creativity: 3, spatial: 5, digital: 3 };
                 state.recommendedModule = 'Python';
-                state.recommendedLevel = 'FOUNDATIONAL — Lv1';
+                state.recommendedLevel = 'Level 1';
                 state.stage2Result = {
-                    level: 'FOUNDATIONAL — Lv1',
+                    level: 'Level 1',
                     assignedModule: 'Python',
                     lv3Candidate: false
                 };

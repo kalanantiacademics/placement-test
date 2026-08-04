@@ -4,6 +4,19 @@ All notable changes, bug fixes, visual improvements, and architectural updates t
 
 ---
 
+## [Unreleased] - 2026-08-03
+
+### 34. Corrected HQ/Restricted Dashboard Access and Student Session Cleanup
+
+- Aligned the `DROPDOWNS` access schema with production: Column E is HQ/all access, Column F is Branch Manager/restricted, and Column G is SA Kids/restricted.
+- Limited public access requests to restricted BM/SA columns; HQ access remains manual-only.
+- HQ now loads all placement results and can filter by name/email/ID, audience, status, and test date.
+- BM/SA dashboards no longer request all results on load. Restricted search requires an exact normalized student name or parent email, supports an optional test date, returns at most 10 matches, and stores only expiring search parameters locally.
+- Protected full-result and email-status endpoints so restricted sessions cannot bypass the search flow.
+- Updated placement local-session retention to two hours after activity and immediate cleanup after the final report is successfully saved to the backend.
+
+---
+
 ## [Unreleased] - 2026-07-29
 
 ### 33. Updated Parent Email Delivery Flow to Default 'Not Sent' & Added Manual Spreadsheet / Dashboard Dropdown Trigger

@@ -9,7 +9,7 @@
     queueKey: 'pt_sync_queue_v1',
     tokenKey: 'pt_sync_token_v1',
     cleanupKey: 'pt_cleanup_after_v1',
-    cleanupDelayMs: 60 * 60 * 1000,
+    cleanupDelayMs: 2 * 60 * 60 * 1000,
     retryDelayMs: 15 * 1000
   };
 
@@ -64,6 +64,7 @@
   }
 
   function queueOperation(action, payload, options = {}) {
+    touchSessionExpiry();
     const submissionId = options.submissionId || getSubmissionId() || payload?.submissionId;
     if (!submissionId) return Promise.resolve({ queued: false, reason: 'missing_submission_id' });
 
@@ -143,6 +144,13 @@
   }
 
   function scheduleCleanup() {
+    // A successful finalize means the server already has the report; local student data can go.
+    const cleanupAt = Date.now();
+    localStorage.setItem(CONFIG.cleanupKey, String(cleanupAt));
+    global.setTimeout(clearCompletedSessionIfDue, 250);
+  }
+
+  function touchSessionExpiry() {
     const cleanupAt = Date.now() + CONFIG.cleanupDelayMs;
     localStorage.setItem(CONFIG.cleanupKey, String(cleanupAt));
     global.setTimeout(clearCompletedSessionIfDue, CONFIG.cleanupDelayMs + 250);
@@ -1497,7 +1505,7 @@
     });
     const assignedModule = String(customData.assignedModule || 'Belum ditentukan');
     const potentialModule = String(customData.potentialModule || '');
-    const level = String(customData.level || 'FOUNDATIONAL — Lv1');
+    const level = String(customData.level || 'Level 1');
     const lv3Candidate = Boolean(customData.lv3Candidate);
     const pathName = String(customData.pathName || 'Interactive Creator Path');
     const learningModules = safeArray(customData.learningModules).length
