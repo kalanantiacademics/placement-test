@@ -1020,19 +1020,39 @@
       align-items: flex-start;
       gap: 10px;
       padding: 10px 14px;
-      border: 1.5px solid #e2e8f0;
+      border: 1.5px solid #cbd5e1;
       border-radius: 12px;
       background: #f8fafc;
       font-size: 0.82rem;
       color: #1e293b;
       line-height: 1.38;
+      cursor: pointer;
+      user-select: none;
       transition: all 0.2s ease;
     }
+    .quiz-option:hover {
+      border-color: #3b82f6;
+      background: #eff6ff;
+      transform: translateY(-1px);
+    }
     .quiz-option.correct {
-      border-color: #86efac;
-      background: #f0fdf4;
-      color: #14532d;
+      border-color: #22c55e !important;
+      background: #f0fdf4 !important;
+      color: #14532d !important;
       font-weight: 750;
+      box-shadow: 0 4px 12px rgba(34,197,94,0.15);
+    }
+    .quiz-option.correct .quiz-opt-letter {
+      background: #16a34a !important;
+    }
+    .quiz-option.wrong {
+      border-color: #f87171 !important;
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+      font-weight: 750;
+    }
+    .quiz-option.wrong .quiz-opt-letter {
+      background: #dc2626 !important;
     }
     .quiz-opt-letter {
       display: grid;
@@ -1046,9 +1066,7 @@
       font-family: 'Orbitron', sans-serif;
       font-size: 0.72rem;
       font-weight: 800;
-    }
-    .quiz-option.correct .quiz-opt-letter {
-      background: #16a34a;
+      transition: background 0.2s ease;
     }
     .quiz-explanation {
       margin-top: 4px;
@@ -1167,10 +1185,10 @@
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 1 · Mitos vs Realita</span></div>
           <div class="quiz-question">Parents bertanya: <em>"Kok tesnya cuma puzzle visual? Kapan dites koding Roblox langsung di software-nya?"</em><br>Mana jawaban EC terbaik?</div>
           <div class="quiz-options">
-            <div class="quiz-option"><span class="quiz-opt-letter">A</span> Tes ini cuma formalitas administrasi saja, Bunda.</div>
-            <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> PT dibuat universal tanpa hafalan tool agar anak yang belum pernah les tetap bisa menunjukkan kepintaran alaminya tanpa takut/frustrasi.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">C</span> Karena Roblox terlalu susah, jadi kami ganti tesnya pakai gambar.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">D</span> Roblox hanya untuk anak yang nilainya sempurna di Stage 1A.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Tes ini cuma formalitas administrasi saja, Bunda.</div>
+            <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">B</span> PT dibuat universal tanpa hafalan tool agar anak yang belum pernah les tetap bisa menunjukkan kepintaran alaminya tanpa takut/frustrasi.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">C</span> Karena Roblox terlalu susah, jadi kami ganti tesnya pakai gambar.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Roblox hanya untuk anak yang nilainya sempurna di Stage 1A.</div>
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
@@ -1277,10 +1295,10 @@
             <div class="quiz-meta"><span class="quiz-badge primary">Soal 2 · Routing Usia</span></div>
             <div class="quiz-question">Anak usia 7 tahun secara otomatis dirouting ke <strong>Junior (Scratch Jr)</strong>. Mengapa tidak bisa langsung pilih Python?</div>
             <div class="quiz-options">
-              <div class="quiz-option"><span class="quiz-opt-letter">A</span> Usia 7 tahun dianggap belum punya potensi kognitif.</div>
-              <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> Routing usia menjaga pengalaman tetap aman (age-safe); usia 5–7th butuh antarmuka visual tanpa teks rumit agar tidak terbebani motorik/sintaks.</div>
-              <div class="quiz-option"><span class="quiz-opt-letter">C</span> Karena Python hanya disediakan untuk cabang offline.</div>
-              <div class="quiz-option"><span class="quiz-opt-letter">D</span> Usia 7th boleh Python jika ortu membuat surat izin.</div>
+              <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Usia 7 tahun dianggap belum punya potensi kognitif.</div>
+              <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">B</span> Routing usia menjaga pengalaman tetap aman (age-safe); usia 5–7th butuh antarmuka visual tanpa teks rumit agar tidak terbebani motorik/sintaks.</div>
+              <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">C</span> Karena Python hanya disediakan untuk cabang offline.</div>
+              <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Usia 7th boleh Python jika ortu membuat surat izin.</div>
             </div>
             <details class="quiz-explanation">
               <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan</summary>
@@ -1292,10 +1310,10 @@
             <div class="quiz-meta"><span class="quiz-badge primary">Soal 3 · Pilar Kognitif</span></div>
             <div class="quiz-question">Aktivitas mengurutkan frame animasi gerakan dan memilih kombinasi kontras warna UI tergolong pilar...</div>
             <div class="quiz-options">
-              <div class="quiz-option"><span class="quiz-opt-letter">A</span> Logika</div>
-              <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> Kreativitas</div>
-              <div class="quiz-option"><span class="quiz-opt-letter">C</span> Spasial</div>
-              <div class="quiz-option"><span class="quiz-opt-letter">D</span> Literasi Digital</div>
+              <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Logika</div>
+              <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">B</span> Kreativitas</div>
+              <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">C</span> Spasial</div>
+              <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Literasi Digital</div>
             </div>
             <details class="quiz-explanation">
               <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan</summary>
@@ -1499,10 +1517,10 @@
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 4 · Assigned vs Potential</span></div>
           <div class="quiz-question">Raka (10th) ingin Roblox, tapi hasil tes menetapkan <strong>Assigned Program: Scratch</strong> & <strong>Potential: Roblox</strong>. Apa artinya?</div>
           <div class="quiz-options">
-            <div class="quiz-option"><span class="quiz-opt-letter">A</span> Raka tidak berbakat Roblox, jadi diturunkan ke Scratch.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">B</span> Raka bebas memilih kelas mana saja hari ini.</div>
-            <div class="quiz-option correct"><span class="quiz-opt-letter">C</span> Scratch adalah titik start nyaman (jembatan) untuk bangun fondasi logika sebelum naik ke impian Roblox-nya.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">D</span> Raka wajib ujian ulang bulan depan untuk ikut Roblox.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Raka tidak berbakat Roblox, jadi diturunkan ke Scratch.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">B</span> Raka bebas memilih kelas mana saja hari ini.</div>
+            <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">C</span> Scratch adalah titik start nyaman (jembatan) untuk bangun fondasi logika sebelum naik ke impian Roblox-nya.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Raka wajib ujian ulang bulan depan untuk ikut Roblox.</div>
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
@@ -1639,10 +1657,10 @@
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 5 · Level Stage 2</span></div>
           <div class="quiz-question">Di Stage 2, apa beda mendasar antara <strong>FOUNDATIONAL — Level 1</strong> dan <strong>BASIC — Level 2</strong>?</div>
           <div class="quiz-options">
-            <div class="quiz-option"><span class="quiz-opt-letter">A</span> Level 2 berarti anak "lebih pintar", sedangkan Level 1 berarti "kurang mampu".</div>
-            <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> Level 1 butuh pendampingan pada konsep dasar & alat, sedangkan Level 2 sudah paham dasar & siap tertantang mengombinasikan logika mandiri.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">C</span> Level 1 belajar teori saja, Level 2 langsung buat game commercial.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">D</span> Level 2 mendapat potongan biaya pendaftaran.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Level 2 berarti anak "lebih pintar", sedangkan Level 1 berarti "kurang mampu".</div>
+            <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">B</span> Level 1 butuh pendampingan pada konsep dasar & alat, sedangkan Level 2 sudah paham dasar & siap tertantang mengombinasikan logika mandiri.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">C</span> Level 1 belajar teori saja, Level 2 langsung buat game commercial.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Level 2 mendapat potongan biaya pendaftaran.</div>
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
@@ -1967,10 +1985,10 @@
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 6 · Growth Mindset</span></div>
           <div class="quiz-question">Pada report, pilar <strong>Kreativitas</strong> anak berada di band <em>"Sedang Bertumbuh" (Skor 40%)</em>. Bagaimana EC menjelaskannya?</div>
           <div class="quiz-options">
-            <div class="quiz-option"><span class="quiz-opt-letter">A</span> Nilai Kreativitas anak jelek dan di bawah rata-rata.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">B</span> Anak kurang berbakat di bidang seni & desain UI.</div>
-            <div class="quiz-option correct"><span class="quiz-opt-letter">C</span> Ini bukan arti tidak mampu, melainkan petunjuk bahwa di kelas nanti Coach akan memberikan porsi latihan visual & proyek UI bertahap.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">D</span> Anak wajib les privat tambahan sebelum mulai kelas.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Nilai Kreativitas anak jelek dan di bawah rata-rata.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">B</span> Anak kurang berbakat di bidang seni & desain UI.</div>
+            <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">C</span> Ini bukan arti tidak mampu, melainkan petunjuk bahwa di kelas nanti Coach akan memberikan porsi latihan visual & proyek UI bertahap.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Anak wajib les privat tambahan sebelum mulai kelas.</div>
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
@@ -2039,10 +2057,10 @@
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 7 · Strategy Upsell</span></div>
           <div class="quiz-question">Parents bertanya: <em>"Bisa coba 1 bulan les dulu gak? Takut anaknya bosan."</em> Bagaimana cara mereframe (upsell) yang pas?</div>
           <div class="quiz-options">
-            <div class="quiz-option"><span class="quiz-opt-letter">A</span> Boleh saja Bunda, coba 1 bulan dulu nanti kalau suka baru perpanjang.</div>
-            <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> Koding butuh proses jangka panjang. Paket Learning Path (1-2 Th) memastikan posisi anak di jalur proyek impiannya dan lebih hemat.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">C</span> Di Kalananti wajib 1 tahun Bunda, tidak bisa daftar bulanan.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">D</span> Kalau 1 bulan nanti anak tidak mendapat sertifikat.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Boleh saja Bunda, coba 1 bulan dulu nanti kalau suka baru perpanjang.</div>
+            <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">B</span> Koding butuh proses jangka panjang. Paket Learning Path (1-2 Th) memastikan posisi anak di jalur proyek impiannya dan lebih hemat.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">C</span> Di Kalananti wajib 1 tahun Bunda, tidak bisa daftar bulanan.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Kalau 1 bulan nanti anak tidak mendapat sertifikat.</div>
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
@@ -2086,10 +2104,10 @@
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 8 · Handling Objection</span></div>
           <div class="quiz-question">Anak usia 8th mendapat <strong>Assigned: Scratch Lv1</strong>. Ortu memaksa: <em>"Anak saya main Roblox terus, pokoknya harus masuk Roblox hari ini!"</em> Respon EC?</div>
           <div class="quiz-options">
-            <div class="quiz-option"><span class="quiz-opt-letter">A</span> Langsung kami pindahkan ke Roblox sekarang biar Bunda senang.</div>
-            <div class="quiz-option correct"><span class="quiz-opt-letter">B</span> Roblox butuh logika 3D & Lua yang rumit. Titik start Scratch membangun fondasinya dulu agar anak tidak frustrasi. Dalam 1-2 term, otomatis naik ke Roblox dengan percaya diri!</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">C</span> Tidak bisa Bunda, aturan sistem tidak boleh diubah.</div>
-            <div class="quiz-option"><span class="quiz-opt-letter">D</span> Kalau mau Roblox, anak harus bayar biaya tes ulang.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">A</span> Langsung kami pindahkan ke Roblox sekarang biar Bunda senang.</div>
+            <div class="quiz-option" data-correct="true"><span class="quiz-opt-letter">B</span> Roblox butuh logika 3D & Lua yang rumit. Titik start Scratch membangun fondasinya dulu agar anak tidak frustrasi. Dalam 1-2 term, otomatis naik ke Roblox dengan percaya diri!</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">C</span> Tidak bisa Bunda, aturan sistem tidak boleh diubah.</div>
+            <div class="quiz-option" data-correct="false"><span class="quiz-opt-letter">D</span> Kalau mau Roblox, anak harus bayar biaya tes ulang.</div>
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
@@ -2262,6 +2280,26 @@
       window.addEventListener("hashchange", () => {
         const match = location.hash.match(/slide-(\d+)/);
         if (match) show(Number(match[1]) - 1, false);
+      });
+
+      // Interactive Quiz Handler
+      document.addEventListener("click", (event) => {
+        const option = event.target.closest(".quiz-option");
+        if (!option) return;
+        const parent = option.closest(".quiz-options");
+        if (!parent || parent.dataset.answered === "true") return;
+
+        parent.dataset.answered = "true";
+        const allOptions = parent.querySelectorAll(".quiz-option");
+        allOptions.forEach(opt => {
+          if (opt.getAttribute("data-correct") === "true") {
+            opt.classList.add("correct");
+          }
+        });
+
+        if (option.getAttribute("data-correct") !== "true") {
+          option.classList.add("wrong");
+        }
       });
 
       const initial = location.hash.match(/slide-(\d+)/);
