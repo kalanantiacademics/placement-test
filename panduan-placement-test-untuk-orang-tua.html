@@ -554,7 +554,7 @@
       font-size: 2.4rem;
       font-weight: 950;
     }
-    .module-name {
+    .program-name {
       display: inline-flex;
       width: fit-content;
       margin: 8px 0 14px;
@@ -566,7 +566,7 @@
       font-family: 'Orbitron', sans-serif;
       font-size: 1.05rem;
     }
-    .module-name.potential { color: #684f08; background: var(--yellow); }
+    .program-name.potential { color: #684f08; background: var(--yellow); }
 
     .table-wrap {
       overflow: auto;
@@ -1222,8 +1222,8 @@
         <div class="journey">
           <div class="journey-step"><b>0</b><strong>Registrasi</strong><span>Nama, usia, email orang tua, cabang.</span></div>
           <div class="journey-step"><b>1A</b><strong>Fondasi</strong><span>Profil awal empat pilar.</span></div>
-          <div class="journey-step"><b>1B</b><strong>Penguatan</strong><span>Validasi potensi modul.</span></div>
-          <div class="journey-step"><b>M</b><strong>Modul</strong><span>Potential + Assigned Program.</span></div>
+          <div class="journey-step"><b>1B</b><strong>Penguatan</strong><span>Validasi potensi program.</span></div>
+          <div class="journey-step"><b>M</b><strong>Program</strong><span>Potential + Assigned Program.</span></div>
           <div class="journey-step"><b>2</b><strong>Praktik</strong><span>Batas penguasaan pada Assigned Program.</span></div>
           <div class="journey-step"><b>3</b><strong>Minat</strong><span>Tujuan proyek dan preferensi anak.</span></div>
           <div class="journey-step final"><b>R</b><strong>Result</strong><span>Rekomendasi, profil, dan Learning Path.</span></div>
@@ -1251,7 +1251,7 @@
             <div class="tag-row"><span class="tag yellow">bukan diagnosis</span><span class="tag yellow">bukan perlombaan</span><span class="tag yellow">bukan label bakat</span></div>
           </article>
         </div>
-        <div class="callout"><span class="icon">!</span><div><strong>Guardrail interpretasi:</strong> Gunakan minimal dua bukti yang konsisten dalam pilar atau challenge trail. Keputusan modul dan level tetap mengikuti mesin placement aktif.</div></div>
+        <div class="callout"><span class="icon">!</span><div><strong>Guardrail interpretasi:</strong> Gunakan minimal dua bukti yang konsisten dalam pilar atau challenge trail. Keputusan program dan level tetap mengikuti mesin placement aktif.</div></div>
       </div>
     </section>
 
@@ -1266,7 +1266,7 @@
           <article class="card green"><span class="big-number">8–15</span><h3>Kids</h3><p>Interaksi lebih beragam, manipulasi objek, tantangan block coding, dan reasoning yang makin kompleks.</p><span class="tag green">8–11 & 12–15 dirouting berbeda</span></article>
           <article class="card pink"><span class="big-number">16–18</span><h3>Teens</h3><p>Bahasa teknis, debugging, code reasoning, input langsung, dan konteks proyek yang lebih matang.</p><span class="tag pink">arah teknis: Python</span></article>
         </div>
-        <div class="callout blue"><span class="icon">↳</span><div><strong>Batas aktif:</strong> usia 7 masuk Junior, usia 8 masuk Kids. Di dalam kelompok Kids, usia 8–11 dan 12–15 tetap memiliki kebijakan modul yang berbeda.</div></div>
+        <div class="callout blue"><span class="icon">↳</span><div><strong>Batas aktif:</strong> usia 7 masuk Junior, usia 8 masuk Kids. Di dalam kelompok Kids, usia 8–11 dan 12–15 tetap memiliki kebijakan program yang berbeda.</div></div>
       </div>
     </section>
 
@@ -1405,7 +1405,7 @@
             <div class="report-stack">
               <div class="report-row"><b>1</b><div><strong>Skor per pilar</strong><span>Logika, Kreativitas, Spasial, Literasi Digital.</span></div></div>
               <div class="report-row"><b>2</b><div><strong>Pilar terkuat dan area tumbuh</strong><span>Dipakai untuk memilih penguatan pada Stage 1B.</span></div></div>
-              <div class="report-row"><b>3</b><div><strong>Sinyal kesiapan modul</strong><span>Masih harus divalidasi oleh Stage 1B dan aturan usia.</span></div></div>
+              <div class="report-row"><b>3</b><div><strong>Sinyal kesiapan program</strong><span>Masih harus divalidasi oleh Stage 1B dan aturan usia.</span></div></div>
             </div>
           </article>
           <article class="card yellow">
@@ -1422,7 +1422,7 @@
     <section class="slide section-break" data-title="Stage 1B — Penguatan potensi">
       <div class="slide-inner">
         <span class="section-index">1B</span>
-        <h2>Penguatan potensi dan validasi modul</h2>
+        <h2>Penguatan potensi dan validasi program</h2>
         <p class="lead">Stage 1B masuk lebih dalam pada pilar yang relevan. Anak tidak harus melihat seluruh bank soal; subset dipilih berdasarkan pola Stage 1A dan aturan routing usianya.</p>
       </div>
     </section>
@@ -1464,7 +1464,7 @@
             </div>
           </article>
         </div>
-        <div class="callout"><span class="icon">↗</span><div><strong>Makna jika belum memenuhi:</strong> kebutuhan latihan menjadi lebih spesifik—misalnya transformasi pola atau prioritas visual—dan tidak otomatis menghapus potensi modul lain.</div></div>
+        <div class="callout"><span class="icon">↗</span><div><strong>Makna jika belum memenuhi:</strong> kebutuhan latihan menjadi lebih spesifik—misalnya transformasi pola atau prioritas visual—dan tidak otomatis menghapus potensi program lain.</div></div>
       </div>
     </section>
 
@@ -1480,39 +1480,39 @@
             <div><strong>Apa yang diukur?</strong> Mendeteksi logical error dan menjelaskan bagian yang perlu diperbaiki.</div>
             <div><strong>Apa yang dinilai?</strong> Anak mengidentifikasi bahwa password salah tidak boleh memberi akses ke dashboard.</div>
           </div>
-          <p class="answer"><b>Peran di placement:</b> bukti penguat Logika dan kesiapan teknis; tetap dibaca bersama Stage 1A dan kebijakan modul Teens.</p>
+          <p class="answer"><b>Peran di placement:</b> bukti penguat Logika dan kesiapan teknis; tetap dibaca bersama Stage 1A dan kebijakan program Teens.</p>
         </article>
         <div class="callout blue"><span class="icon">≠</span><div><strong>Catatan:</strong> kreativitas tinggi saja dapat menjadi sinyal potensi Roblox Studio, tetapi tidak cukup untuk mengganti Assigned Program Teens. Assignment alternatif membutuhkan validasi Spasial yang lengkap.</div></div>
       </div>
     </section>
 
     <!-- SLIDE 18: POTENTIAL VS ASSIGNED MODULE -->
-    <section class="slide" data-title="Potential Module dan Assigned Program">
+    <section class="slide" data-title="Potential Program dan Assigned Program">
       <div class="slide-inner">
         <span class="eyebrow">Output Stage 1</span>
         <h2>Dua istilah yang harus tetap dipisahkan</h2>
         <div class="comparison">
           <article class="card yellow">
-            <h3>Potential Module</h3>
-            <span class="module-name potential">Arah potensi jangka panjang</span>
-            <p>Modul tertinggi yang disarankan oleh profil kognitif. Bisa menjadi tujuan berikutnya, tetapi belum tentu aman atau tepat untuk dipelajari sekarang.</p>
+            <h3>Potential Program</h3>
+            <span class="program-name potential">Arah potensi jangka panjang</span>
+            <p>Program tertinggi yang disarankan oleh profil kognitif. Bisa menjadi tujuan berikutnya, tetapi belum tentu aman atau tepat untuk dipelajari sekarang.</p>
           </article>
           <div class="comparison-arrow">≠</div>
           <article class="card blue">
             <h3>Assigned Program</h3>
-            <span class="module-name">Modul yang dipelajari sekarang</span>
-            <p>Modul sesuai usia dan kesiapan yang membuka Stage 2. Inilah rekomendasi utama yang harus paling jelas pada result.</p>
+            <span class="program-name">Program yang dipelajari sekarang</span>
+            <p>Program sesuai usia dan kesiapan yang membuka Stage 2. Inilah rekomendasi utama yang harus paling jelas pada result.</p>
           </article>
         </div>
-        <div class="callout green"><span class="icon">✓</span><div><strong>Aturan inti:</strong> hanya Assigned Program yang membuka assessment Stage 2. Potential Module boleh tetap terkunci sambil anak membangun fondasi yang diperlukan.</div></div>
+        <div class="callout green"><span class="icon">✓</span><div><strong>Aturan inti:</strong> hanya Assigned Program yang membuka assessment Stage 2. Potential Program boleh tetap terkunci sambil anak membangun fondasi yang diperlukan.</div></div>
       </div>
     </section>
 
     <!-- SLIDE QUIZ 3: ASSIGNED VS POTENTIAL -->
-    <section class="slide" data-title="Check Pemahaman 3 — Assigned vs Potential Module">
+    <section class="slide" data-title="Check Pemahaman 3 — Assigned vs Potential Program">
       <div class="slide-inner">
-        <span class="eyebrow">Check Pemahaman 3 · Pembedaan Modul</span>
-        <h2>Uji Pemahaman: Assigned vs Potential Module</h2>
+        <span class="eyebrow">Check Pemahaman 3 · Pembedaan Program</span>
+        <h2>Uji Pemahaman: Assigned vs Potential Program</h2>
         <div class="quiz-card">
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 4 · Assigned vs Potential</span></div>
           <div class="quiz-question">Raka (10th) ingin Roblox, tapi hasil tes menetapkan <strong>Assigned Program: Scratch</strong> & <strong>Potential: Roblox</strong>. Apa artinya?</div>
@@ -1524,14 +1524,14 @@
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
-            <p style="margin-top:6px"><strong>Jawaban C Benar!</strong> Assigned Program adalah tempat mulai hari ini. Potential Module adalah tujuan akhir di ujung jalur Learning Path.</p>
+            <p style="margin-top:6px"><strong>Jawaban C Benar!</strong> Assigned Program adalah tempat mulai hari ini. Potential Program adalah tujuan akhir di ujung jalur Learning Path.</p>
           </details>
         </div>
       </div>
     </section>
 
     <!-- SLIDE 19: KEBIJAKAN MODUL BERDASARKAN USIA (TABEL LENGKAP) -->
-    <section class="slide" data-title="Kebijakan modul berdasarkan usia">
+    <section class="slide" data-title="Kebijakan program berdasarkan usia">
       <div class="slide-inner">
         <span class="eyebrow">Age-safe routing</span>
         <h2>Mengapa usia tetap menjadi pagar pengaman?</h2>
@@ -1543,13 +1543,13 @@
               <tr><td><strong>5–7</strong></td><td>Scratch Jr</td><td>Scratch Jr</td><td>Fondasi visual dan kesiapan perangkat dipertahankan sesuai usia.</td></tr>
               <tr><td><strong>8–9</strong></td><td>Scratch</td><td>Scratch</td><td>Fondasi block coding menjadi rekomendasi utama.</td></tr>
               <tr><td><strong>10–11</strong></td><td>Scratch</td><td>Roblox Studio</td><td>Profil Spasial dapat mengarah ke Roblox; minat Roblox yang dikonfirmasi di Stage 3 juga dapat mengalihkan hasil ke Roblox Level 1.</td></tr>
-              <tr><td><strong>12</strong></td><td>Scratch / Python</td><td>Roblox Studio</td><td>Tanpa minat Roblox, Logika kuat mengarah ke Python; selain itu Scratch. Minat Roblox mengarah ke Roblox Level 1 bila modul berubah.</td></tr>
+              <tr><td><strong>12</strong></td><td>Scratch / Python</td><td>Roblox Studio</td><td>Tanpa minat Roblox, Logika kuat mengarah ke Python; selain itu Scratch. Minat Roblox mengarah ke Roblox Level 1 bila program berubah.</td></tr>
               <tr><td><strong>13–15</strong></td><td>Python</td><td>Roblox Studio</td><td>Minat Roblox dapat menetapkan Roblox; Spasial rendah berarti mulai dari Level 1, bukan ditolak.</td></tr>
               <tr><td><strong>16–18</strong></td><td>Python</td><td>Roblox Studio sebagai assignment alternatif</td><td>Spasial harus sempurna dan tervalidasi di Stage 1A serta 1B.</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="small" style="margin-top:10px">Rute ini adalah kebijakan modul aktif; Stage 2 tetap menentukan level di dalam Assigned Program.</p>
+        <p class="small" style="margin-top:10px">Rute ini adalah kebijakan program aktif; Stage 2 tetap menentukan level di dalam Assigned Program.</p>
       </div>
     </section>
 
@@ -1568,12 +1568,12 @@
         <span class="eyebrow">Stage 2</span>
         <h2>Yang dicari adalah <span class="highlight">batas penguasaan</span>, bukan nilai ujian biasa</h2>
         <div class="grid-4">
-          <article class="card blue"><span class="icon-box">1</span><h3>Modul spesifik</h3><p>Scratch Jr, Scratch/Blockly, Roblox Studio, atau Python sesuai assignment.</p></article>
+          <article class="card blue"><span class="icon-box">1</span><h3>Program spesifik</h3><p>Scratch Jr, Scratch/Blockly, Roblox Studio, atau Python sesuai assignment.</p></article>
           <article class="card green"><span class="icon-box">2</span><h3>Tantangan bertingkat</h3><p>Kesulitan meningkat saat bukti berhasil dan turun ketika anak membutuhkan fondasi.</p></article>
           <article class="card yellow"><span class="icon-box">3</span><h3>Trail tersimpan</h3><p>First submission, final submission, attempts, dan perjalanan challenge ikut dibaca.</p></article>
-          <article class="card pink"><span class="icon-box">4</span><h3>Level modul</h3><p>Hasil otomatis mengarah ke FOUNDATIONAL — Lv1 atau BASIC — Lv2.</p></article>
+          <article class="card pink"><span class="icon-box">4</span><h3>Level program</h3><p>Hasil otomatis mengarah ke FOUNDATIONAL — Lv1 atau BASIC — Lv2.</p></article>
         </div>
-        <div class="callout"><span class="icon">!</span><div><strong>Level bersifat module-specific.</strong> BASIC — Lv2 di Python tidak otomatis setara dengan BASIC — Lv2 di Roblox Studio karena bukti praktik dan alatnya berbeda.</div></div>
+        <div class="callout"><span class="icon">!</span><div><strong>Level bersifat program-specific.</strong> BASIC — Lv2 di Python tidak otomatis setara dengan BASIC — Lv2 di Roblox Studio karena bukti praktik dan alatnya berbeda.</div></div>
       </div>
     </section>
 
@@ -1675,7 +1675,7 @@
       <div class="slide-inner">
         <span class="section-index">3</span>
         <h2>Menghubungkan kemampuan dengan tujuan yang membuat anak tertarik</h2>
-        <p class="lead">Semua audience mengerjakan 10 pertanyaan minat yang sesuai usia. Tidak ada jawaban benar atau salah, dan hasilnya tidak menghitung ulang modul maupun level.</p>
+        <p class="lead">Semua audience mengerjakan 10 pertanyaan minat yang sesuai usia. Tidak ada jawaban benar atau salah, dan hasilnya tidak menghitung ulang program maupun level.</p>
       </div>
     </section>
 
@@ -1688,9 +1688,9 @@
           <article class="card blue"><span class="icon-box">🎬</span><h3>Jenis proyek</h3><p>Cerita interaktif, game 3D, aplikasi, program, atau otomatisasi.</p></article>
           <article class="card green"><span class="icon-box">🧩</span><h3>Cara membangun</h3><p>Blok visual, objek 3D, atau kode berbasis teks.</p></article>
           <article class="card yellow"><span class="icon-box">🔎</span><h3>Cara memperbaiki</h3><p>Menelusuri blok, playtest, atau membaca error dan nilai.</p></article>
-          <article class="card pink"><span class="icon-box">♥</span><h3>Pilihan akhir</h3><p>Modul yang ingin didalami serta alasan singkat anak.</p></article>
+          <article class="card pink"><span class="icon-box">♥</span><h3>Pilihan akhir</h3><p>Program yang ingin didalami serta alasan singkat anak.</p></article>
         </div>
-        <div class="callout blue"><span class="icon">i</span><div><strong>Interest Confirmation:</strong> jawaban eksplisit "modul mana yang ingin kamu dalami?" menjadi konfirmasi akhir. Pertanyaan sebelumnya memberi konteks, bukan voting mayoritas yang mengalahkan pilihan akhir.</div></div>
+        <div class="callout blue"><span class="icon">i</span><div><strong>Interest Confirmation:</strong> jawaban eksplisit "program mana yang ingin kamu dalami?" menjadi konfirmasi akhir. Pertanyaan sebelumnya memberi konteks, bukan voting mayoritas yang mengalahkan pilihan akhir.</div></div>
       </div>
     </section>
 
@@ -1712,7 +1712,7 @@
           </article>
           <article class="question-card teens">
             <div class="question-meta"><span class="question-label">Teens</span><span class="tag pink">non-scored</span></div>
-            <div class="prompt">“Setelah mempertimbangkan proses dan hasil proyeknya, modul mana yang ingin kamu dalami?”</div>
+            <div class="prompt">“Setelah mempertimbangkan proses dan hasil proyeknya, program mana yang ingin kamu dalami?”</div>
             <p class="small">Scratch · Roblox Studio · Python<br>Diikuti alasan terbuka yang relevan.</p>
           </article>
         </div>
@@ -1730,7 +1730,7 @@
           <article class="card green"><span class="icon-box">L</span><h3>Assigned Level</h3><p>Ditentukan dari Stage 2. Menjawab: "mulai dari kedalaman mana?"</p></article>
           <article class="card pink"><span class="icon-box">I</span><h3>Interest Confirmation</h3><p>Ditentukan dari Stage 3. Menjawab: "proyek dan tujuan apa yang memotivasi?"</p></article>
         </div>
-        <div class="callout green"><span class="icon">=</span><div><strong>Aturan khusus usia 10–15:</strong> pilihan final Roblox Studio dapat mengalihkan rekomendasi ke Roblox. Jika Stage 2 sebelumnya menguji modul lain, anak mulai aman dari Roblox Level 1. Untuk usia lain, Stage 3 tetap berfungsi sebagai penguat Learning Path.</div></div>
+        <div class="callout green"><span class="icon">=</span><div><strong>Aturan khusus usia 10–15:</strong> pilihan final Roblox Studio dapat mengalihkan rekomendasi ke Roblox. Jika Stage 2 sebelumnya menguji program lain, anak mulai aman dari Roblox Level 1. Untuk usia lain, Stage 3 tetap berfungsi sebagai penguat Learning Path.</div></div>
       </div>
     </section>
 
@@ -1751,7 +1751,7 @@
     <!-- SLIDE 30: MATRIKS LEARNING PATH PER AUDIENCE -->
     <section class="slide" data-title="Matriks Learning Path per audience">
       <div class="slide-inner">
-        <span class="eyebrow">Urutan modul resmi</span>
+        <span class="eyebrow">Urutan program resmi</span>
         <h2>Satu nama path, urutan menyesuaikan tahap usia</h2>
         <div class="table-wrap">
           <table>
@@ -1763,12 +1763,12 @@
             </tbody>
           </table>
         </div>
-        <div class="callout"><span class="icon">!</span><div><strong>Chart Learning Path hanya berisi nama path dan urutan modul.</strong> Assigned Program, level, status tersedia/terkunci, dan alasan penempatan tetap dijelaskan di bagian result yang terpisah.</div></div>
+        <div class="callout"><span class="icon">!</span><div><strong>Chart Learning Path hanya berisi nama path dan urutan program.</strong> Assigned Program, level, status tersedia/terkunci, dan alasan penempatan tetap dijelaskan di bagian result yang terpisah.</div></div>
       </div>
     </section>
 
     <!-- SLIDE 31: MENGAPA ANAK TIDAK LANGSUNG KE MODUL TUJUAN -->
-    <section class="slide" data-title="Mengapa anak tidak langsung ke modul tujuan">
+    <section class="slide" data-title="Mengapa anak tidak langsung ke program tujuan">
       <div class="slide-inner">
         <span class="eyebrow">Mengapa tidak langsung "loncat"?</span>
         <h2>Tujuan boleh jauh, titik mulai harus tetap realistis</h2>
@@ -1947,7 +1947,7 @@
             <div class="script-explanation-box">
               <div class="script-header">🗣️ Script EC / Konsultasi:</div>
               <div class="script-text">
-                "Di Stage 3 tadi Budi sendiri yang memilih impiannya ingin buat aplikasi interaktif. Di jalur <strong>Interactive Creator Path (1–2 Tahun)</strong> ini, modul Python hari ini adalah <strong>jembatan pertama menuju impian besarnya!</strong>"
+                "Di Stage 3 tadi Budi sendiri yang memilih impiannya ingin buat aplikasi interaktif. Di jalur <strong>Interactive Creator Path (1–2 Tahun)</strong> ini, program Python hari ini adalah <strong>jembatan pertama menuju impian besarnya!</strong>"
               </div>
             </div>
           </div>
@@ -2009,7 +2009,7 @@
           <article class="card yellow"><span class="big-number">45–64</span><h3>Sedang Bertumbuh</h3><p>Mulai terlihat; perlu latihan terstruktur.</p></article>
           <article class="card orange"><span class="big-number">0–44</span><h3>Perlu Pendampingan</h3><p>Dukungan bertahap tanpa label gagal.</p></article>
         </div>
-        <div class="callout"><span class="icon">!</span><div><strong>Band ini hanya untuk penyajian profil.</strong> Ia tidak menggantikan aturan rekomendasi modul, routing Stage 2, atau status review Lv3.</div></div>
+        <div class="callout"><span class="icon">!</span><div><strong>Band ini hanya untuk penyajian profil.</strong> Ia tidak menggantikan aturan rekomendasi program, routing Stage 2, atau status review Lv3.</div></div>
       </div>
     </section>
 
@@ -2044,7 +2044,7 @@
             <p><em>"Agar impian Ananda **bikin Game Roblox** tercapai dengan sukses, titik start terbaiknya adalah **Scratch Level 1** sebagai jembatan fondasi di jalur Learning Path-nya."</em></p>
           </article>
         </div>
-        <div class="callout green"><span class="icon">🎯</span><div><strong>Kunci Upsell:</strong> Jangan menjual "1 modul/1 bulan les", melainkan juallah <strong>"Jalur Impian Anak (Learning Path 1-2 Tahun)"</strong> tempat anak bertumbuh secara utuh.</div></div>
+        <div class="callout green"><span class="icon">🎯</span><div><strong>Kunci Upsell:</strong> Jangan menjual "1 program/1 bulan les", melainkan juallah <strong>"Jalur Impian Anak (Learning Path 1-2 Tahun)"</strong> tempat anak bertumbuh secara utuh.</div></div>
       </div>
     </section>
 
@@ -2064,7 +2064,7 @@
           </div>
           <details class="quiz-explanation">
             <summary style="cursor:pointer; font-weight:800; color:#166534">💡 Kunci & Pembahasan (Klik untuk buka)</summary>
-            <p style="margin-top:6px"><strong>Jawaban B Benar!</strong> Juallah "Jalur Impian Anak (Learning Path 1-2 Tahun)", bukan sekadar unit modul bulanan.</p>
+            <p style="margin-top:6px"><strong>Jawaban B Benar!</strong> Juallah "Jalur Impian Anak (Learning Path 1-2 Tahun)", bukan sekadar unit program bulanan.</p>
           </details>
         </div>
       </div>
@@ -2099,7 +2099,7 @@
     <section class="slide" data-title="Check Pemahaman 7 — Handling Objection">
       <div class="slide-inner">
         <span class="eyebrow">Check Pemahaman 7 · Handling Objection</span>
-        <h2>Uji Pemahaman: Ortu Memaksa Pindah Modul</h2>
+        <h2>Uji Pemahaman: Ortu Memaksa Pindah Program</h2>
         <div class="quiz-card">
           <div class="quiz-meta"><span class="quiz-badge primary">Soal 8 · Handling Objection</span></div>
           <div class="quiz-question">Anak usia 8th mendapat <strong>Assigned: Scratch Lv1</strong>. Ortu memaksa: <em>"Anak saya main Roblox terus, pokoknya harus masuk Roblox hari ini!"</em> Respon EC?</div>
@@ -2124,9 +2124,9 @@
         <h2>Pertanyaan Ringkas yang Sering Muncul</h2>
         <div class="faq">
           <details open><summary>Kalau satu soal salah, apakah anak tidak mampu?</summary><p>Tidak. Itu hanya berarti bukti keterampilan belum terlihat di soal tersebut. Penilaian memakai pola beberapa soal.</p></details>
-          <details open><summary>Kalau anak memilih Python, apakah langsung belajar Python?</summary><p>Belum tentu. Pilihan anak menentukan tujuan impiannya; modul saat ini tetap menyesuaikan kesiapan fondasinya.</p></details>
-          <details open><summary>Mengapa anak seusia bisa mendapat modul berbeda?</summary><p>Karena sistem memadukan faktor usia dengan kesiapan alami dan profil 4 pilar kognitif anak.</p></details>
-          <details open><summary>Apakah Level 2 selalu lebih baik daripada Level 1?</summary><p>Bukan label "lebih pintar", melainkan penanda titik start belajar yang paling nyaman di dalam modul tersebut.</p></details>
+          <details open><summary>Kalau anak memilih Python, apakah langsung belajar Python?</summary><p>Belum tentu. Pilihan anak menentukan tujuan impiannya; program saat ini tetap menyesuaikan kesiapan fondasinya.</p></details>
+          <details open><summary>Mengapa anak seusia bisa mendapat program berbeda?</summary><p>Karena sistem memadukan faktor usia dengan kesiapan alami dan profil 4 pilar kognitif anak.</p></details>
+          <details open><summary>Apakah Level 2 selalu lebih baik daripada Level 1?</summary><p>Bukan label "lebih pintar", melainkan penanda titik start belajar yang paling nyaman di dalam program tersebut.</p></details>
         </div>
       </div>
     </section>

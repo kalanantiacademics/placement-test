@@ -211,7 +211,7 @@
             font-weight: 900;
         }
 
-        .teen-module {
+        .teen-program {
             border: 2px solid #bfdbfe;
             background: #eaf4ff;
             color: #265e9b;
@@ -444,7 +444,7 @@
             text-align: center;
         }
 
-        .teen-current-module {
+        .teen-current-program {
             display: flex;
             width: max-content;
             max-width: 100%;
@@ -460,7 +460,7 @@
             font-weight: 850;
         }
 
-        .teen-current-module strong {
+        .teen-current-program strong {
             color: #17324f;
         }
 
@@ -605,7 +605,7 @@
             <div class="report-student-name" id="studentName">Budi Pratama</div>
             
             <div class="teen-report-placement">
-                <span class="teen-module" id="assignedModule">Python</span>
+                <span class="teen-program" id="assignedProgram">Python</span>
                 <span class="teen-level" id="assignedLevel">Level 1</span>
             </div>
             
@@ -672,9 +672,9 @@
         <section class="teen-section">
             <h2 id="learningPathTitle">Learning Path Siswa</h2>
             <div class="teen-path-name" id="pathName">Interactive Creator Path</div>
-            <div class="teen-current-module">
+            <div class="teen-current-program">
                 <span aria-hidden="true">✦</span>
-                <span>Rekomendasi modul saat ini: <strong id="currentModuleText">Python</strong></span>
+                <span>Rekomendasi program saat ini: <strong id="currentProgramText">Python</strong></span>
             </div>
             <div class="teen-track" id="learningTrackContainer">
                 <!-- Rendered by JavaScript -->
@@ -750,11 +750,11 @@
                 studentName: 'Budi Pratama',
                 age: 16,
                 reportDate: '27 Juli 2026',
-                assignedModule: 'Python',
+                assignedProgram: 'Python',
                 level: 'Level 1',
                 lv3Candidate: false,
                 pathName: 'Interactive Creator Path',
-                learningModules: ['Scratch', 'Roblox Studio', 'Python'],
+                learningPrograms: ['Scratch', 'Roblox Studio', 'Python'],
                 studentReason: 'Suka membuat program game dan ingin mendalami logika coding Python.',
                 questionResults: [
                     { pillar: 'logic', focus: 'Efisiensi', isCorrect: true },
@@ -790,7 +790,7 @@
                 const studentName = custom.studentName || params.get('name') || DEFAULT_DATA.studentName;
                 const age = custom.age || params.get('age') || DEFAULT_DATA.age;
                 const reportDate = custom.reportDate || params.get('date') || DEFAULT_DATA.reportDate;
-                const assignedModule = custom.assignedModule || params.get('module') || DEFAULT_DATA.assignedModule;
+                const assignedProgram = custom.assignedProgram || params.get('program') || DEFAULT_DATA.assignedProgram;
                 const level = custom.level || params.get('level') || DEFAULT_DATA.level;
                 const pathName = custom.pathName || params.get('path') || DEFAULT_DATA.pathName;
                 const studentReason = custom.studentReason || params.get('reason') || DEFAULT_DATA.studentReason;
@@ -848,13 +848,13 @@
                     studentName,
                     age,
                     reportDate,
-                    assignedModule,
+                    assignedProgram,
                     level,
                     lv3Candidate,
                     scores,
                     pillarBreakdown,
                     pathName,
-                    learningModules: custom.learningModules || DEFAULT_DATA.learningModules,
+                    learningPrograms: custom.learningPrograms || DEFAULT_DATA.learningPrograms,
                     studentReason
                 };
             }
@@ -906,7 +906,7 @@
                         : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK';
 
                 document.getElementById('studentName').textContent = data.studentName;
-                document.getElementById('assignedModule').textContent = data.assignedModule;
+                document.getElementById('assignedProgram').textContent = data.assignedProgram;
                 document.getElementById('assignedLevel').textContent = data.level;
 
                 const sortedPillars = Object.entries(data.scores).sort((a, b) => b[1] - a[1]);
@@ -918,7 +918,7 @@
 
                 // CONCISE SUBTITLE (NO LONG WORDY PARAGRAPHS)
                 document.getElementById('mainSubtitle').innerHTML = 
-                    `${data.studentName} direkomendasikan memulai <strong>${data.assignedModule}</strong> pada <strong>${data.level}</strong>.<br>` +
+                    `${data.studentName} direkomendasikan memulai <strong>${data.assignedProgram}</strong> pada <strong>${data.level}</strong>.<br>` +
                     `Kekuatan utama terlihat pada pilar <strong>${topPillarName}</strong>, dengan fokus perkembangan berikutnya pada <strong>${bottomPillarName}</strong>.`;
 
                 document.getElementById('sectionSkillTitle').textContent = `Profil Kemampuan ${data.studentName}`;
@@ -967,8 +967,8 @@
 
                 // CONCISE WHY LEVEL
                 document.getElementById('whyLevelText').textContent = data.level.startsWith('FOUNDATIONAL')
-                    ? `Rekomendasi ini bertujuan memperkuat fondasi logika & algoritma dasar pilar ${bottomPillarName} sebelum masuk ke proyek ${data.assignedModule} yang lebih kompleks.`
-                    : `Siswa telah siap untuk level BASIC. Fokus berikutnya adalah mengembangkan solusi mandiri pada proyek ${data.assignedModule}.`;
+                    ? `Rekomendasi ini bertujuan memperkuat fondasi logika & algoritma dasar pilar ${bottomPillarName} sebelum masuk ke proyek ${data.assignedProgram} yang lebih kompleks.`
+                    : `Siswa telah siap untuk level BASIC. Fokus berikutnya adalah mengembangkan solusi mandiri pada proyek ${data.assignedProgram}.`;
 
                 // CONCISE FOCUS LIST
                 const focusList = document.getElementById('focusAreaList');
@@ -995,11 +995,11 @@
                 // LEARNING PATH
                 document.getElementById('learningPathTitle').textContent = `Learning Path ${data.studentName}`;
                 document.getElementById('pathName').textContent = data.pathName;
-                document.getElementById('currentModuleText').textContent = data.assignedModule;
+                document.getElementById('currentProgramText').textContent = data.assignedProgram;
 
                 const trackContainer = document.getElementById('learningTrackContainer');
-                trackContainer.innerHTML = data.learningModules.map((mod, idx) => {
-                    const isAssigned = mod === data.assignedModule;
+                trackContainer.innerHTML = data.learningPrograms.map((mod, idx) => {
+                    const isAssigned = mod === data.assignedProgram;
                     const arrow = idx > 0 ? `<span class="teen-track-arrow" aria-hidden="true">→</span>` : '';
                     const assignedClass = isAssigned ? ' is-assigned' : '';
                     return `
