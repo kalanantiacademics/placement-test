@@ -1,0 +1,26 @@
+.DS_Store
+.venv/
+node_modules/
+__pycache__/
+*.py[cod]
+
+# Local QA output and generated reports
+qc-output/
+qc-artifacts/
+screenshots/
+*.pdf
+
+# Local backups and legacy generators (kept on disk, not deployed)
+backups/
+legacy_generators/
+scripts/
+pdf-test/
+
+# One-off local repair and injection tools
+fix_*.py
+test-injeksi.html
+remind teacher.html
+implementation_plan.md
+favicon.ico
+
+# Package-specific generated dependencies
