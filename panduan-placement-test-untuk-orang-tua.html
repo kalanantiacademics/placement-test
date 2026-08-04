@@ -854,7 +854,115 @@
       .card, .question-card, .scenario, .table-wrap { box-shadow: none; }
       h1 { font-size: 45pt; }
       h2 { font-size: 31pt; }
-      .lead { font-size: 13pt; }
+    /* Visual Guide & Arrow Explanation Styles */
+    .arrow-guide-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .arrow-guide-row {
+      display: grid;
+      grid-template-columns: 1fr 54px 1.15fr;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border: 1.5px solid var(--line);
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(22,63,113,.06);
+    }
+    .arrow-guide-row.blue-tint { background: #f4f8fd; border-color: #bad3eb; }
+    .arrow-guide-row.green-tint { background: #f2f9f7; border-color: #a7dfd6; }
+    .arrow-guide-row.yellow-tint { background: #fffcf0; border-color: #f1df97; }
+    .arrow-guide-row.pink-tint { background: #fdf5f8; border-color: #f4c2d7; }
+
+    .report-component-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .report-component-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-pink { background: #fce7f3; color: #9d174d; }
+
+    .report-component-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+    .report-component-preview {
+      font-size: 0.82rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.85);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px dashed rgba(22,63,113,0.15);
+      line-height: 1.4;
+    }
+
+    .arrow-divider {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+      font-size: 1.8rem;
+      font-weight: 950;
+    }
+    .arrow-divider .arrow-label {
+      font-size: 0.62rem;
+      font-weight: 900;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: -2px;
+    }
+
+    .script-explanation-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #17324f;
+      color: #ffffff;
+      box-shadow: 0 6px 16px rgba(23,50,79,0.15);
+    }
+    .script-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 850;
+      color: #f9c013;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .script-text {
+      font-size: 0.86rem;
+      line-height: 1.42;
+      color: #eaf4ff;
+    }
+    .script-text strong {
+      color: #ffffff;
+      background: rgba(249,192,19,0.25);
+      padding: 1px 4px;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -1516,65 +1624,115 @@
       </div>
     </section>
 
-    <!-- SLIDE 36: VISUAL REPORT ANATOMY DARI REPORT-ALL.HTML -->
-    <section class="slide" data-title="Anatomi Placement Report (report-all.html)">
+    <!-- SLIDE 36: VISUAL ARROW GUIDE PART 1 (REPORT HEADER & RADAR CHART) -->
+    <section class="slide" data-title="Cara Menjelaskan Result (Header & Radar Chart)">
       <div class="slide-inner">
-        <span class="eyebrow">Contoh Laporan Resmi</span>
-        <h2>Anatomi Tampilan Placement Report untuk Parents</h2>
-        <p class="lead">Laporan resmi berbentuk A4 (sesuai format <code>report-all.html</code>) yang memuat 4 komponen visual utama:</p>
-        <div class="grid-4">
-          <article class="card blue">
-            <span class="icon-box">1</span>
-            <h3>Header & Status</h3>
-            <p>• Nama Anak & Usia<br>
-               • <strong>Assigned Module</strong> (e.g. Python)<br>
-               • <strong>Assigned Level</strong> (e.g. Level 1)<br>
-               • Status Kesiapan Belajar</p>
-          </article>
-          <article class="card green">
-            <span class="icon-box">2</span>
-            <h3>Radar Chart 4 Pilar</h3>
-            <p>• Grafik Spider-Web Logika, Kreativitas, Spasial, Digital.<br>
-               • <strong>Band Label:</strong> Kekuatan Utama, Berkembang Baik, Sedang Bertumbuh.</p>
-          </article>
-          <article class="card yellow">
-            <span class="icon-box">3</span>
-            <h3>Why Level & Fokus</h3>
-            <p>• <strong>Alasan Penempatan:</strong> Mengapa mulai dari titik ini.<br>
-               • <strong>Fokus Latihan:</strong> 3 keterampilan utama yang akan diasah di term pertama.</p>
-          </article>
-          <article class="card pink">
-            <span class="icon-box">4</span>
-            <h3>Learning Path & Minat</h3>
-            <p>• Nama Jalur Belajar (e.g. App Creator Path).<br>
-               • Urutan Modul (Scratch → Python).<br>
-               • Catatan Alasan Minat Anak.</p>
-          </article>
+        <span class="eyebrow">Visual Guide · report-all.html (Part 1)</span>
+        <h2>Cara Menjelaskan Header Status & Radar Chart 4 Pilar</h2>
+        <p class="lead">Gunakan komponen visual laporan resmi untuk menyampaikan titik start dan profil potensi ke orang tua dengan percaya diri.</p>
+        
+        <div class="arrow-guide-container">
+          <!-- ROW 1: HEADER & STATUS -->
+          <div class="arrow-guide-row blue-tint">
+            <div class="report-component-box">
+              <span class="report-component-badge badge-blue">Komponen Laporan #1</span>
+              <div class="report-component-title">Header Status: Assigned Module & Level</div>
+              <div class="report-component-preview">
+                <strong>BUDI PRATAMA (16 Th)</strong> · <span style="background:#bfdbfe; color:#1e40af; padding:2px 8px; border-radius:6px; font-weight:800">Python</span> <span style="background:#f9c013; color:#5a3f00; padding:2px 8px; border-radius:6px; font-weight:800">Level 1</span><br>
+                <small style="color:#2563eb">STATUS: DIREKOMENDASIKAN UNTUK MEMBANGUN FONDASI</small>
+              </div>
+            </div>
+            <div class="arrow-divider">
+              <span>➔</span>
+              <span class="arrow-label">Jelaskan</span>
+            </div>
+            <div class="script-explanation-box">
+              <div class="script-header">🗣️ Script EC / Konsultasi:</div>
+              <div class="script-text">
+                "Selamat Ayah/Bunda! Berdasarkan hasil tes hari ini, titik start paling nyaman untuk Ananda Budi adalah <strong>Python Level 1</strong>. Titik ini dipilihkam secara presisi agar Budi merasa <strong>percaya diri dan sukses</strong> di pertemuan pertamanya tanpa rasa frustrasi."
+              </div>
+            </div>
+          </div>
+
+          <!-- ROW 2: RADAR CHART 4 PILAR -->
+          <div class="arrow-guide-row green-tint">
+            <div class="report-component-box">
+              <span class="report-component-badge badge-green">Komponen Laporan #2</span>
+              <div class="report-component-title">Radar Chart 4 Pilar Kognitif</div>
+              <div class="report-component-preview">
+                🕷️ <strong>Spider-Web Chart (report-all.html):</strong><br>
+                • <strong>Logika (80%):</strong> Kekuatan Utama | • <strong>Spasial (80%):</strong> Kekuatan Utama<br>
+                • <strong>Kreativitas (40%):</strong> Sedang Bertumbuh | • <strong>Digital (60%):</strong> Berkembang Baik
+              </div>
+            </div>
+            <div class="arrow-divider">
+              <span>➔</span>
+              <span class="arrow-label">Jelaskan</span>
+            </div>
+            <div class="script-explanation-box">
+              <div class="script-header">🗣️ Script EC / Konsultasi:</div>
+              <div class="script-text">
+                "Lihat grafik 4 pilar ini Bunda! <strong>Logika & Spasial Budi adalah Kekuatan Utama</strong>—analisis alur kodingnya sangat tajam! Sementara pilar <strong>Kreativitas yang sedang bertumbuh</strong> akan kita asah bersama lewat proyek visual di kelas."
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="callout green"><span class="icon">📄</span><div><strong>Format Standar Kalananti:</strong> Laporan didesain ringkas, profesional, dan empatis agar orang tua langsung memahami ke mana investasi belajar anak disalurkan.</div></div>
       </div>
     </section>
 
-    <!-- SLIDE 37: ANATOMI RESULT UNTUK PARENTS -->
-    <section class="slide" data-title="Anatomi result untuk parents">
+    <!-- SLIDE 37: VISUAL ARROW GUIDE PART 2 (WHY LEVEL & LEARNING PATH) -->
+    <section class="slide" data-title="Cara Menjelaskan Result (Why Level & Learning Path)">
       <div class="slide-inner">
-        <span class="eyebrow">Urutan informasi result</span>
-        <h2>Rekomendasi utama harus terlihat lebih dulu</h2>
-        <div class="grid-2">
-          <div class="report-stack">
-            <div class="report-row"><b>1</b><div><strong>Assigned Module + level</strong><span>Apa yang dipelajari sekarang dan mulai dari mana.</span></div></div>
-            <div class="report-row"><b>2</b><div><strong>Personalized placement statement</strong><span>Ringkasan bukti yang menjelaskan rekomendasi.</span></div></div>
-            <div class="report-row"><b>3</b><div><strong>Profil empat pilar</strong><span>Kekuatan, perkembangan, relevansi, dan aktivitas belajar.</span></div></div>
-            <div class="report-row"><b>4</b><div><strong>Mengapa modul ini sekarang</strong><span>Bukti → kebutuhan → aktivitas → kompetensi.</span></div></div>
+        <span class="eyebrow">Visual Guide · report-all.html (Part 2)</span>
+        <h2>Cara Menjelaskan Alasan Level & Arah Learning Path</h2>
+        <p class="lead">Gunakan bagian bawah laporan untuk mengarahkan investasi belajar orang tua ke jalur proyek jangka panjang.</p>
+        
+        <div class="arrow-guide-container">
+          <!-- ROW 1: WHY LEVEL & 3 FOKUS -->
+          <div class="arrow-guide-row yellow-tint">
+            <div class="report-component-box">
+              <span class="report-component-badge badge-yellow">Komponen Laporan #3</span>
+              <div class="report-component-title">Why Level & 3 Fokus Perkembangan</div>
+              <div class="report-component-preview">
+                📌 <strong>Mengapa Mulai Level 1?</strong> Memperkuat algoritma dasar bertahap.<br>
+                🎯 <strong>3 Fokus Latihan:</strong> 1. Algoritma Terstruktur · 2. Perulangan (Loop) · 3. Debugging Mandiri
+              </div>
+            </div>
+            <div class="arrow-divider">
+              <span>➔</span>
+              <span class="arrow-label">Jelaskan</span>
+            </div>
+            <div class="script-explanation-box">
+              <div class="script-header">🗣️ Script EC / Konsultasi:</div>
+              <div class="script-text">
+                "Mengapa mulai dari Level 1? Karena di Term 1 ini Coach akan <strong>berfokus mengasah 3 keterampilan kunci ini</strong>. Begitu 3 fondasi ini matang, Budi akan otomatis siap naik ke Level 2 dengan pemahaman yang sangat kuat."
+              </div>
+            </div>
           </div>
-          <div class="report-stack">
-            <div class="report-row"><b>5</b><div><strong>Prioritas perkembangan awal</strong><span>Dua atau tiga fokus yang konkret.</span></div></div>
-            <div class="report-row"><b>6</b><div><strong>Learning Path</strong><span>Nama path dan urutan modul.</span></div></div>
-            <div class="report-row"><b>7</b><div><strong>Arah berdasarkan minat</strong><span>Tujuan proyek, path, dan alasan mulai dari modul saat ini.</span></div></div>
-            <div class="report-row"><b>8</b><div><strong>Review dan next action</strong><span>Hanya bila relevan; lalu unduh/consult/program.</span></div></div>
+
+          <!-- ROW 2: LEARNING PATH & MINAT -->
+          <div class="arrow-guide-row pink-tint">
+            <div class="report-component-box">
+              <span class="report-component-badge badge-pink">Komponen Laporan #4</span>
+              <div class="report-component-title">Learning Path Track & Minat Anak</div>
+              <div class="report-component-preview">
+                🚀 <strong>Interactive Creator Path:</strong><br>
+                <code>1. Scratch</code> ➔ <code>2. Roblox Studio</code> ➔ <code>[3. Python ✓]</code><br>
+                ♥ <em>Minat: Suka buat program game & aplikasi interaktif.</em>
+              </div>
+            </div>
+            <div class="arrow-divider">
+              <span>➔</span>
+              <span class="arrow-label">Jelaskan</span>
+            </div>
+            <div class="script-explanation-box">
+              <div class="script-header">🗣️ Script EC / Konsultasi:</div>
+              <div class="script-text">
+                "Di Stage 3 tadi Budi sendiri yang memilih impiannya ingin buat aplikasi interaktif. Di jalur <strong>Interactive Creator Path (1–2 Tahun)</strong> ini, modul Python hari ini adalah <strong>jembatan pertama menuju impian besarnya!</strong>"
+              </div>
+            </div>
           </div>
         </div>
-        <div class="callout"><span class="icon">!</span><div><strong>Potential Module dan minat tidak boleh bersaing secara visual.</strong> Screen pertama harus membuat Assigned Module dan level saat ini langsung terbaca.</div></div>
       </div>
     </section>
 
