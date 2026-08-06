@@ -26,7 +26,7 @@ Repository ini adalah source production yang ditampilkan melalui:
 ### Kontrak akses dashboard
 
 - `DROPDOWNS!A:A` menyimpan nama cabang; `Online` merupakan branch khusus online.
-- Akses restricted existing tetap dibaca dari `DROPDOWNS!F:F` (BM) dan `DROPDOWNS!G:G` (SA Kids). Record transisi di B/C juga tetap didukung agar tidak ada akses lama yang hilang.
+- Request baru ditulis ke `DROPDOWNS!B:B` (BM) atau `DROPDOWNS!C:C` (SA Kids) pada exact row cabang yang dipilih. Akses existing di F/G tetap dibaca agar akun lama tidak terputus.
 - `DROPDOWNS!E:E` menyimpan HQ dan hanya dikelola manual.
 - Request publik masuk ke `AccessRequests` sebagai `pending`. Hanya HQ yang sudah login dapat approve/reject dari dashboard.
 - Login memakai email terdaftar setelah masa review backend 2 menit, tanpa mengirim OTP/email. Session token disimpan sebagai hash, berlaku 24 jam, dan dapat dicabut melalui logout.

@@ -1034,7 +1034,7 @@
 
       <form id="requestForm" onsubmit="handleRequestSubmit(event)">
         <div class="form-group">
-          <label class="form-label">Cabang</label>
+          <label class="form-label">Cabang yang Diminta <span aria-hidden="true">*</span></label>
           <div class="custom-select-container" id="branchSelectContainer">
             <div class="custom-select-trigger" onclick="toggleCustomSelect()"><span id="selectedBranchText" class="placeholder">Cari dan pilih cabang</span><i class="fa-solid fa-chevron-down"></i></div>
             <div class="custom-select-dropdown">
@@ -1043,6 +1043,7 @@
             </div>
           </div>
           <input type="hidden" id="reqBranch" required>
+          <small style="display:block;margin-top:7px;color:var(--muted);font-size:.78rem;line-height:1.4;">Akses akan ditempatkan pada baris cabang ini di sheet <strong>DROPDOWNS</strong>.</small>
         </div>
         <div class="form-group">
           <label class="form-label">Nama Lengkap</label>

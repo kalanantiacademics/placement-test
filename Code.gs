@@ -24,15 +24,15 @@ const DASHBOARD_AUDIT_HEADERS = [
   'status', 'detail'
 ];
 
-// Production still contains the original restricted-access columns F/G,
-// while a few newer records already exist in B/C. Read both layouts, but
-// keep new approved branch access in the established F/G columns.
+// Production still contains access records in both B/C and F/G. Read both
+// layouts so existing users keep working, but write every newly approved
+// request to the current mapping: B = BM and C = SA Kids.
 const DROPDOWN_ACCESS_COLUMNS = Object.freeze({
   hq: [5],
   bmRead: [2, 6],
   saKidsRead: [3, 7],
-  bmWrite: 6,
-  saKidsWrite: 7
+  bmWrite: 2,
+  saKidsWrite: 3
 });
 
 const SESSION_HEADERS = [
