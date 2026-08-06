@@ -7,7 +7,8 @@ Repository ini adalah source production yang ditampilkan melalui:
 
 ## Runtime production
 
-- `index.html` — registrasi dan routing berdasarkan usia.
+- `index.html` — entry point registrasi khusus siswa **Cabang Offline** (wajib memilih kota & cabang).
+- `index-online.html` — entry point registrasi khusus siswa **Online** (otomatis menetapkan branch `Online`).
 - `junior-final-placement-test.html` — placement test usia 5–7.
 - `kids-final-placement-test.html` — placement test usia 8–15.
 - `teens.html` — placement test usia 16–18.
@@ -21,6 +22,29 @@ Repository ini adalah source production yang ditampilkan melalui:
 ## Backend
 
 - `Code.gs` — Google Apps Script Web App. Perubahan file ini tetap harus di-deploy manual ke Apps Script.
+
+### Kontrak akses dashboard
+
+- `DROPDOWNS!A:A` menyimpan nama cabang; `Online` merupakan branch khusus online.
+- Akses restricted existing tetap dibaca dari `DROPDOWNS!F:F` (BM) dan `DROPDOWNS!G:G` (SA Kids). Record transisi di B/C juga tetap didukung agar tidak ada akses lama yang hilang.
+- `DROPDOWNS!E:E` menyimpan HQ dan hanya dikelola manual.
+- Request publik masuk ke `AccessRequests` sebagai `pending`. Hanya HQ yang sudah login dapat approve/reject dari dashboard.
+- Login memakai email terdaftar setelah masa review backend 2 menit, tanpa mengirim OTP/email. Session token disimpan sebagai hash, berlaku 24 jam, dan dapat dicabut melalui logout.
+- HQ memiliki `dataScope=all,columnAccess=full`; Online memiliki `dataScope=branch,columnAccess=full`; cabang offline memiliki `dataScope=branch,columnAccess=restricted`.
+
+### Deployment dan migrasi
+
+1. Buat backup/tag source dan catat deployment Apps Script aktif.
+2. Salin `Code.gs` ke Apps Script, deploy sebagai versi Web App baru, lalu pastikan URL pada HTML masih menunjuk deployment yang benar.
+3. Jalankan `setupPlacementStorage()` satu kali jika sheet placement belum tersedia.
+4. Deploy Web App dengan eksekusi sebagai owner dan pastikan scope Spreadsheet, Drive, dan Mail sudah diotorisasi.
+5. Pasang installable edit trigger untuk fungsi `onEdit`; simple trigger tidak memiliki otorisasi Drive yang cukup untuk memperbarui permission folder.
+6. Jalankan `migratePlacementPdfsToBranchFolders()` dari Apps Script editor untuk memindahkan PDF existing ke subfolder `Placement Test - <branch>`.
+7. Periksa permission root PDF. Hapus akses BM/SA lama dari root secara manual; hanya HQ yang boleh tetap memiliki akses root.
+8. Uji dengan data non-production: satu user Online, dua cabang offline berbeda, dan satu HQ.
+9. Verifikasi masa review 2 menit, approval/rejection HQ, penolakan token lintas cabang, restricted response, pagination, analytics, dan PDF lintas cabang sebelum mengganti deployment production.
+
+Rollback dilakukan dengan mengaktifkan kembali deployment Apps Script sebelumnya dan source tag phase terkait. Jangan menghapus row registrasi yang sudah masuk. Jika migrasi PDF belum selesai, backend otomatis tidak mengirim URL PDF lama kepada user non-HQ.
 
 ## Report dan referensi
 

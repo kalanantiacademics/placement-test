@@ -4,6 +4,19 @@ All notable changes, bug fixes, visual improvements, and architectural updates t
 
 ---
 
+## [Unreleased] - 2026-08-05
+
+### 35. Online/Offline Entry Separation, Secure Branch Authorization, and HQ Analytics
+
+- Added `index-online.html` with a fixed `Online` branch and changed `index.html` to require a valid offline city/branch.
+- Added the cleaned `get_offline_branches` contract and removed direct multi-column CSV parsing from offline registration.
+- Rebuilt dashboard access around `DROPDOWNS` A/B/C/E, a two-minute backend review window without outbound login email, hashed opaque sessions, rate limits, audit logs, ambiguous-access rejection, and immediate allowlist revalidation.
+- Added separate `dataScope` and `columnAccess` enforcement with server-side row filtering and an explicit restricted-field allowlist.
+- Routed new PDFs into per-branch subfolders, restricted non-HQ PDF URLs to correctly isolated files, and added the manual existing-file migration function.
+- Added aggregate-first HQ analytics, funnel/drop-off, Top 3 branch metrics, 30-day trend, operational alerts, branch recap, server-side filters, and paginated raw results.
+- Changed Online, Offline, Kids fallback, and Teens registration to request the student's full name; added whitespace normalization and frontend/backend data-quality validation without changing the spreadsheet schema.
+- Updated README deployment/runbook guidance and PRD Section 21.
+
 ## [Unreleased] - 2026-08-03
 
 ### 34. Corrected HQ/Restricted Dashboard Access and Student Session Cleanup

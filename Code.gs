@@ -3,7 +3,36 @@ const PLACEMENT_CONFIG = Object.freeze({
   pdfFolderId: '171mw0cN5K22tjsTfAHrKhqPbD7ZjPV9W',
   sessionsSheet: 'Sessions',
   payloadsSheet: 'StagePayloads',
-  logSheet: 'SyncLog'
+  logSheet: 'SyncLog',
+  dashboardSessionHours: 24,
+  accessReviewMinutes: 2,
+  stalledHours: 24
+});
+
+const DASHBOARD_SESSION_HEADERS = [
+  'token_hash', 'authorized_branch', 'email', 'role', 'data_scope',
+  'column_access', 'created_at', 'expires_at', 'revoked_at'
+];
+
+const ACCESS_REQUEST_HEADERS = [
+  'request_id', 'requested_at', 'branch', 'name', 'email', 'role',
+  'status', 'reviewed_at', 'reviewed_by'
+];
+
+const DASHBOARD_AUDIT_HEADERS = [
+  'timestamp', 'event', 'email', 'authorized_branch', 'submission_id',
+  'status', 'detail'
+];
+
+// Production still contains the original restricted-access columns F/G,
+// while a few newer records already exist in B/C. Read both layouts, but
+// keep new approved branch access in the established F/G columns.
+const DROPDOWN_ACCESS_COLUMNS = Object.freeze({
+  hq: [5],
+  bmRead: [2, 6],
+  saKidsRead: [3, 7],
+  bmWrite: 6,
+  saKidsWrite: 7
 });
 
 const SESSION_HEADERS = [
@@ -32,17 +61,16 @@ function setupPlacementStorage() {
   const sessions = ensureSheet_(spreadsheet, PLACEMENT_CONFIG.sessionsSheet, SESSION_HEADERS);
   const payloads = ensureSheet_(spreadsheet, PLACEMENT_CONFIG.payloadsSheet, PAYLOAD_HEADERS);
   const log = ensureSheet_(spreadsheet, PLACEMENT_CONFIG.logSheet, LOG_HEADERS);
+  ensureAccessRequestSheet_(spreadsheet);
+  ensureDashboardSessionSheet_(spreadsheet);
+  ensureDashboardSheet_(spreadsheet, 'DashboardAuditLog', DASHBOARD_AUDIT_HEADERS);
 
   [sessions, payloads, log].forEach(sheet => {
     sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, sheet.getLastColumn())
+    sheet.getRange(1, 1, 1, Math.min(sheet.getLastColumn(), SESSION_HEADERS.length))
       .setFontWeight('bold')
       .setBackground('#e8eaed')
       .setWrap(true);
-    sheet.autoResizeColumns(1, sheet.getLastColumn());
-    if (!sheet.getFilter()) {
-      sheet.getRange(1, 1, Math.max(sheet.getMaxRows(), 2), sheet.getLastColumn()).createFilter();
-    }
   });
 
   return {
@@ -51,31 +79,37 @@ function setupPlacementStorage() {
   };
 }
 
+function installPlacementOnEditTrigger() {
+  let removedDuplicates = 0;
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === 'onEdit') {
+      ScriptApp.deleteTrigger(trigger);
+      removedDuplicates += 1;
+    }
+  });
+
+  ScriptApp.newTrigger('onEdit')
+    .forSpreadsheet(PLACEMENT_CONFIG.spreadsheetId)
+    .onEdit()
+    .create();
+
+  return {
+    installed: true,
+    spreadsheetId: PLACEMENT_CONFIG.spreadsheetId,
+    removedDuplicates
+  };
+}
+
 function doGet(event) {
   const action = event?.parameter?.action;
-  if (action === 'get_branches' || action === 'get_dropdowns') {
+
+  if (action === 'get_branches' || action === 'get_dropdowns' || action === 'get_offline_branches') {
     try {
       const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
-      const sheet = spreadsheet.getSheetByName('DROPDOWNS');
-      if (!sheet) throw new Error('Sheet DROPDOWNS not found');
-      const lastRow = sheet.getLastRow();
-      if (lastRow < 5) return json_({ ok: true, branches: ['Online'] });
-      // Branch names start at row 5 in Column A
-      const data = sheet.getRange(5, 1, lastRow - 4, 1).getValues();
-      const branches = data
-        .map(r => String(r[0] || '').trim())
-        .filter(val => val !== '' && val !== 'BAC/EAC Branch Name');
-      return json_({ ok: true, branches: branches });
-    } catch (error) {
-      return json_({ ok: false, error: String(error.message || error) });
-    }
-  }
-
-  if (action === 'get_branch_results') {
-    try {
-      const token = event?.parameter?.token;
-      const result = getBranchResults_({ token });
-      return json_({ ok: true, ...result });
+      const offlineOnly = action === 'get_offline_branches' || event?.parameter?.offline_only === 'true';
+      return json_({ ok: true, branches: getBranchRows_(spreadsheet)
+        .map(item => item.branch)
+        .filter(branch => !offlineOnly || normalizeBranch_(branch) !== 'online') });
     } catch (error) {
       return json_({ ok: false, error: String(error.message || error) });
     }
@@ -88,31 +122,42 @@ function doGet(event) {
     capabilities: {
       visualPdfAttachment: true,
       legacyPdfFallback: false,
-      branchDashboard: true
+      branchDashboard: true,
+      delayedEmailLogin: true,
+      hqAnalytics: true
     }
   });
 }
 
 function doPost(event) {
-  const lock = LockService.getScriptLock();
-  lock.waitLock(20000);
   let operation = null;
+  let lock = null;
   try {
     operation = JSON.parse(event?.postData?.contents || '{}');
     const action = operation.action;
+    const readOnlyActions = ['get_access_requests', 'get_branch_results', 'get_hq_overview'];
+    if (!readOnlyActions.includes(action)) {
+      lock = LockService.getScriptLock();
+      lock.waitLock(20000);
+    }
 
-    // Handle branch dashboard actions
     if (action === 'request_dashboard_access') {
       const result = requestDashboardAccess_(operation);
       return json_({ ok: true, ...result });
     } else if (action === 'login_dashboard') {
       const result = loginDashboard_(operation);
       return json_({ ok: true, ...result });
+    } else if (action === 'approve_dashboard_access') {
+      const result = approveDashboardAccess_(operation);
+      return json_({ ok: true, ...result });
+    } else if (action === 'get_access_requests') {
+      const result = getAccessRequests_(operation);
+      return json_({ ok: true, ...result });
     } else if (action === 'get_branch_results') {
       const result = getBranchResults_(operation);
       return json_({ ok: true, ...result });
-    } else if (action === 'search_restricted_results') {
-      const result = searchRestrictedResults_(operation);
+    } else if (action === 'get_hq_overview') {
+      const result = getHqOverview_(operation);
       return json_({ ok: true, ...result });
     } else if (action === 'update_email_status') {
       const result = updateEmailStatus_(operation);
@@ -135,9 +180,20 @@ function doPost(event) {
     return json_({ ok: true, ...result });
   } catch (error) {
     if (operation?.submissionId) appendLog_(operation, 'error', String(error.message || error));
+    const dashboardActions = [
+      'request_dashboard_access', 'login_dashboard',
+      'approve_dashboard_access', 'get_access_requests', 'get_branch_results',
+      'get_hq_overview', 'update_email_status', 'logout_dashboard'
+    ];
+    if (dashboardActions.includes(operation?.action)) {
+      try {
+        const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+        auditDashboard_(spreadsheet, `${operation.action}_failed`, operation.email || '', operation.branch || '', operation.submissionId || '', 'failed', String(error.message || error));
+      } catch (auditError) {}
+    }
     return json_({ ok: false, error: String(error.message || error) });
   } finally {
-    lock.releaseLock();
+    if (lock) lock.releaseLock();
   }
 }
 
@@ -148,15 +204,17 @@ function register_(operation) {
   const sheet = getSheet_(PLACEMENT_CONFIG.sessionsSheet);
   const found = findSession_(sheet, operation.submissionId);
   const now = new Date().toISOString();
+  const studentName = validateStudentName_(student.name);
+  const branch = validateRegistrationBranch_(student.branch);
   const values = {
     submission_id: operation.submissionId,
     sync_token_hash: hash_(operation.syncToken),
-    student_name: student.name || '',
+    student_name: studentName,
     exact_age: Number(student.exactAge) || '',
     age_range: student.ageRange || '',
     audience: student.audienceGroup || '',
     parent_email: student.parentEmail || '',
-    branch: student.branch || '',
+    branch,
     registered_at: registration.registeredAt || now,
     session_status: 'in_progress',
     child_confirmed: consent.childConfirmed === true ? 'TRUE' : 'FALSE',
@@ -336,15 +394,19 @@ function onEdit(e) {
     if (sheet.getName() === 'DROPDOWNS') {
       const col = e.range.getColumn();
       const row = e.range.getRow();
-      // Dashboard access columns: E = HQ, F = Branch Manager, G = SA Kids.
-      if (row >= 5 && [5, 6, 7].includes(col)) {
+      // Existing production uses F/G; B/C are retained for compatibility.
+      if (row >= 1 && [2, 3, 5, 6, 7].includes(col)) {
         const val = String(e.value || e.range.getValue() || '').trim();
         if (val) {
           const parsed = parseBranchCellEntries_(val);
           if (parsed.length > 0) {
             parsed.forEach(entry => {
               if (entry.email) {
-                grantFolderAccess_(entry.email);
+                if (DROPDOWN_ACCESS_COLUMNS.hq.includes(col)) grantRootFolderAccess_(entry.email);
+                else {
+                  const branch = String(sheet.getRange(row, 1).getValue() || '').trim();
+                  if (branch) grantBranchFolderAccess_(entry.email, branch);
+                }
               }
             });
           }
@@ -379,7 +441,7 @@ function onEdit(e) {
 }
 
 function createResultPdf_(submissionId, row, payload) {
-  const folder = DriveApp.getFolderById(PLACEMENT_CONFIG.pdfFolderId);
+  const folder = getOrCreateBranchFolder_(normalizeBranchForAudit_(row.branch));
   const safeName = String(row.student_name || 'Siswa').replace(/[^\w\- ]+/g, '').trim() || 'Siswa';
   const requestedName = String(payload?.pdfAttachment?.filename || '').trim();
   const attachmentName = requestedName
@@ -823,450 +885,646 @@ function json_(payload) {
 }
 
 // ====================================================
-// BRANCH DASHBOARD AUTHENTICATION & DATA FETCHING
+// BRANCH DASHBOARD AUTHENTICATION, AUTHORIZATION & HQ ANALYTICS
 // ====================================================
 
+function normalizeEmail_(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function normalizeBranch_(value) {
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function normalizeBranchForAudit_(value) {
+  const branch = String(value || '').trim();
+  return !branch || branch === '-' ? 'Legacy/Unknown' : branch;
+}
+
+function isValidEmail_(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || ''));
+}
+
 function parseBranchCellEntries_(cellText) {
-  const text = String(cellText || '').trim();
-  if (!text) return [];
+  return String(cellText || '').split(/,|\n/).map(part => part.trim()).filter(Boolean).map(part => {
+    const match = part.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (!match) return null;
+    return {
+      name: part.replace(match[0], '').replace(/[-–—\s]+$/, '').trim() || 'User',
+      email: normalizeEmail_(match[0])
+    };
+  }).filter(Boolean);
+}
 
-  const rawParts = text.split(/,|\n/);
-  const entries = [];
+function getBranchRows_(spreadsheet) {
+  const sheet = spreadsheet.getSheetByName('DROPDOWNS');
+  if (!sheet) throw new Error('Sheet DROPDOWNS tidak ditemukan.');
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 1) return [];
+  const values = sheet.getRange(1, 1, lastRow, 1).getValues();
+  const seen = {};
+  const rows = [];
+  values.forEach((item, index) => {
+    const branch = String(item[0] || '').trim();
+    const key = normalizeBranch_(branch);
+    if (!branch || key === 'bac/eac branch name' || key === 'branch' || seen[key]) return;
+    seen[key] = true;
+    rows.push({ row: index + 1, branch });
+  });
+  return rows;
+}
 
-  for (let i = 0; i < rawParts.length; i++) {
-    const part = rawParts[i].trim();
-    if (!part) continue;
+function validateRegistrationBranch_(value) {
+  const branch = String(value || '').trim();
+  if (!branch || branch === '-') throw new Error('invalid_branch');
+  if (normalizeBranch_(branch) === 'online') return 'Online';
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const match = getBranchRows_(spreadsheet).find(item => normalizeBranch_(item.branch) === normalizeBranch_(branch));
+  if (!match || normalizeBranch_(match.branch) === 'online') throw new Error('invalid_offline_branch');
+  return match.branch;
+}
 
-    const emailMatch = part.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    if (emailMatch) {
-      const email = emailMatch[0];
-      let name = part.replace(emailMatch[0], '').trim();
-      // Remove trailing dashes and spaces
-      name = name.replace(/[-–—\s]+$/, '').trim();
-      entries.push({ name: name || 'User', email: email });
-    } else {
-      entries.push({ name: part, email: part });
-    }
+function validateStudentName_(value) {
+  const name = String(value || '').trim().replace(/\s+/g, ' ');
+  if (name.length < 3 || name.length > 100 || !/\p{L}/u.test(name)) {
+    throw new Error('invalid_student_full_name');
   }
-  return entries;
+  return name;
+}
+
+function ensureDashboardSheet_(spreadsheet, name, headers) {
+  let sheet = spreadsheet.getSheetByName(name);
+  if (!sheet) sheet = spreadsheet.insertSheet(name);
+  if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+  else sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold').setBackground('#e8eaed');
+  return sheet;
+}
+
+function ensureAccessRequestSheet_(spreadsheet) {
+  let sheet = spreadsheet.getSheetByName('AccessRequests');
+  if (!sheet) return ensureDashboardSheet_(spreadsheet, 'AccessRequests', ACCESS_REQUEST_HEADERS);
+  const legacyHeaders = ['requested_at', 'branch', 'name', 'email', 'role', 'status'];
+  const currentLegacyHeaders = sheet.getRange(1, 1, 1, legacyHeaders.length).getValues()[0].map(String);
+  const isLegacy = legacyHeaders.every((header, index) => currentLegacyHeaders[index] === header);
+  if (isLegacy) sheet.insertColumnBefore(1);
+
+  if (sheet.getMaxColumns() < ACCESS_REQUEST_HEADERS.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), ACCESS_REQUEST_HEADERS.length - sheet.getMaxColumns());
+  }
+  const currentHeaders = sheet.getRange(1, 1, 1, ACCESS_REQUEST_HEADERS.length).getValues()[0].map(String);
+  const isEmpty = currentHeaders.every(header => !header.trim());
+  const isCurrent = ACCESS_REQUEST_HEADERS.every((header, index) => currentHeaders[index] === header);
+  if (!isLegacy && !isEmpty && !isCurrent) {
+    throw new Error('Struktur AccessRequests tidak dikenali; setup dihentikan agar data existing tidak tertimpa.');
+  }
+  sheet.getRange(1, 1, 1, ACCESS_REQUEST_HEADERS.length).setValues([ACCESS_REQUEST_HEADERS]);
+
+  // Legacy requests had no request_id. Assign IDs without changing their
+  // timestamps, profiles, or statuses.
+  if (sheet.getLastRow() > 1) {
+    const idRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1);
+    const ids = idRange.getValues();
+    const rowData = sheet.getRange(2, 2, sheet.getLastRow() - 1, 6).getValues();
+    let changed = false;
+    ids.forEach((row, index) => {
+      if (!String(row[0] || '').trim() && rowData[index].some(value => String(value || '').trim())) {
+        row[0] = `access_${Utilities.getUuid()}`;
+        changed = true;
+      }
+    });
+    if (changed) idRange.setValues(ids);
+  }
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, ACCESS_REQUEST_HEADERS.length).setFontWeight('bold').setBackground('#e8eaed');
+  return sheet;
+}
+
+function ensureDashboardSessionSheet_(spreadsheet) {
+  let sheet = spreadsheet.getSheetByName('DashboardSessions');
+  if (!sheet) return ensureDashboardSheet_(spreadsheet, 'DashboardSessions', DASHBOARD_SESSION_HEADERS);
+
+  const legacyHeaders = ['token', 'branch', 'email', 'role', 'created_at', 'expires_at'];
+  const legacyHeaderValues = sheet.getRange(1, 1, 1, legacyHeaders.length).getValues()[0].map(String);
+  const isLegacy = legacyHeaders.every((header, index) => legacyHeaderValues[index] === header);
+  if (sheet.getMaxColumns() < DASHBOARD_SESSION_HEADERS.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), DASHBOARD_SESSION_HEADERS.length - sheet.getMaxColumns());
+  }
+  const currentHeaders = sheet.getRange(1, 1, 1, DASHBOARD_SESSION_HEADERS.length).getValues()[0].map(String);
+  const isEmpty = currentHeaders.every(header => !header.trim());
+  const isCurrent = DASHBOARD_SESSION_HEADERS.every((header, index) => currentHeaders[index] === header);
+  if (!isLegacy && !isEmpty && !isCurrent) {
+    throw new Error('Struktur DashboardSessions tidak dikenali; setup dihentikan agar data existing tidak tertimpa.');
+  }
+
+  if (sheet.getLastRow() > 1 && (isLegacy || isCurrent)) {
+    const width = isLegacy ? legacyHeaders.length : DASHBOARD_SESSION_HEADERS.length;
+    const source = sheet.getRange(2, 1, sheet.getLastRow() - 1, width).getValues();
+    const migrated = source.map(row => {
+      const looksCurrent = !isLegacy && ['all', 'branch'].includes(String(row[4] || '').toLowerCase());
+      if (looksCurrent || !String(row[0] || '').trim()) {
+        return DASHBOARD_SESSION_HEADERS.map((_, index) => row[index] || '');
+      }
+      const role = String(row[3] || '');
+      const branch = String(row[1] || '');
+      const dataScope = role.toUpperCase() === 'HQ' || normalizeBranch_(branch) === 'all access' ? 'all' : 'branch';
+      const columnAccess = dataScope === 'all' || normalizeBranch_(branch) === 'online' ? 'full' : 'restricted';
+      return [hash_(row[0]), branch, normalizeEmail_(row[2]), role, dataScope, columnAccess, row[4] || '', row[5] || '', ''];
+    });
+    sheet.getRange(2, 1, migrated.length, DASHBOARD_SESSION_HEADERS.length).setValues(migrated);
+  }
+  sheet.getRange(1, 1, 1, DASHBOARD_SESSION_HEADERS.length).setValues([DASHBOARD_SESSION_HEADERS]);
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, DASHBOARD_SESSION_HEADERS.length).setFontWeight('bold').setBackground('#e8eaed');
+  return sheet;
+}
+
+function auditDashboard_(spreadsheet, event, email, branch, submissionId, status, detail) {
+  try {
+    const sheet = ensureDashboardSheet_(spreadsheet, 'DashboardAuditLog', DASHBOARD_AUDIT_HEADERS);
+    sheet.appendRow([new Date().toISOString(), event, normalizeEmail_(email), branch || '', submissionId || '', status, detail || '']);
+  } catch (error) {
+    console.error('dashboard audit failed: ' + error);
+  }
+}
+
+function enforceRateLimit_(action, identity, limit, windowSeconds) {
+  const key = `rate:${action}:${hash_(normalizeEmail_(identity) || 'anonymous')}`;
+  const cache = CacheService.getScriptCache();
+  const count = Number(cache.get(key) || 0);
+  if (count >= limit) throw new Error('Terlalu banyak percobaan. Silakan tunggu beberapa menit.');
+  cache.put(key, String(count + 1), windowSeconds);
 }
 
 function requestDashboardAccess_(operation) {
-  const branch = String(operation.branch || '').trim();
+  const branchInput = String(operation.branch || '').trim();
   const name = String(operation.name || '').trim();
-  const email = String(operation.email || '').trim().toLowerCase();
-  const rawRole = String(operation.role || '').trim();
-
-  if (!name || !email) {
-    throw new Error('Nama, Email, dan Peran wajib diisi.');
-  }
-
-  const isBM = /BM|Branch\s*Manager/i.test(rawRole);
-  // Public requests may only create restricted access. HQ (Column E) is manual-only.
-  const targetCol = isBM ? 6 : 7;
-  const roleLabel = isBM ? 'Branch Manager (BM)' : 'SA Kids';
+  const email = normalizeEmail_(operation.email);
+  const roleInput = String(operation.role || '').trim();
+  if (!branchInput || !name || !email || !roleInput) throw new Error('Cabang, nama, email, dan peran wajib diisi.');
+  if (!isValidEmail_(email)) throw new Error('Format email tidak valid.');
+  const role = /^BM$/i.test(roleInput) || /^Branch Manager/i.test(roleInput) ? 'BM'
+    : /^SA Kids$/i.test(roleInput) ? 'SA Kids' : '';
+  if (!role) throw new Error('Peran hanya boleh BM atau SA Kids.');
+  enforceRateLimit_('access_request', email, 3, 15 * 60);
+  enforceRateLimit_('access_request_client', operation.clientId || email, 10, 15 * 60);
 
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
-  const dropdownSheet = spreadsheet.getSheetByName('DROPDOWNS');
-  if (!dropdownSheet) throw new Error('Sheet DROPDOWNS tidak ditemukan.');
+  const branchMatch = getBranchRows_(spreadsheet).find(item => normalizeBranch_(item.branch) === normalizeBranch_(branchInput));
+  if (!branchMatch) throw new Error('Cabang tidak valid. Muat ulang daftar cabang dan coba lagi.');
+  const sheet = ensureAccessRequestSheet_(spreadsheet);
+  const data = sheet.getLastRow() > 1 ? sheet.getRange(2, 1, sheet.getLastRow() - 1, ACCESS_REQUEST_HEADERS.length).getValues() : [];
+  const duplicateIndex = data.findIndex(row => normalizeBranch_(row[2]) === normalizeBranch_(branchMatch.branch)
+    && normalizeEmail_(row[4]) === email && String(row[5]) === role);
+  if (duplicateIndex >= 0 && String(data[duplicateIndex][6]).toLowerCase() === 'approved') {
+    return { requested: false, requestId: String(data[duplicateIndex][0]), status: 'approved', message: 'Akses ini sudah aktif. Silakan login menggunakan email terdaftar.' };
+  }
+  const requestId = duplicateIndex >= 0 ? String(data[duplicateIndex][0]) : `access_${Utilities.getUuid()}`;
+  const now = new Date().toISOString();
+  const values = [requestId, now, branchMatch.branch, name, email, role, 'pending', '', ''];
+  if (duplicateIndex >= 0) sheet.getRange(duplicateIndex + 2, 1, 1, values.length).setValues([values]);
+  else sheet.appendRow(values);
+  auditDashboard_(spreadsheet, 'access_request', email, branchMatch.branch, '', 'pending', role);
+  return { requested: true, requestId, status: 'pending', message: 'Request tersimpan dan menunggu approval HQ. Akses belum diberikan.' };
+}
 
-  const lastRow = dropdownSheet.getLastRow();
-  const maxSearchRow = Math.max(lastRow, 5);
+function findDashboardIdentity_(spreadsheet, email) {
+  const cleanEmail = normalizeEmail_(email);
+  const sheet = spreadsheet.getSheetByName('DROPDOWNS');
+  if (!sheet) throw new Error('Sheet DROPDOWNS tidak ditemukan.');
+  const lastRow = sheet.getLastRow();
+  const data = lastRow ? sheet.getRange(1, 1, lastRow, 7).getValues() : [];
+  const hq = data.some(row => parseBranchCellEntries_(row[4]).some(entry => entry.email === cleanEmail));
+  if (hq) return { email: cleanEmail, role: 'HQ', authorizedBranch: 'All Access', dataScope: 'all', columnAccess: 'full' };
 
-  // Read the requested restricted-access column (F or G) starting from row 5.
-  const colValues = dropdownSheet.getRange(5, targetCol, maxSearchRow - 4, 1).getValues();
-  let isAlready = false;
-  let firstEmptyRow = -1;
-
-  for (let i = 0; i < colValues.length; i++) {
-    const val = String(colValues[i][0] || '').trim();
-    if (val) {
-      const parsed = parseBranchCellEntries_(val);
-      if (parsed.some(e => e.email.toLowerCase() === email)) {
-        isAlready = true;
-        break;
-      }
-    } else if (firstEmptyRow === -1) {
-      firstEmptyRow = 5 + i;
+  const matches = [];
+  data.forEach(row => {
+    const branch = String(row[0] || '').trim();
+    if (!branch || normalizeBranch_(branch) === 'bac/eac branch name') return;
+    if (DROPDOWN_ACCESS_COLUMNS.bmRead.some(column => parseBranchCellEntries_(row[column - 1]).some(entry => entry.email === cleanEmail))) {
+      matches.push({ branch, role: 'BM' });
     }
-  }
-
-  if (firstEmptyRow === -1 && !isAlready) {
-    firstEmptyRow = 5 + colValues.length;
-  }
-
-  const formattedEntry = `${name} - ${email}`;
-
-  if (isAlready) {
-    recordAccessRequest_(spreadsheet, branch || 'All Access', name, email, roleLabel, 'approved');
-    grantFolderAccess_(email);
-    return {
-      requested: true,
-      alreadyRegistered: true,
-      message: 'Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 2 menit, ya.'
-    };
-  }
-
-  // Add the user to Column F (BM) or G (SA Kids).
-  dropdownSheet.getRange(firstEmptyRow, targetCol).setValue(formattedEntry);
-
-  // Record timestamp in AccessRequests sheet
-  recordAccessRequest_(spreadsheet, branch || 'All Access', name, email, roleLabel, 'pending_2min');
-
-  grantFolderAccess_(email);
-
+    if (DROPDOWN_ACCESS_COLUMNS.saKidsRead.some(column => parseBranchCellEntries_(row[column - 1]).some(entry => entry.email === cleanEmail))) {
+      matches.push({ branch, role: 'SA Kids' });
+    }
+  });
+  const branches = Array.from(new Set(matches.map(match => normalizeBranch_(match.branch))));
+  if (branches.length > 1) throw new Error('Konfigurasi akses ambigu: email terdaftar pada lebih dari satu cabang. Hubungi HQ.');
+  if (!matches.length) throw new Error('Email belum memiliki akses yang disetujui HQ.');
+  const match = matches[0];
   return {
-    requested: true,
-    alreadyRegistered: false,
-    message: 'Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 2 menit, ya.'
+    email: cleanEmail,
+    role: match.role,
+    authorizedBranch: match.branch,
+    dataScope: 'branch',
+    columnAccess: normalizeBranch_(match.branch) === 'online' ? 'full' : 'restricted'
   };
-}
-
-function grantFolderAccess_(email) {
-  try {
-    // Coba gunakan Drive API (Advanced Service) jika sudah diaktifkan,
-    // karena bisa menembus peringatan eksternal Google Workspace
-    if (typeof Drive !== 'undefined') {
-      Drive.Permissions.create({
-        role: 'reader',
-        type: 'user',
-        emailAddress: email
-      }, PLACEMENT_CONFIG.pdfFolderId, {
-        sendNotificationEmail: false,
-        supportsAllDrives: true
-      });
-      return true;
-    }
-
-    // Fallback: gunakan DriveApp biasa
-    DriveApp.getFolderById(PLACEMENT_CONFIG.pdfFolderId).addViewer(email);
-    return true;
-  } catch (e) {
-    console.error('Failed to grant folder access to ' + email + ': ' + e);
-    return false;
-  }
-}
-
-function recordAccessRequest_(spreadsheet, branch, name, email, role, status) {
-  let reqSheet = spreadsheet.getSheetByName('AccessRequests');
-  if (!reqSheet) {
-    reqSheet = spreadsheet.insertSheet('AccessRequests');
-    reqSheet.appendRow(['requested_at', 'branch', 'name', 'email', 'role', 'status']);
-    reqSheet.setFrozenRows(1);
-    reqSheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#e8eaed');
-  }
-  reqSheet.appendRow([new Date().toISOString(), branch, name, email, role, status || 'pending_2min']);
 }
 
 function loginDashboard_(operation) {
-  const email = String(operation.email || '').trim().toLowerCase();
-
-  if (!email) {
-    throw new Error('Email wajib diisi.');
-  }
-
+  const email = normalizeEmail_(operation.email);
+  if (!isValidEmail_(email)) throw new Error('Masukkan email terdaftar yang valid.');
+  enforceRateLimit_('dashboard_login', email, 8, 15 * 60);
+  enforceRateLimit_('dashboard_login_client', operation.clientId || email, 20, 15 * 60);
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
-  const dropdownSheet = spreadsheet.getSheetByName('DROPDOWNS');
-  if (!dropdownSheet) throw new Error('Sheet DROPDOWNS tidak ditemukan.');
-
-  const lastRow = dropdownSheet.getLastRow();
-  if (lastRow < 5) throw new Error('Data cabang tidak ditemukan.');
-
-  // E = HQ/all access, F = Branch Manager/restricted, G = SA Kids/restricted.
-  const dropdownData = dropdownSheet.getRange(5, 5, lastRow - 4, 3).getValues();
-  let userRole = null;
-  let accessLevel = null;
-  let potentialTypoMatch = null;
-
-  // Check access lists across all rows. HQ takes precedence if duplicated.
-  for (let i = 0; i < dropdownData.length; i++) {
-    const hqEntries = parseBranchCellEntries_(dropdownData[i][0]);
-    if (hqEntries.some(entry => entry.email.toLowerCase() === email)) {
-      userRole = 'HQ';
-      accessLevel = 'all';
-      break;
+  let identity;
+  try {
+    identity = findDashboardIdentity_(spreadsheet, email);
+  } catch (accessError) {
+    const pending = findPendingAccessForLogin_(spreadsheet, email);
+    if (!pending) throw accessError;
+    const availableAt = new Date(pending.requestedAt).getTime() + PLACEMENT_CONFIG.accessReviewMinutes * 60 * 1000;
+    if (!Number.isFinite(availableAt) || Date.now() < availableAt) {
+      auditDashboard_(spreadsheet, 'login_waiting_review', email, pending.branch, '', 'pending', pending.requestId);
+      throw new Error('Request akses sedang ditinjau tim HQ. Silakan coba login kembali beberapa saat lagi.');
     }
+    activateAccessRequest_(spreadsheet, pending.row, 'system:auto-after-2-minutes');
+    identity = findDashboardIdentity_(spreadsheet, email);
   }
-
-  if (!userRole) {
-    for (let i = 0; i < dropdownData.length; i++) {
-      const bmEntries = parseBranchCellEntries_(dropdownData[i][1]);
-      const saEntries = parseBranchCellEntries_(dropdownData[i][2]);
-      if (bmEntries.some(entry => entry.email.toLowerCase() === email)) {
-        userRole = 'Branch Manager (BM)';
-        accessLevel = 'restricted';
-        break;
-      }
-      if (saEntries.some(entry => entry.email.toLowerCase() === email)) {
-        userRole = 'SA Kids';
-        accessLevel = 'restricted';
-        break;
-      }
-
-      const inputUsername = email.split('@')[0].trim();
-      const possible = bmEntries.concat(saEntries).find(entry =>
-        entry.email.split('@')[0].trim().toLowerCase() === inputUsername
-      );
-      if (!potentialTypoMatch && possible) potentialTypoMatch = possible;
-    }
-  }
-
-  if (!userRole) {
-    if (potentialTypoMatch) {
-      throw new Error(`Email "${email}" tidak ditemukan. Email yang mirip terdaftar atas nama ${potentialTypoMatch.name} (${potentialTypoMatch.email}). Periksa kembali email yang dimasukkan.`);
-    } else {
-      throw new Error('Email belum terdaftar. Silakan klik "Minta Akses" terlebih dahulu.');
-    }
-  }
-
-  // Check 2-minute cooldown ONLY for newly pending requests
-  const reqSheet = spreadsheet.getSheetByName('AccessRequests');
-  if (reqSheet && reqSheet.getLastRow() > 1) {
-    const reqData = reqSheet.getRange(2, 1, reqSheet.getLastRow() - 1, 6).getValues();
-    let newestPendingTime = 0;
-    for (let i = reqData.length - 1; i >= 0; i--) {
-      const rTime = new Date(reqData[i][0]).getTime();
-      const rEmail = String(reqData[i][3] || '').trim().toLowerCase();
-      const rStatus = String(reqData[i][5] || '').trim();
-
-      if (rEmail === email && (rStatus === 'pending_5min' || rStatus === 'pending_2min') && !isNaN(rTime)) {
-        if (rTime > newestPendingTime) newestPendingTime = rTime;
-      }
-    }
-
-    if (newestPendingTime > 0) {
-      const now = Date.now();
-      const diffMs = now - newestPendingTime;
-      const twoMinsMs = 2 * 60 * 1000;
-      if (diffMs < twoMinsMs) {
-        const remainingSecs = Math.ceil((twoMinsMs - diffMs) / 1000);
-        const minsLeft = Math.floor(remainingSecs / 60);
-        const secsLeft = remainingSecs % 60;
-        const timeStr = minsLeft > 0 ? `${minsLeft}m ${secsLeft}s` : `${secsLeft}s`;
-        throw new Error(`Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 2 menit, ya (sisa waktu: ${timeStr}).`);
-      }
-    }
-  }
-
-  // Generate Session Token
-  const token = hash_(`${accessLevel}:${email}:${Date.now()}:${Math.random()}`);
-  saveDashboardSession_(spreadsheet, token, accessLevel, email, userRole);
-
+  const token = `${Utilities.getUuid()}${Utilities.getUuid()}`.replace(/-/g, '');
+  saveDashboardSession_(spreadsheet, token, identity);
+  auditDashboard_(spreadsheet, 'login', email, identity.authorizedBranch, '', 'success', identity.role);
   return {
     authenticated: true,
-    token: token,
-    branch: accessLevel === 'all' ? 'All Access' : 'Restricted',
+    token,
+    branch: identity.authorizedBranch,
     userEmail: email,
-    role: userRole,
-    accessLevel: accessLevel
+    role: identity.role,
+    dataScope: identity.dataScope,
+    columnAccess: identity.columnAccess,
+    accessLevel: identity.columnAccess === 'restricted' ? 'restricted' : 'all',
+    reviewCompleted: true
   };
 }
 
-function saveDashboardSession_(spreadsheet, token, branch, email, role) {
-  let sessSheet = spreadsheet.getSheetByName('DashboardSessions');
-  if (!sessSheet) {
-    sessSheet = spreadsheet.insertSheet('DashboardSessions');
-    sessSheet.appendRow(['token', 'branch', 'email', 'role', 'created_at', 'expires_at']);
-    sessSheet.setFrozenRows(1);
-    sessSheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#e8eaed');
-  }
+function findPendingAccessForLogin_(spreadsheet, email) {
+  const sheet = ensureAccessRequestSheet_(spreadsheet);
+  if (sheet.getLastRow() <= 1) return null;
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, ACCESS_REQUEST_HEADERS.length).getValues();
+  const matches = data.map((row, index) => ({
+    row: index + 2, requestId: String(row[0]), requestedAt: row[1], branch: String(row[2]),
+    email: normalizeEmail_(row[4]), role: String(row[5]), status: String(row[6]).toLowerCase()
+  })).filter(item => item.email === normalizeEmail_(email) && item.status === 'pending');
+  const branches = Array.from(new Set(matches.map(item => normalizeBranch_(item.branch))));
+  if (branches.length > 1) throw new Error('Request akses ambigu: email meminta lebih dari satu cabang. Hubungi HQ.');
+  return matches.sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime())[0] || null;
+}
 
+function activateAccessRequest_(spreadsheet, requestRow, reviewer) {
+  const sheet = ensureAccessRequestSheet_(spreadsheet);
+  const values = sheet.getRange(requestRow, 1, 1, ACCESS_REQUEST_HEADERS.length).getValues()[0];
+  if (String(values[6]).toLowerCase() !== 'pending') throw new Error('Request sudah pernah diproses.');
+  const branch = String(values[2]);
+  const name = String(values[3]) || 'User';
+  const email = normalizeEmail_(values[4]);
+  const role = String(values[5]);
+  const branchMatch = getBranchRows_(spreadsheet).find(item => normalizeBranch_(item.branch) === normalizeBranch_(branch));
+  if (!branchMatch) throw new Error('Cabang request tidak lagi tersedia.');
+  const dropdown = spreadsheet.getSheetByName('DROPDOWNS');
+  const readColumns = role === 'BM' ? DROPDOWN_ACCESS_COLUMNS.bmRead
+    : role === 'SA Kids' ? DROPDOWN_ACCESS_COLUMNS.saKidsRead : [];
+  const targetCol = role === 'BM' ? DROPDOWN_ACCESS_COLUMNS.bmWrite
+    : role === 'SA Kids' ? DROPDOWN_ACCESS_COLUMNS.saKidsWrite : 0;
+  if (!targetCol) throw new Error('Role request tidak valid.');
+  const alreadyRegistered = readColumns.some(column => parseBranchCellEntries_(dropdown.getRange(branchMatch.row, column).getValue())
+    .some(entry => entry.email === email));
+  const entries = parseBranchCellEntries_(dropdown.getRange(branchMatch.row, targetCol).getValue());
+  if (!alreadyRegistered) {
+    entries.push({ name, email });
+    dropdown.getRange(branchMatch.row, targetCol).setValue(entries.map(entry => `${entry.name} - ${entry.email}`).join(', '));
+  }
+  grantBranchFolderAccess_(email, branchMatch.branch);
+  sheet.getRange(requestRow, 7, 1, 3).setValues([['approved', new Date().toISOString(), reviewer]]);
+  auditDashboard_(spreadsheet, 'access_activated', email, branchMatch.branch, '', 'approved', `${role}; reviewer=${reviewer}`);
+  return { email, branch: branchMatch.branch, role };
+}
+
+function saveDashboardSession_(spreadsheet, token, identity) {
+  const sheet = ensureDashboardSessionSheet_(spreadsheet);
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(); // 24-hour token
-  sessSheet.appendRow([token, branch, email, role, now.toISOString(), expiresAt]);
+  const expiresAt = new Date(now.getTime() + PLACEMENT_CONFIG.dashboardSessionHours * 60 * 60 * 1000);
+  sheet.appendRow([hash_(token), identity.authorizedBranch, identity.email, identity.role, identity.dataScope, identity.columnAccess, now.toISOString(), expiresAt.toISOString(), '']);
 }
 
 function requireDashboardSession_(spreadsheet, token) {
   const cleanToken = String(token || '').trim();
   if (!cleanToken) throw new Error('Token sesi tidak valid. Silakan login kembali.');
-
-  const sessSheet = spreadsheet.getSheetByName('DashboardSessions');
-  if (!sessSheet || sessSheet.getLastRow() <= 1) {
-    throw new Error('Sesi tidak ditemukan. Silakan login kembali.');
-  }
-
-  const sessData = sessSheet.getRange(2, 1, sessSheet.getLastRow() - 1, 6).getValues();
-  for (let i = sessData.length - 1; i >= 0; i--) {
-    if (String(sessData[i][0] || '').trim() !== cleanToken) continue;
-    const expiresAt = new Date(sessData[i][5]).getTime();
-    if (!isNaN(expiresAt) && Date.now() > expiresAt) {
-      throw new Error('Sesi telah kadaluarsa. Silakan login kembali.');
-    }
-    const accessLevel = String(sessData[i][1] || '').trim() === 'all' ? 'all' : 'restricted';
-    return {
-      accessLevel,
-      branch: accessLevel === 'all' ? 'All Access' : 'Restricted',
-      email: String(sessData[i][2] || '').trim(),
-      role: String(sessData[i][3] || '').trim()
+  const sheet = ensureDashboardSessionSheet_(spreadsheet);
+  const tokenHash = hash_(cleanToken);
+  const data = sheet.getLastRow() > 1 ? sheet.getRange(2, 1, sheet.getLastRow() - 1, DASHBOARD_SESSION_HEADERS.length).getValues() : [];
+  for (let i = data.length - 1; i >= 0; i--) {
+    if (String(data[i][0]) !== tokenHash) continue;
+    if (data[i][8]) throw new Error('Sesi telah dicabut. Silakan login kembali.');
+    if (Date.now() > new Date(data[i][7]).getTime()) throw new Error('Sesi telah kadaluarsa. Silakan login kembali.');
+    const session = {
+      row: i + 2,
+      tokenHash,
+      branch: String(data[i][1]),
+      email: normalizeEmail_(data[i][2]),
+      role: String(data[i][3]),
+      dataScope: String(data[i][4]) === 'all' ? 'all' : 'branch',
+      columnAccess: String(data[i][5]) === 'full' ? 'full' : 'restricted',
+      accessLevel: String(data[i][5]) === 'restricted' ? 'restricted' : 'all'
     };
+    const currentIdentity = findDashboardIdentity_(spreadsheet, session.email);
+    if (normalizeBranch_(currentIdentity.authorizedBranch) !== normalizeBranch_(session.branch)
+      || currentIdentity.dataScope !== session.dataScope
+      || currentIdentity.columnAccess !== session.columnAccess) {
+      sheet.getRange(session.row, 9).setValue(new Date().toISOString());
+      throw new Error('Hak akses berubah atau dicabut. Silakan login kembali.');
+    }
+    return session;
   }
   throw new Error('Sesi tidak terautentikasi.');
 }
 
-function dashboardResult_(row) {
+function requireHqSession_(spreadsheet, token) {
+  const session = requireDashboardSession_(spreadsheet, token);
+  if (session.dataScope !== 'all' || session.role !== 'HQ') throw new Error('Endpoint ini hanya dapat diakses HQ.');
+  return session;
+}
+
+function approveDashboardAccess_(operation) {
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const hq = requireHqSession_(spreadsheet, operation.token);
+  const requestId = String(operation.requestId || '').trim();
+  const decision = String(operation.decision || 'approved').toLowerCase();
+  if (!requestId || !['approved', 'rejected'].includes(decision)) throw new Error('Request atau keputusan tidak valid.');
+  const sheet = ensureAccessRequestSheet_(spreadsheet);
+  const finder = sheet.getRange('A:A').createTextFinder(requestId).matchEntireCell(true).findNext();
+  if (!finder || finder.getRow() <= 1) throw new Error('Request akses tidak ditemukan.');
+  const requestRow = finder.getRow();
+  const values = sheet.getRange(requestRow, 1, 1, ACCESS_REQUEST_HEADERS.length).getValues()[0];
+  if (String(values[6]).toLowerCase() !== 'pending') throw new Error('Request sudah pernah diproses.');
+  const branch = String(values[2]);
+  const email = normalizeEmail_(values[4]);
+  const role = String(values[5]);
+  if (decision === 'approved') {
+    activateAccessRequest_(spreadsheet, requestRow, hq.email);
+  } else {
+    sheet.getRange(requestRow, 7, 1, 3).setValues([[decision, new Date().toISOString(), hq.email]]);
+    auditDashboard_(spreadsheet, 'access_review', email, branch, '', decision, `${role}; reviewer=${hq.email}`);
+  }
+  return { requestId, status: decision };
+}
+
+function getAccessRequests_(operation) {
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  requireHqSession_(spreadsheet, operation.token);
+  const sheet = ensureAccessRequestSheet_(spreadsheet);
+  const status = String(operation.status || 'pending').toLowerCase();
+  const data = sheet.getLastRow() > 1 ? sheet.getRange(2, 1, sheet.getLastRow() - 1, ACCESS_REQUEST_HEADERS.length).getValues() : [];
+  return { requests: data.filter(row => !status || String(row[6]).toLowerCase() === status).map(row => ({
+    requestId: row[0], requestedAt: row[1], branch: row[2], name: row[3], email: row[4], role: row[5], status: row[6]
+  })).reverse() };
+}
+
+function getSessionRows_(spreadsheet) {
+  const sheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
+  if (!sheet || sheet.getLastRow() <= 1) return [];
+  return sheet.getRange(2, 1, sheet.getLastRow() - 1, SESSION_HEADERS.length).getValues()
+    .map(row => Object.fromEntries(SESSION_HEADERS.map((header, index) => [header, row[index]])));
+}
+
+function requireRowScope_(session, row) {
+  if (session.dataScope === 'all') return true;
+  if (normalizeBranch_(row.branch) !== normalizeBranch_(session.branch)) throw new Error('Data berada di luar scope cabang Anda.');
+  return true;
+}
+
+function filterSessionRows_(rows, session, filters) {
+  const f = filters || {};
+  return rows.filter(row => {
+    if (session.dataScope !== 'all' && normalizeBranch_(row.branch) !== normalizeBranch_(session.branch)) return false;
+    const branch = normalizeBranchForAudit_(row.branch);
+    const mode = normalizeBranch_(branch) === 'online' ? 'online' : 'offline';
+    const date = new Date(row.registered_at);
+    const query = String(f.query || '').toLowerCase().trim();
+    const searchValues = session.columnAccess === 'restricted'
+      ? [row.submission_id, row.student_name, row.parent_email]
+      : [row.submission_id, row.student_name, row.parent_email, branch, row.assigned_module, row.assigned_level];
+    if (query && !searchValues
+      .some(value => String(value || '').toLowerCase().includes(query))) return false;
+    if (f.branch && normalizeBranch_(branch) !== normalizeBranch_(f.branch)) return false;
+    if (f.mode && String(f.mode).toLowerCase() !== mode) return false;
+    if (f.audience && normalizeBranch_(row.audience) !== normalizeBranch_(f.audience)) return false;
+    if (f.status && normalizeBranch_(row.final_status || 'in_progress') !== normalizeBranch_(f.status)) return false;
+    if (f.module && !String(row.assigned_module || '').toLowerCase().includes(String(f.module).toLowerCase())) return false;
+    if (f.level && !String(row.assigned_level || '').toLowerCase().includes(String(f.level).toLowerCase())) return false;
+    if (f.pdf === 'ready' && (!row.pdf_file_id || !row.pdf_file_url)) return false;
+    if (f.pdf === 'missing' && row.pdf_file_id && row.pdf_file_url) return false;
+    if (f.emailStatus && normalizeBranch_(row.email_status || 'not sent') !== normalizeBranch_(f.emailStatus)) return false;
+    if (f.dateFrom && (!Number.isFinite(date.getTime()) || date < new Date(`${f.dateFrom}T00:00:00`))) return false;
+    if (f.dateTo && (!Number.isFinite(date.getTime()) || date > new Date(`${f.dateTo}T23:59:59`))) return false;
+    return true;
+  });
+}
+
+function safePdfUrlForSession_(row, session) {
+  const url = String(row.pdf_file_url || '');
+  if (!url || session.dataScope === 'all') return url;
+  try {
+    const expectedFolder = findBranchFolder_(session.branch);
+    if (!expectedFolder) return '';
+    const parents = DriveApp.getFileById(String(row.pdf_file_id || '')).getParents();
+    while (parents.hasNext()) if (parents.next().getId() === expectedFolder.getId()) return url;
+  } catch (error) {}
+  return '';
+}
+
+function fullDashboardResult_(row, session) {
   return {
-    placement_id: row[SESSION_HEADERS.indexOf('submission_id')] || '-',
-    student_name: row[SESSION_HEADERS.indexOf('student_name')] || '-',
-    student_age: row[SESSION_HEADERS.indexOf('exact_age')] || '-',
-    audience: row[SESSION_HEADERS.indexOf('audience')] || '-',
-    parent_email: row[SESSION_HEADERS.indexOf('parent_email')] || '-',
-    test_date: row[SESSION_HEADERS.indexOf('registered_at')] || '',
-    branch: row[SESSION_HEADERS.indexOf('branch')] || '-',
-    child_confirmed: row[SESSION_HEADERS.indexOf('child_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('child_confirmed')] === true,
-    guardian_confirmed: row[SESSION_HEADERS.indexOf('guardian_confirmed')] === 'TRUE' || row[SESSION_HEADERS.indexOf('guardian_confirmed')] === true,
-    assigned_module: row[SESSION_HEADERS.indexOf('assigned_module')] || '-',
-    potential_module: row[SESSION_HEADERS.indexOf('potential_module')] || '-',
-    assigned_level: row[SESSION_HEADERS.indexOf('assigned_level')] || '-',
-    final_status: row[SESSION_HEADERS.indexOf('final_status')] || 'in_progress',
-    pdf_file_url: row[SESSION_HEADERS.indexOf('pdf_file_url')] || '',
-    email_status: row[SESSION_HEADERS.indexOf('email_status')] || 'not sent'
+    placement_id: row.submission_id || '-', student_name: row.student_name || '-', student_age: row.exact_age || '-',
+    audience: row.audience || '-', parent_email: row.parent_email || '-', test_date: row.registered_at || '',
+    branch: normalizeBranchForAudit_(row.branch), child_confirmed: row.child_confirmed === 'TRUE' || row.child_confirmed === true,
+    guardian_confirmed: row.guardian_confirmed === 'TRUE' || row.guardian_confirmed === true,
+    assigned_module: row.assigned_module || '-', potential_module: row.potential_module || '-', assigned_level: row.assigned_level || '-',
+    final_status: row.final_status || 'in_progress', pdf_file_url: safePdfUrlForSession_(row, session),
+    email_status: row.email_status || 'not sent', current_stage: row.current_stage || 1, last_activity_at: row.last_activity_at || '',
+    last_error: row.last_error || ''
+  };
+}
+
+function restrictedDashboardResult_(row, session) {
+  return {
+    placement_id: row.submission_id || '-', student_name: row.student_name || '-', parent_email: row.parent_email || '-',
+    final_status: row.final_status || 'in_progress', pdf_file_url: safePdfUrlForSession_(row, session),
+    email_status: row.email_status || 'not sent'
   };
 }
 
 function getBranchResults_(operation) {
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
   const session = requireDashboardSession_(spreadsheet, operation.token);
-  if (session.accessLevel !== 'all') {
-    throw new Error('Akses terbatas. Gunakan pencarian nama atau email siswa.');
+  const filters = operation.filters || {};
+  if (session.columnAccess === 'restricted') {
+    const forbidden = ['branch', 'mode', 'audience', 'module', 'level', 'dateFrom', 'dateTo'];
+    if (forbidden.some(key => String(filters[key] || '').trim())) throw new Error('Filter tersebut tidak tersedia untuk akses restricted.');
   }
-
-  // Read Sessions Sheet
-  const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
-  if (!sessionsSheet || sessionsSheet.getLastRow() <= 1) {
-    return {
-      branch: session.branch,
-      userEmail: session.email,
-      role: session.role,
-      results: []
-    };
-  }
-
-  const data = sessionsSheet.getRange(2, 1, sessionsSheet.getLastRow() - 1, SESSION_HEADERS.length).getValues();
-  const filtered = data.map(dashboardResult_);
-
+  const page = Math.max(1, Number(operation.page || 1));
+  const pageSize = Math.min(100, Math.max(10, Number(operation.pageSize || 25)));
+  const rows = filterSessionRows_(getSessionRows_(spreadsheet), session, filters)
+    .sort((a, b) => new Date(b.registered_at).getTime() - new Date(a.registered_at).getTime());
+  const start = (page - 1) * pageSize;
+  const mapper = session.columnAccess === 'full' ? fullDashboardResult_ : restrictedDashboardResult_;
+  const results = rows.slice(start, start + pageSize).map(row => mapper(row, session));
+  auditDashboard_(spreadsheet, 'data_access', session.email, session.branch, '', 'success', `page=${page}; count=${results.length}`);
   return {
-    branch: session.branch,
-    userEmail: session.email,
-    role: session.role,
-    results: filtered
+    branch: session.branch, userEmail: session.email, role: session.role, dataScope: session.dataScope,
+    columnAccess: session.columnAccess, accessLevel: session.accessLevel, page, pageSize,
+    total: rows.length, totalPages: Math.max(1, Math.ceil(rows.length / pageSize)), results
+  };
+}
+
+function getHqOverview_(operation) {
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const session = requireHqSession_(spreadsheet, operation.token);
+  const rows = filterSessionRows_(getSessionRows_(spreadsheet), session, operation.filters);
+  const now = Date.now();
+  const stalledBefore = now - PLACEMENT_CONFIG.stalledHours * 60 * 60 * 1000;
+  const completed = rows.filter(row => normalizeBranch_(row.final_status) === 'completed');
+  const stalled = rows.filter(row => normalizeBranch_(row.final_status) !== 'completed' && new Date(row.last_activity_at || row.registered_at).getTime() < stalledBefore);
+  const online = rows.filter(row => normalizeBranch_(row.branch) === 'online');
+  const offline = rows.filter(row => normalizeBranch_(row.branch) !== 'online');
+  const startToday = new Date(); startToday.setHours(0, 0, 0, 0);
+  const startWeek = new Date(startToday); startWeek.setDate(startWeek.getDate() - ((startWeek.getDay() + 6) % 7));
+  const startMonth = new Date(startToday.getFullYear(), startToday.getMonth(), 1);
+  const isAfter = (row, date) => new Date(row.registered_at).getTime() >= date.getTime();
+  const branchMap = {};
+  rows.forEach(row => {
+    const branch = normalizeBranchForAudit_(row.branch);
+    if (!branchMap[branch]) branchMap[branch] = { branch, total: 0, completed: 0, stage1: 0, stage2: 0, stage3: 0, stalled: 0, lastActivity: '' };
+    const item = branchMap[branch];
+    item.total += 1;
+    if (normalizeBranch_(row.final_status) === 'completed') item.completed += 1;
+    if (normalizeBranch_(row.stage1_status) === 'completed') item.stage1 += 1;
+    if (normalizeBranch_(row.stage2_status) === 'completed') item.stage2 += 1;
+    if (normalizeBranch_(row.stage3_status) === 'completed') item.stage3 += 1;
+    if (normalizeBranch_(row.final_status) !== 'completed' && new Date(row.last_activity_at || row.registered_at).getTime() < stalledBefore) item.stalled += 1;
+    if (!item.lastActivity || new Date(row.last_activity_at) > new Date(item.lastActivity)) item.lastActivity = row.last_activity_at || row.registered_at;
+  });
+  const branches = Object.values(branchMap).map(item => ({ ...item, incomplete: item.total - item.completed, completionRate: item.total ? Math.round(item.completed * 1000 / item.total) / 10 : 0 }));
+  const topBy = key => branches.slice().sort((a, b) => b[key] - a[key] || b.total - a.total).slice(0, 3);
+  const countStage = stage => rows.filter(row => normalizeBranch_(row[`stage${stage}_status`]) === 'completed').length;
+  const funnelValues = [rows.length, countStage(1), countStage(2), countStage(3), completed.length];
+  const funnelNames = ['Registrasi', 'Stage 1', 'Stage 2', 'Stage 3', 'Final'];
+  const funnel = funnelNames.map((name, index) => ({ name, count: funnelValues[index], percent: rows.length ? Math.round(funnelValues[index] * 1000 / rows.length) / 10 : 0, dropOff: index ? funnelValues[index - 1] - funnelValues[index] : 0 }));
+  const trendMap = {};
+  rows.forEach(row => {
+    const date = new Date(row.registered_at);
+    if (!Number.isFinite(date.getTime())) return;
+    const key = Utilities.formatDate(date, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    if (!trendMap[key]) trendMap[key] = { date: key, total: 0, completed: 0 };
+    trendMap[key].total += 1;
+    if (normalizeBranch_(row.final_status) === 'completed') trendMap[key].completed += 1;
+  });
+  const alertItems = {
+    syncFailed: rows.filter(row => String(row.last_error || '').trim()).slice(0, 10).map(row => row.submission_id),
+    stalled: stalled.slice(0, 10).map(row => row.submission_id),
+    finalWithoutPdf: completed.filter(row => !row.pdf_file_id || !row.pdf_file_url).slice(0, 10).map(row => row.submission_id),
+    emailPendingOrFailed: completed.filter(row => normalizeBranch_(row.email_status) !== 'sent').slice(0, 10).map(row => row.submission_id)
+  };
+  auditDashboard_(spreadsheet, 'hq_overview', session.email, 'All Access', '', 'success', `count=${rows.length}`);
+  return {
+    generatedAt: new Date().toISOString(),
+    kpis: {
+      total: rows.length, completed: completed.length, completedPercent: rows.length ? Math.round(completed.length * 1000 / rows.length) / 10 : 0,
+      incomplete: rows.length - completed.length, incompletePercent: rows.length ? Math.round((rows.length - completed.length) * 1000 / rows.length) / 10 : 0,
+      stalled: stalled.length, activeBranches: Object.keys(branchMap).filter(branch => branch !== 'Legacy/Unknown').length,
+      online: online.length, offline: offline.length, today: rows.filter(row => isAfter(row, startToday)).length,
+      thisWeek: rows.filter(row => isAfter(row, startWeek)).length, thisMonth: rows.filter(row => isAfter(row, startMonth)).length
+    },
+    funnel, trends: Object.values(trendMap).sort((a, b) => a.date.localeCompare(b.date)).slice(-30),
+    topBranches: { byVolume: topBy('total'), byCompleted: topBy('completed'), byCompletionRate: topBy('completionRate') },
+    branches: branches.sort((a, b) => b.total - a.total),
+    alerts: Object.fromEntries(Object.entries(alertItems).map(([key, ids]) => [key, { count: key === 'stalled' ? stalled.length : key === 'syncFailed' ? rows.filter(row => String(row.last_error || '').trim()).length : key === 'finalWithoutPdf' ? completed.filter(row => !row.pdf_file_id || !row.pdf_file_url).length : completed.filter(row => normalizeBranch_(row.email_status) !== 'sent').length, submissionIds: ids }]))
   };
 }
 
 function updateEmailStatus_(operation) {
-  const token = String(operation.token || '').trim();
   const submissionId = String(operation.submissionId || '').trim();
   const requestedStatus = String(operation.emailStatus || operation.status || '').trim().toLowerCase();
-
-  if (!token) throw new Error('Token sesi tidak valid. Silakan login kembali.');
   if (!submissionId) throw new Error('submissionId wajib diisi.');
-
+  if (!['sent', 'send', 'not sent', 'not_sent'].includes(requestedStatus)) throw new Error('Status email tidak valid.');
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
-  const dashboardSession = requireDashboardSession_(spreadsheet, token);
-
-  const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
-  const found = findSession_(sessionsSheet, submissionId);
+  const session = requireDashboardSession_(spreadsheet, operation.token);
+  const sheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
+  const found = findSession_(sheet, submissionId);
   if (!found.exists) throw new Error(`Submission ID ${submissionId} tidak ditemukan.`);
-  if (dashboardSession.accessLevel !== 'all') {
-    const row = sessionObject_(sessionsSheet, found.row);
-    const suppliedName = normalizeSearchText_(operation.studentName);
-    const suppliedEmail = String(operation.parentEmail || '').trim().toLowerCase();
-    if (!suppliedName || !suppliedEmail
-      || suppliedName !== normalizeSearchText_(row.student_name)
-      || suppliedEmail !== String(row.parent_email || '').trim().toLowerCase()) {
-      throw new Error('Data siswa tidak sesuai dengan hasil pencarian restricted.');
-    }
-  }
-
+  const row = sessionObject_(sheet, found.row);
+  requireRowScope_(session, row);
+  let response;
   if (requestedStatus === 'sent' || requestedStatus === 'send') {
-    const result = sendParentEmail_(sessionsSheet, found.row);
-    return {
-      submissionId,
-      emailStatus: 'sent',
-      emailSentAt: result.emailSentAt
-    };
+    const result = sendParentEmail_(sheet, found.row);
+    response = { submissionId, emailStatus: 'sent', emailSentAt: result.emailSentAt };
   } else {
-    upsertSession_(sessionsSheet, found, {
-      email_status: 'not sent',
-      email_sent_at: '',
-      last_error: '',
-      updated_at: new Date().toISOString()
-    });
-    return {
-      submissionId,
-      emailStatus: 'not sent'
-    };
+    upsertSession_(sheet, found, { email_status: 'not sent', email_sent_at: '', last_error: '', updated_at: new Date().toISOString() });
+    response = { submissionId, emailStatus: 'not sent' };
   }
+  auditDashboard_(spreadsheet, 'email_status_update', session.email, session.branch, submissionId, 'success', response.emailStatus);
+  return response;
+}
+
+function getOrCreateBranchFolder_(branch) {
+  const root = DriveApp.getFolderById(PLACEMENT_CONFIG.pdfFolderId);
+  const safeBranch = normalizeBranchForAudit_(branch).replace(/[\\/:*?"<>|]+/g, '-').trim();
+  const name = `Placement Test - ${safeBranch}`;
+  const existing = root.getFoldersByName(name);
+  return existing.hasNext() ? existing.next() : root.createFolder(name);
+}
+
+function findBranchFolder_(branch) {
+  const root = DriveApp.getFolderById(PLACEMENT_CONFIG.pdfFolderId);
+  const safeBranch = normalizeBranchForAudit_(branch).replace(/[\\/:*?"<>|]+/g, '-').trim();
+  const existing = root.getFoldersByName(`Placement Test - ${safeBranch}`);
+  return existing.hasNext() ? existing.next() : null;
+}
+
+function grantFolderViewer_(folder, email) {
+  try {
+    folder.addViewer(email);
+    return true;
+  } catch (error) {
+    console.error(`Failed to grant folder access to ${email}: ${error}`);
+    return false;
+  }
+}
+
+function grantBranchFolderAccess_(email, branch) {
+  return grantFolderViewer_(getOrCreateBranchFolder_(branch), email);
+}
+
+function grantRootFolderAccess_(email) {
+  return grantFolderViewer_(DriveApp.getFolderById(PLACEMENT_CONFIG.pdfFolderId), email);
+}
+
+function migratePlacementPdfsToBranchFolders() {
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const rows = getSessionRows_(spreadsheet);
+  let moved = 0;
+  let skipped = 0;
+  rows.forEach(row => {
+    if (!row.pdf_file_id) { skipped += 1; return; }
+    try {
+      DriveApp.getFileById(String(row.pdf_file_id)).moveTo(getOrCreateBranchFolder_(normalizeBranchForAudit_(row.branch)));
+      moved += 1;
+    } catch (error) {
+      skipped += 1;
+    }
+  });
+  return { moved, skipped };
 }
 
 function logoutDashboard_(operation) {
   const token = String(operation.token || '').trim();
-  if (token) {
-    try {
-      const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
-      const sessSheet = spreadsheet.getSheetByName('DashboardSessions');
-      if (sessSheet && sessSheet.getLastRow() > 1) {
-        const finder = sessSheet.getRange('A:A').createTextFinder(token).matchEntireCell(true).findNext();
-        if (finder) {
-          sessSheet.deleteRow(finder.getRow());
-        }
-      }
-    } catch (e) {}
-  }
-  return { loggedOut: true };
-}
-
-function searchRestrictedResults_(operation) {
-  const token = String(operation.token || '').trim();
-  const query = normalizeSearchText_(operation.query);
-  const testDate = String(operation.testDate || '').trim();
-  if (!token) throw new Error('Token sesi tidak valid. Silakan login kembali.');
-  if (!query || query.length < 3) throw new Error('Masukkan setidaknya 3 karakter untuk melakukan pencarian.');
-
+  if (!token) return { loggedOut: true };
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
-  const session = requireDashboardSession_(spreadsheet, token);
-
-  // Read Sessions Sheet
-  const sessionsSheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
-  if (!sessionsSheet || sessionsSheet.getLastRow() <= 1) {
-    return {
-      branch: session.branch,
-      userEmail: session.email,
-      role: session.role,
-      results: []
-    };
-  }
-
-  const data = sessionsSheet.getRange(2, 1, sessionsSheet.getLastRow() - 1, SESSION_HEADERS.length).getValues();
-  const filtered = [];
-
-  for (let i = 0; i < data.length; i++) {
-    const row = data[i];
-    const studentName = String(row[SESSION_HEADERS.indexOf('student_name')] || '').trim();
-    const parentEmail = String(row[SESSION_HEADERS.indexOf('parent_email')] || '').trim();
-    const registeredAt = String(row[SESSION_HEADERS.indexOf('registered_at')] || '').trim();
-    let rowDate = '';
-    if (registeredAt) {
-      const parsedDate = new Date(registeredAt);
-      if (!isNaN(parsedDate.getTime())) {
-        rowDate = Utilities.formatDate(parsedDate, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-      }
-    }
-
-    const identityMatches = normalizeSearchText_(studentName) === query || parentEmail.toLowerCase() === query;
-    if (identityMatches && (!testDate || rowDate === testDate)) {
-      filtered.push(dashboardResult_(row));
-      if (filtered.length >= 10) break;
-    }
-  }
-
-  return {
-    branch: session.branch,
-    userEmail: session.email,
-    role: session.role,
-    results: filtered
-  };
-}
-
-function normalizeSearchText_(value) {
-  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  try {
+    const session = requireDashboardSession_(spreadsheet, token);
+    const sheet = spreadsheet.getSheetByName('DashboardSessions');
+    sheet.getRange(session.row, 9).setValue(new Date().toISOString());
+    auditDashboard_(spreadsheet, 'logout', session.email, session.branch, '', 'success', '');
+  } catch (error) {}
+  return { loggedOut: true };
 }

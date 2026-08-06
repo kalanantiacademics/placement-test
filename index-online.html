@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kalananti – Placement Test Registration</title>
+  <title>Kalananti – Placement Test Registration (Online)</title>
   <link rel="icon" href="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" type="image/png">
   <script src="device-guard.js"></script>
   <!-- Three.js & GSAP CDN -->
@@ -701,7 +701,7 @@
       <div class="hero">
         <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo" class="main-logo-img">
         <div class="subtitle-title">PLACEMENT TEST</div>
-        <div class="eyebrow"><i class="fa-solid fa-star"></i> Misi Penentuan Modul</div>
+        <div class="eyebrow"><i class="fa-solid fa-globe"></i> Placement Test Online</div>
         <p class="subtitle">Silakan isi data calon siswa untuk memulai petualangan placement test interaktif!</p>
       </div>
 
@@ -725,40 +725,6 @@
           <input type="email" id="emailInput" placeholder="orangtua@example.com" required />
         </div>
 
-        <div class="field">
-          <label><i class="fa-solid fa-city"></i> Pilih Kota Cabang</label>
-          <div class="custom-select-container" id="citySelectContainer">
-            <div class="custom-select-trigger is-placeholder" id="citySelectTrigger" onclick="toggleCustomSelect('citySelectContainer')">
-              <span id="citySelectLabel">🔍 Cari & pilih kota...</span>
-              <i class="fa-solid fa-chevron-down chevron"></i>
-            </div>
-            <div class="custom-select-dropdown">
-              <div class="custom-select-search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="citySearchInput" placeholder="Ketik nama kota (contoh: Bandung, Jakarta, Surabaya)..." oninput="filterCityOptions()" onclick="event.stopPropagation()" />
-              </div>
-              <div class="custom-select-options-list" id="cityOptionsList"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label><i class="fa-solid fa-store"></i> Pilih Cabang Offline di Kota Tersebut</label>
-          <div class="custom-select-container" id="branchSelectContainer">
-            <div class="custom-select-trigger disabled is-placeholder" id="branchSelectTrigger" onclick="toggleCustomSelect('branchSelectContainer')">
-              <span id="branchSelectLabel">Pilih kota terlebih dahulu...</span>
-              <i class="fa-solid fa-chevron-down chevron"></i>
-            </div>
-            <div class="custom-select-dropdown">
-              <div class="custom-select-search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="branchSearchInput" placeholder="Cari lokasi cabang..." oninput="filterBranchOptions()" onclick="event.stopPropagation()" />
-              </div>
-              <div class="custom-select-options-list" id="branchOptionsList"></div>
-            </div>
-          </div>
-        </div>
-
         <button type="submit" class="btn-submit">
           Lanjut ke Petunjuk <i class="fa-solid fa-arrow-right"></i>
         </button>
@@ -770,7 +736,7 @@
       <div class="hero" style="margin-bottom:18px;">
         <img src="https://cdn-web-2.ruangguru.com/landing-pages/assets/545c0426-169c-406f-8775-93afcacef50a.png" alt="Kalananti Logo" class="main-logo-img" style="height:48px;">
         <div class="subtitle-title" style="font-size:1.25rem;">PERSIAPAN MISI</div>
-        <div class="eyebrow" id="studentSummaryBadge"><i class="fa-solid fa-rocket"></i> Peserta: <span id="summaryName">Siswa</span> (<span id="summaryAge">8</span> Th) — Cabang: <span id="summaryBranch">-</span></div>
+        <div class="eyebrow" id="studentSummaryBadge"><i class="fa-solid fa-rocket"></i> Peserta: <span id="summaryName">Siswa</span> (<span id="summaryAge">8</span> Th) — Cabang: <span id="summaryBranch">Online</span></div>
       </div>
 
       <!-- Segmented Tabs -->
@@ -1283,7 +1249,6 @@
       if (isRedirecting) return;
       initThreeCanvas();
       runSplashAnimation();
-      initBranchData();
     });
     
     function clearAllPlacementSessionData() {
@@ -1543,13 +1508,7 @@
         return;
       }
 
-      if (!selectedCity || !selectedBranch) {
-        errorText.textContent = 'Mohon pilih kota dan cabang offline lokasi tes terlebih dahulu.';
-        errorMsg.classList.add('visible');
-        return;
-      }
-
-      const cabang = selectedBranch;
+      const cabang = 'Online';
 
       const exactAge = parseInt(ageVal);
       if (isNaN(exactAge) || exactAge < 5 || exactAge > 18) {
@@ -1622,7 +1581,7 @@
           ageRange: draftData.ageRange,
           audienceGroup: draftData.audienceGroup,
           parentEmail: draftData.email,
-          branch: draftData.cabang
+          branch: 'Online'
         },
         consent: {
           childConfirmed: true,

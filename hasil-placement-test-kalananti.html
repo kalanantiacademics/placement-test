@@ -543,6 +543,45 @@
       color: var(--text);
     }
 
+    .hq-analytics { display: none; margin-bottom: 24px; }
+    .hq-analytics.active { display: block; }
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .metric-card, .analytics-panel {
+      background: #fff;
+      border: 1.5px solid var(--card-b);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 28px -14px rgba(26,69,118,.2);
+    }
+    .metric-label { color: var(--muted); font-size: .78rem; font-weight: 700; }
+    .metric-value { color: var(--k-blue-d); font-size: 1.65rem; font-weight: 900; margin-top: 4px; }
+    .analytics-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    .analytics-panel h3 { color: var(--k-blue-d); margin-bottom: 12px; font-size: 1.05rem; }
+    .analytics-list { display: grid; gap: 8px; }
+    .analytics-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid #e9f1f9; }
+    .alert-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 12px; }
+    .alert-card { border-radius: 12px; padding: 14px; background: #fff7e6; border: 1px solid #ffd98a; }
+    .alert-card strong { display: block; font-size: 1.3rem; color: #9a6200; }
+    .approval-item { padding: 12px 0; border-bottom: 1px solid #e9f1f9; display:flex; gap:12px; justify-content:space-between; align-items:center; }
+    .approval-actions { display:flex; gap:8px; }
+    .approval-actions button { width:auto; padding:8px 12px; border-radius:8px; }
+    .pagination-bar { display:flex; justify-content:center; align-items:center; gap:12px; padding:18px; }
+    .pagination-bar button { width:auto; padding:9px 14px; }
+    .branch-summary-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+    .branch-summary-table th, .branch-summary-table td { padding:9px; border-bottom:1px solid #e6eef6; text-align:left; }
+    .hq-tabs { display:none; gap:10px; margin:0 0 18px; flex-wrap:wrap; }
+    .hq-tabs.active { display:flex; }
+    .hq-tabs button { width:auto; padding:10px 16px; }
+    @media (max-width: 780px) {
+      .analytics-columns { grid-template-columns: 1fr; }
+      .dashboard-meta-info { flex-wrap: wrap; }
+    }
+
     /* Results Table */
     .table-container {
       background: #ffffff;
@@ -883,23 +922,32 @@
         </button>
       </div>
 
-      <!-- Restricted Search Bar -->
-      <div id="restrictedSearchContainer" style="display: none; text-align: center; margin: 40px auto; max-width: 600px; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <h3 style="margin-bottom:8px; font-size:1.2rem; color:var(--k-blue-d);">Pencarian Data Siswa</h3>
-        <p style="margin-bottom:24px; color:#666; font-size:0.95rem;">Masukkan nama lengkap siswa atau email orang tua. Tanggal tes dapat dipakai untuk mempersempit hasil.</p>
-        <form onsubmit="handleRestrictedSearch(event)" style="display:flex; gap:10px; flex-wrap:wrap;">
-          <input type="text" id="restrictedSearchInput" placeholder="Nama lengkap atau email orang tua" required minlength="3" class="input-field" style="flex:2; min-width:240px;">
-          <input type="date" id="restrictedSearchDate" aria-label="Tanggal placement test" class="input-field" style="flex:1; min-width:170px;">
-          <button type="submit" class="btn-action btn-primary" id="btnRestrictedSearch" style="width:auto; padding:0 24px;">Cari</button>
-        </form>
-        <div id="searchHistoryContainer" style="margin-top:24px; text-align:left; display:none;">
-          <h4 style="font-size:0.9rem; color:#888; margin-bottom:12px;">Riwayat Pencarian Anda</h4>
-          <div id="searchHistoryList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-        </div>
+      <div class="hq-tabs" id="hqTabs">
+        <button class="btn-action btn-primary" onclick="showHqTab('analytics', this)">Analytics HQ</button>
+        <button class="btn-action btn-secondary" onclick="showHqTab('branches', this)">Rekap Cabang</button>
+        <button class="btn-action btn-secondary" onclick="showHqTab('results', this)">Semua Hasil</button>
       </div>
 
+      <section class="hq-analytics" id="hqAnalytics">
+        <div class="analytics-grid" id="kpiGrid"></div>
+        <div class="analytics-columns">
+          <div class="analytics-panel"><h3>Funnel Placement Test</h3><div id="funnelList" class="analytics-list"></div></div>
+          <div class="analytics-panel"><h3>Top 3 Cabang</h3><div id="topBranchesList" class="analytics-list"></div></div>
+        </div>
+        <div class="analytics-panel" style="margin-bottom:18px"><h3>Tren 30 Hari Terakhir</h3><div id="trendList" class="analytics-list"></div></div>
+        <div class="analytics-panel" style="margin-bottom:18px"><h3>Operational Alerts</h3><div id="operationalAlerts" class="alert-grid"></div></div>
+        <div class="analytics-columns">
+          <div class="analytics-panel"><h3>Request Akses Pending</h3><div id="accessRequestList"></div></div>
+          <div class="analytics-panel"><h3>Status Operasional</h3><p>KPI dan alert diperbarui berdasarkan filter global. Buka tab Rekap Cabang untuk tabel cabang lengkap.</p></div>
+        </div>
+      </section>
+
+      <section class="analytics-panel" id="hqBranchRecap" style="display:none;overflow:auto;margin-bottom:20px"><h3>Rekap Per Cabang</h3><div id="branchSummary"></div></section>
+
+      <!-- Restricted Search Bar (Removed in Phase 2) -->
+
       <!-- Controls & Filter Bar -->
-      <div class="controls-bar">
+      <div class="controls-bar" id="controlsBar">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="text" id="searchInput" placeholder="Cari nama anak, email ortu, cabang, atau ID..." oninput="applyFilters()">
@@ -918,7 +966,16 @@
           <option value="in_progress">In Progress</option>
         </select>
 
-        <input type="date" id="dateFilter" aria-label="Filter tanggal tes" class="filter-select" onchange="applyFilters()">
+        <select id="modeFilter" class="filter-select" onchange="applyFilters()">
+          <option value="">Online + Offline</option><option value="Online">Online</option><option value="Offline">Offline</option>
+        </select>
+        <select id="branchFilter" class="filter-select" onchange="applyFilters()"><option value="">Semua Cabang</option></select>
+        <input type="text" id="moduleFilter" class="filter-select" placeholder="Module" oninput="applyFilters()">
+        <input type="text" id="levelFilter" class="filter-select" placeholder="Level" oninput="applyFilters()">
+        <select id="pdfFilter" class="filter-select" onchange="applyFilters()"><option value="">Semua PDF</option><option value="ready">PDF tersedia</option><option value="missing">PDF belum ada</option></select>
+        <select id="emailStatusFilter" class="filter-select" onchange="applyFilters()"><option value="">Semua Email</option><option value="sent">Sent</option><option value="not sent">Not Sent</option><option value="failed">Failed</option></select>
+        <input type="date" id="dateFromFilter" aria-label="Tanggal mulai" class="filter-select" onchange="applyFilters()">
+        <input type="date" id="dateToFilter" aria-label="Tanggal selesai" class="filter-select" onchange="applyFilters()">
 
         <button onclick="loadDashboardData()" class="btn-action btn-secondary" style="width: auto; padding: 10px 16px;">
           <i class="fa-solid fa-rotate-right"></i> Refresh
@@ -926,7 +983,7 @@
       </div>
 
       <!-- Results Table -->
-      <div class="table-container">
+      <div class="table-container" id="resultsTableSection">
         <table class="results-table">
           <thead id="resultsTableHead">
             <tr>
@@ -955,6 +1012,11 @@
           <i class="fa-solid fa-folder-open"></i>
           <p>Belum ada data placement test.</p>
         </div>
+        <div class="pagination-bar" id="paginationBar">
+          <button class="btn-action btn-secondary" id="prevPageBtn" onclick="changePage(-1)">Sebelumnya</button>
+          <span id="pageInfo">Halaman 1</span>
+          <button class="btn-action btn-secondary" id="nextPageBtn" onclick="changePage(1)">Berikutnya</button>
+        </div>
       </div>
 
     </div>
@@ -971,6 +1033,17 @@
       <div id="modalAlertBox" class="alert-box"></div>
 
       <form id="requestForm" onsubmit="handleRequestSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Cabang</label>
+          <div class="custom-select-container" id="branchSelectContainer">
+            <div class="custom-select-trigger" onclick="toggleCustomSelect()"><span id="selectedBranchText" class="placeholder">Cari dan pilih cabang</span><i class="fa-solid fa-chevron-down"></i></div>
+            <div class="custom-select-dropdown">
+              <input type="text" id="branchSearchInput" class="custom-select-search" placeholder="Cari cabang..." oninput="filterBranchOptions()" onclick="event.stopPropagation()">
+              <div class="custom-select-options" id="branchOptionsList"></div>
+            </div>
+          </div>
+          <input type="hidden" id="reqBranch" required>
+        </div>
         <div class="form-group">
           <label class="form-label">Nama Lengkap</label>
           <input type="text" id="reqName" class="input-field" placeholder="Masukkan nama Anda..." required>
@@ -999,11 +1072,14 @@
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYga6HmAaTkAjVnwMX-AVJ7shYdg8JWeiLfcExhV0Lv1y6lxL0qr0oQIvYQkaLRznh/exec';
 
-    let availableBranches = ["All Access"];
-    let selectedBranch = "All Access";
+    let availableBranches = [];
+    let selectedBranch = "";
     let selectedRole = "BM";
     let rawDashboardData = [];
     let currentSession = null;
+    let currentPage = 1;
+    let totalPages = 1;
+    let filterTimer = null;
 
     function copyToClipboard(text, successMessage) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1035,13 +1111,13 @@
     }
 
     function getColSpan() {
-      return (currentSession && currentSession.accessLevel === 'restricted') ? 5 : 15;
+      return (currentSession && currentSession.columnAccess === 'restricted') ? 5 : 15;
     }
 
     function renderTableHeader() {
       const thead = document.getElementById('resultsTableHead');
       if (!thead) return;
-      const isRestricted = currentSession && currentSession.accessLevel === 'restricted';
+      const isRestricted = currentSession && currentSession.columnAccess === 'restricted';
       if (isRestricted) {
         thead.innerHTML = `
           <tr>
@@ -1139,6 +1215,8 @@
           if (data.ok && Array.isArray(data.branches) && data.branches.length > 0) {
             availableBranches = data.branches;
             if (!availableBranches.includes('Online')) availableBranches.unshift('Online');
+            const branchFilter = document.getElementById('branchFilter');
+            branchFilter.innerHTML = '<option value="">Semua Cabang</option>' + availableBranches.map(branch => `<option value="${escapeHtml(branch)}">${escapeHtml(branch)}</option>`).join('');
           }
           renderBranchOptions();
         })
@@ -1196,6 +1274,7 @@
       document.getElementById('modalAlertBox').className = 'alert-box';
       document.getElementById('modalAlertBox').style.display = 'none';
       document.getElementById('requestModal').classList.add('active');
+      renderBranchOptions();
     }
 
     function closeRequestModal() {
@@ -1212,10 +1291,11 @@
       e.preventDefault();
       const name = document.getElementById('reqName').value.trim();
       const email = document.getElementById('reqEmail').value.trim();
+      const branch = document.getElementById('reqBranch').value.trim();
       const submitBtn = document.getElementById('reqSubmitBtn');
 
-      if (!name || !email) {
-        showAlert('modalAlertBox', 'Semua field wajib diisi.', 'error');
+      if (!branch || !name || !email) {
+        showAlert('modalAlertBox', 'Cabang, nama, email, dan peran wajib diisi.', 'error');
         return;
       }
 
@@ -1227,10 +1307,11 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'request_dashboard_access',
-          branch: 'All Access',
+          branch: branch,
           name: name,
           email: email,
-          role: selectedRole
+          role: selectedRole,
+          clientId: getClientId()
         })
       })
       .then(res => res.json())
@@ -1239,10 +1320,10 @@
         submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Request Akses`;
 
         if (data.ok) {
-          showAlert('modalAlertBox', data.message || 'Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 2 menit, ya.', 'success');
+          showAlert('modalAlertBox', data.message || 'Request menunggu approval HQ.', 'success');
           setTimeout(() => {
             closeRequestModal();
-            showAlert('loginAlertBox', 'Oke, request kamu sedang direview oleh tim HQ. Coba lagi login menggunakan email terdaftar dalam 2 menit, ya.', 'info');
+            showAlert('loginAlertBox', 'Request tersimpan. Login dapat dilakukan setelah disetujui HQ.', 'info');
           }, 3500);
         } else {
           showAlert('modalAlertBox', data.error || 'Gagal mengajukan request akses.', 'error');
@@ -1274,8 +1355,8 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'login_dashboard',
-          branch: 'All Access',
-          email: email
+          email: email,
+          clientId: getClientId()
         })
       })
       .then(res => res.json())
@@ -1285,16 +1366,14 @@
 
         if (data.ok && data.token) {
           currentSession = {
-            token: data.token,
-            branch: data.branch,
-            email: data.userEmail,
-            role: data.role,
-            accessLevel: data.accessLevel
+            token: data.token, branch: data.branch, email: data.userEmail, role: data.role,
+            dataScope: data.dataScope, columnAccess: data.columnAccess, accessLevel: data.accessLevel
           };
           localStorage.setItem('kalananti_branch_session', JSON.stringify(currentSession));
           showDashboardView();
         } else {
-          showAlert('loginAlertBox', data.error || 'Gagal login. Pastikan email telah terdaftar.', 'error');
+          const message = data.error || 'Request akses sedang ditinjau tim HQ. Silakan coba login kembali beberapa saat lagi.';
+          showAlert('loginAlertBox', message, message.toLowerCase().includes('ditinjau') ? 'info' : 'error');
         }
       })
       .catch(() => {
@@ -1304,7 +1383,15 @@
       });
     }
 
-    // Dashboard View & Data Fetching
+    function getClientId() {
+      let value = localStorage.getItem('kalananti_dashboard_client_id');
+      if (!value) {
+        value = window.crypto?.randomUUID?.() || `client_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        localStorage.setItem('kalananti_dashboard_client_id', value);
+      }
+      return value;
+    }
+
     function showDashboardView() {
       if (!currentSession) return;
       document.body.classList.add('dashboard-active');
@@ -1318,121 +1405,40 @@
 
       renderTableHeader();
 
-      if (currentSession.accessLevel === 'restricted') {
-        document.getElementById('restrictedSearchContainer').style.display = 'block';
-        document.querySelector('.controls-bar').style.display = 'none';
-        document.getElementById('emptyTableState').innerHTML = `<i class="fa-solid fa-magnifying-glass"></i><p>Silakan cari nama atau email siswa terlebih dahulu.</p>`;
-        document.getElementById('emptyTableState').style.display = 'block';
-        document.getElementById('resultsTableBody').innerHTML = '';
-        loadSearchHistory();
+      document.getElementById('emptyTableState').innerHTML = `<i class="fa-solid fa-folder-open"></i><p>Belum ada data placement test.</p>`;
+      const isHq = currentSession.dataScope === 'all' && currentSession.role === 'HQ';
+      document.getElementById('hqTabs').classList.toggle('active', isHq);
+      document.getElementById('modeFilter').style.display = isHq ? '' : 'none';
+      document.getElementById('branchFilter').style.display = isHq ? '' : 'none';
+      const isRestricted = currentSession.columnAccess === 'restricted';
+      ['audienceFilter', 'moduleFilter', 'levelFilter', 'dateFromFilter', 'dateToFilter'].forEach(id => {
+        document.getElementById(id).style.display = isRestricted ? 'none' : '';
+      });
+      currentPage = 1;
+      if (isHq) {
+        showHqTab('analytics', document.querySelector('#hqTabs button'));
+        loadHqOverview();
+        loadAccessRequests();
       } else {
-        document.getElementById('restrictedSearchContainer').style.display = 'none';
-        document.querySelector('.controls-bar').style.display = 'flex';
-        document.getElementById('emptyTableState').innerHTML = `<i class="fa-solid fa-folder-open"></i><p>Belum ada data placement test.</p>`;
+        document.getElementById('hqAnalytics').classList.remove('active');
+        document.getElementById('hqBranchRecap').style.display = 'none';
+        document.getElementById('controlsBar').style.display = 'flex';
+        document.getElementById('resultsTableSection').style.display = 'block';
         loadDashboardData();
       }
     }
 
-
-    function handleRestrictedSearch(e) {
-      if(e) e.preventDefault();
-      const query = document.getElementById('restrictedSearchInput').value.trim();
-      const testDate = document.getElementById('restrictedSearchDate').value;
-      if (query.length < 3) return;
-
-      const btn = document.getElementById('btnRestrictedSearch');
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
-
-      const tbody = document.getElementById('resultsTableBody');
-      const colspan = getColSpan();
-      tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 32px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:var(--k-blue);"></i><p style="margin-top:8px;">Mencari data...</p></td></tr>`;
-      document.getElementById('emptyTableState').style.display = 'none';
-
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'search_restricted_results',
-          token: currentSession.token,
-          query: query,
-          testDate: testDate
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        btn.disabled = false;
-        btn.innerHTML = `Cari`;
-
-        if (data.ok && Array.isArray(data.results)) {
-          if (data.results.length > 0) {
-            saveSearchHistory(query, testDate);
-            document.getElementById('emptyTableState').style.display = 'none';
-          } else {
-            document.getElementById('emptyTableState').innerHTML = `<i class="fa-solid fa-magnifying-glass"></i><p>Pencarian "${escapeHtml(query)}" tidak ditemukan.</p>`;
-            document.getElementById('emptyTableState').style.display = 'block';
-          }
-          rawDashboardData = data.results;
-          renderTable(data.results);
-        } else if (data.error && data.error.includes('kadaluarsa')) {
-          handleLogout();
-          alert('Sesi telah habis. Silakan login kembali.');
-        } else {
-          tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 24px; color: red;">${escapeHtml(data.error || 'Gagal mencari data.')}</td></tr>`;
-        }
-      })
-      .catch(() => {
-        btn.disabled = false;
-        btn.innerHTML = `Cari`;
-        tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; padding: 24px; color: red;">Terjadi kesalahan koneksi server.</td></tr>`;
-      });
-    }
-
-    function loadSearchHistory() {
-      if (!currentSession || !currentSession.email) return;
-      const key = `kalananti_history_${currentSession.email}`;
-      let history = [];
-      try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e){}
-      const now = Date.now();
-      history = history.filter(item => item && item.expiresAt > now);
-      localStorage.setItem(key, JSON.stringify(history));
-
-      const container = document.getElementById('searchHistoryContainer');
-      const list = document.getElementById('searchHistoryList');
-      if (history.length > 0) {
-        container.style.display = 'block';
-        list.innerHTML = '';
-        history.forEach(item => {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'badge-branch';
-          button.style.cssText = 'cursor:pointer;background:#e0f2fe;color:var(--k-blue-d);font-weight:normal;border:0;';
-          button.textContent = `${item.query}${item.testDate ? ` · ${item.testDate}` : ''}`;
-          button.addEventListener('click', () => {
-            document.getElementById('restrictedSearchInput').value = item.query;
-            document.getElementById('restrictedSearchDate').value = item.testDate || '';
-            handleRestrictedSearch();
-          });
-          list.appendChild(button);
-        });
-      } else {
-        container.style.display = 'none';
-      }
-    }
-
-    function saveSearchHistory(query, testDate) {
-      if (!currentSession || !currentSession.email) return;
-      const key = `kalananti_history_${currentSession.email}`;
-      let history = [];
-      try { history = JSON.parse(localStorage.getItem(key)) || []; } catch(e){}
-
-      const lower = query.toLowerCase();
-      history = history.filter(item => item && (item.query.toLowerCase() !== lower || item.testDate !== testDate));
-      history.unshift({ query, testDate: testDate || '', expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) });
-      if (history.length > 10) history = history.slice(0, 10);
-
-      localStorage.setItem(key, JSON.stringify(history));
-      loadSearchHistory();
+    function showHqTab(tab, button) {
+      const analytics = tab === 'analytics';
+      const branches = tab === 'branches';
+      const results = tab === 'results';
+      document.getElementById('hqAnalytics').classList.toggle('active', analytics);
+      document.getElementById('hqBranchRecap').style.display = branches ? 'block' : 'none';
+      document.getElementById('controlsBar').style.display = results ? 'flex' : 'none';
+      document.getElementById('resultsTableSection').style.display = results ? 'block' : 'none';
+      document.querySelectorAll('#hqTabs button').forEach(item => item.className = 'btn-action btn-secondary');
+      if (button) button.className = 'btn-action btn-primary';
+      if (results && !rawDashboardData.length) loadDashboardData();
     }
 
     function loadDashboardData() {
@@ -1448,14 +1454,22 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
           action: 'get_branch_results',
-          token: currentSession.token
+          token: currentSession.token,
+          page: currentPage,
+          pageSize: 25,
+          filters: collectFilters()
         })
       })
       .then(res => res.json())
       .then(data => {
         if (data.ok && Array.isArray(data.results)) {
           rawDashboardData = data.results;
-          applyFilters();
+          currentSession.dataScope = data.dataScope || currentSession.dataScope;
+          currentSession.columnAccess = data.columnAccess || currentSession.columnAccess;
+          currentSession.accessLevel = data.accessLevel || currentSession.accessLevel;
+          totalPages = data.totalPages || 1;
+          renderTable(data.results);
+          updatePagination(data.total || 0);
         } else if (data.error && data.error.includes('kadaluarsa')) {
           handleLogout();
           alert('Sesi telah habis. Silakan login kembali.');
@@ -1469,29 +1483,100 @@
     }
 
     function applyFilters() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const audience = document.getElementById('audienceFilter').value;
-      const status = document.getElementById('statusFilter').value;
-      const testDate = document.getElementById('dateFilter').value;
+      currentPage = 1;
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => {
+        loadDashboardData();
+        if (currentSession?.dataScope === 'all') loadHqOverview();
+      }, 250);
+    }
 
-      const filtered = rawDashboardData.filter(row => {
-        const matchesQuery = !query ||
-          String(row.student_name || '').toLowerCase().includes(query) ||
-          String(row.parent_email || '').toLowerCase().includes(query) ||
-          String(row.branch || '').toLowerCase().includes(query) ||
-          String(row.placement_id || '').toLowerCase().includes(query) ||
-          String(row.assigned_module || '').toLowerCase().includes(query) ||
-          String(row.potential_module || '').toLowerCase().includes(query) ||
-          String(row.assigned_level || '').toLowerCase().includes(query);
+    function collectFilters() {
+      return {
+        query: document.getElementById('searchInput').value.trim(),
+        audience: document.getElementById('audienceFilter').value,
+        status: document.getElementById('statusFilter').value,
+        mode: document.getElementById('modeFilter').value,
+        branch: document.getElementById('branchFilter').value,
+        module: document.getElementById('moduleFilter').value.trim(),
+        level: document.getElementById('levelFilter').value.trim(),
+        pdf: document.getElementById('pdfFilter').value,
+        emailStatus: document.getElementById('emailStatusFilter').value,
+        dateFrom: document.getElementById('dateFromFilter').value,
+        dateTo: document.getElementById('dateToFilter').value
+      };
+    }
 
-        const matchesAudience = !audience || String(row.audience || '').toLowerCase() === audience.toLowerCase();
-        const matchesStatus = !status || String(row.final_status || '').toLowerCase() === status.toLowerCase();
-        const matchesDate = !testDate || formatDateKey(row.test_date) === testDate;
+    function changePage(delta) {
+      const target = currentPage + delta;
+      if (target < 1 || target > totalPages) return;
+      currentPage = target;
+      loadDashboardData();
+    }
 
-        return matchesQuery && matchesAudience && matchesStatus && matchesDate;
+    function updatePagination(total) {
+      document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${totalPages} · ${total} data`;
+      document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+      document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
+    }
+
+    function loadHqOverview() {
+      if (!currentSession || currentSession.dataScope !== 'all') return;
+      fetch(WEB_APP_URL, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'get_hq_overview', token: currentSession.token, filters: collectFilters() })
+      }).then(res => res.json()).then(data => {
+        if (!data.ok) throw new Error(data.error || 'Gagal memuat analytics HQ.');
+        renderHqOverview(data);
+      }).catch(error => {
+        document.getElementById('kpiGrid').innerHTML = `<div class="alert-box error" style="display:block">${escapeHtml(error.message)}</div>`;
       });
+    }
 
-      renderTable(filtered);
+    function renderHqOverview(data) {
+      const k = data.kpis || {};
+      const metrics = [
+        ['Total Test', k.total], ['Selesai', `${k.completed || 0} (${k.completedPercent || 0}%)`],
+        ['Belum Selesai', `${k.incomplete || 0} (${k.incompletePercent || 0}%)`], ['Stalled', k.stalled],
+        ['Cabang Aktif', k.activeBranches], ['Online / Offline', `${k.online || 0} / ${k.offline || 0}`],
+        ['Hari Ini', k.today], ['Minggu Ini', k.thisWeek], ['Bulan Ini', k.thisMonth]
+      ];
+      document.getElementById('kpiGrid').innerHTML = metrics.map(([label, value]) => `<div class="metric-card"><div class="metric-label">${escapeHtml(label)}</div><div class="metric-value">${escapeHtml(value ?? 0)}</div></div>`).join('');
+      document.getElementById('funnelList').innerHTML = (data.funnel || []).map(item => `<div class="analytics-row"><span>${escapeHtml(item.name)} <small>drop-off ${item.dropOff}</small></span><strong>${item.count} · ${item.percent}%</strong></div>`).join('');
+      const topGroups = [
+        ['Volume', data.topBranches?.byVolume || [], item => `${item.total} test`],
+        ['Selesai', data.topBranches?.byCompleted || [], item => `${item.completed} selesai`],
+        ['Completion Rate', data.topBranches?.byCompletionRate || [], item => `${item.completionRate}%`]
+      ];
+      document.getElementById('topBranchesList').innerHTML = topGroups.map(([label, items, value]) => `<strong>${label}</strong>${items.map((item, index) => `<div class="analytics-row"><span>#${index + 1} ${escapeHtml(item.branch)}</span><strong>${escapeHtml(value(item))}</strong></div>`).join('')}`).join('') || '<p>Belum ada data.</p>';
+      document.getElementById('trendList').innerHTML = (data.trends || []).map(item => `<div class="analytics-row"><span>${escapeHtml(item.date)}</span><strong>${item.total} registrasi · ${item.completed} selesai</strong></div>`).join('') || '<p>Belum ada data pada rentang ini.</p>';
+      const alerts = data.alerts || {};
+      const alertLabels = { syncFailed: 'Sync gagal', stalled: 'Peserta stalled', finalWithoutPdf: 'Final tanpa PDF', emailPendingOrFailed: 'Email belum/gagal' };
+      document.getElementById('operationalAlerts').innerHTML = Object.entries(alertLabels).map(([key, label]) => `<div class="alert-card"><span>${label}</span><strong>${alerts[key]?.count || 0}</strong><small>${escapeHtml((alerts[key]?.submissionIds || []).join(', ') || 'Tidak ada alert')}</small></div>`).join('');
+      document.getElementById('branchSummary').innerHTML = `<table class="branch-summary-table"><thead><tr><th>Cabang</th><th>Total</th><th>S1/S2/S3</th><th>Final</th><th>Stalled</th><th>Rate</th></tr></thead><tbody>${(data.branches || []).map(item => `<tr><td>${escapeHtml(item.branch)}</td><td>${item.total}</td><td>${item.stage1}/${item.stage2}/${item.stage3}</td><td>${item.completed}</td><td>${item.stalled}</td><td>${item.completionRate}%</td></tr>`).join('')}</tbody></table>`;
+    }
+
+    function loadAccessRequests() {
+      if (!currentSession || currentSession.dataScope !== 'all') return;
+      fetch(WEB_APP_URL, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'get_access_requests', token: currentSession.token, status: 'pending' })
+      }).then(res => res.json()).then(data => {
+        const list = document.getElementById('accessRequestList');
+        if (!data.ok) { list.textContent = data.error || 'Gagal memuat request.'; return; }
+        list.innerHTML = (data.requests || []).map(item => `<div class="approval-item"><div><strong>${escapeHtml(item.name)}</strong><br><small>${escapeHtml(item.email)} · ${escapeHtml(item.branch)} · ${escapeHtml(item.role)}</small></div><div class="approval-actions"><button class="btn-action btn-primary" onclick="reviewAccessRequest('${escapeJs(item.requestId)}','approved')">Setujui</button><button class="btn-action btn-secondary" onclick="reviewAccessRequest('${escapeJs(item.requestId)}','rejected')">Tolak</button></div></div>`).join('') || '<p>Tidak ada request pending.</p>';
+      });
+    }
+
+    function reviewAccessRequest(requestId, decision) {
+      if (decision === 'approved' && !confirm('Setujui akses ini dan berikan permission folder cabang?')) return;
+      fetch(WEB_APP_URL, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'approve_dashboard_access', token: currentSession.token, requestId, decision })
+      }).then(res => res.json()).then(data => {
+        if (!data.ok) alert(data.error || 'Gagal memproses request.');
+        loadAccessRequests();
+      }).catch(() => alert('Gagal terhubung ke server.'));
     }
 
     function formatCleanLevel(levelStr) {
@@ -1519,7 +1604,7 @@
       renderTableHeader();
       const tbody = document.getElementById('resultsTableBody');
       const emptyState = document.getElementById('emptyTableState');
-      const isRestricted = currentSession && currentSession.accessLevel === 'restricted';
+      const isRestricted = currentSession && currentSession.columnAccess === 'restricted';
 
       if (!data || data.length === 0) {
         tbody.innerHTML = '';
@@ -1669,6 +1754,7 @@
 
       document.body.classList.remove('dashboard-active');
       document.getElementById('branchDashboardView').classList.remove('active');
+      document.getElementById('hqAnalytics').classList.remove('active');
       document.getElementById('portalLandingView').style.display = 'block';
     }
 
@@ -1685,7 +1771,7 @@
       return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
     function escapeJs(str) {
-      return String(str ?? '').replace(/'/g, "\\'");
+      return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/[\r\n]+/g, ' ');
     }
 
     // Init on Load
@@ -1698,7 +1784,7 @@
       if (saved) {
         try {
           currentSession = JSON.parse(saved);
-          if (currentSession && currentSession.token && ['all', 'restricted'].includes(currentSession.accessLevel)) {
+          if (currentSession && currentSession.token && ['all', 'branch'].includes(currentSession.dataScope) && ['full', 'restricted'].includes(currentSession.columnAccess)) {
             showDashboardView();
           } else {
             currentSession = null;

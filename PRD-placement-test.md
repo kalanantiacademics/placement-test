@@ -1961,46 +1961,56 @@ Rules:
 
 This section documents the architecture, data security, and API contract for the Branch Placement Test Dashboard Portal (`hasil-placement-test-kalananti.html`) and its Google Apps Script backend endpoints in `Code.gs`.
 
-### 21.1 Overview & Security Model
+### 21.1 Security model
 
-The Branch Dashboard Portal provides Branch Managers (BM) and SA Kids at each Kalananti branch with secure, branch-scoped access to placement test results without exposing full database spreadsheet edit access or cross-branch data.
+Dashboard menggunakan dua dimensi izin yang selalu ditegakkan backend:
 
-- **Frontend File:** [`hasil-placement-test-kalananti.html`](file:///Users/yazidhilmi/Documents/cloud/Kalananti-cloud/Academic_Content/B2C/placement-test/hasil-placement-test-kalananti.html)
-- **Authentication:** Token-based session authentication (`DashboardSessions` tab in Google Sheets). Sessions automatically expire after 24 hours.
-- **Authorization:** Standard branch users can strictly view data filtered by their authorized branch (`row.branch === authorizedBranch`).
+| User | `dataScope` | `columnAccess` |
+|---|---|---|
+| HQ pada `DROPDOWNS!E:E` | `all` | `full` |
+| User pada row `Online` | `branch` | `full` |
+| BM/SA Kids cabang offline | `branch` | `restricted` |
 
-### 21.2 Google Sheets Security & Access Control Tabs
+User branch tidak menerima row cabang lain. Response restricted dibentuk menggunakan allowlist field dan bukan full object yang disembunyikan frontend. Semua operasi data sensitif menggunakan POST dan token tidak diterima melalui query string.
 
-- **`DROPDOWNS`**: Contains master branch names (Column A starting at row 5), authorized BM emails (Column B), and authorized SA Kids emails (Column C).
-- **`AccessRequests`**: Audit log recording user requests for branch dashboard access (`requested_at`, `branch`, `name`, `email`, `role`, `status`).
-- **`DashboardSessions`**: Active token database (`token`, `branch`, `email`, `role`, `created_at`, `expires_at`).
+### 21.2 Sheets dan lifecycle akses
 
-### 21.3 Apps Script API Endpoint Specifications
+- `DROPDOWNS`: A = branch, B = BM, C = SA Kids, E = HQ manual-only. Banyak user dalam satu cell dipisahkan koma/newline.
+- `AccessRequests`: request publik dengan `request_id`, profil request, status `pending/approved/rejected`, dan reviewer.
+- `DashboardSessions`: hanya menyimpan hash opaque token, branch, role, `data_scope`, `column_access`, expiry 24 jam, dan revocation timestamp.
+- `DashboardAuditLog`: request, review, login, logout, akses data, dan perubahan status email.
 
-The backend handles both `doGet` (for quick branch list retrieval) and `doPost` (for authentication and branch-filtered data access).
+Request publik tidak pernah mengubah `DROPDOWNS`. Setelah HQ approve, backend mencari exact normalized branch pada kolom A, melakukan deduplikasi email case-insensitive, lalu menulis ulang cell B atau C pada baris yang sama.
 
-#### A. Fetch Branch List (`GET /doGet?action=get_branches`)
+### 21.3 Authentication
 
-- **Parameters:** `action=get_branches`
-- **Output:** `{ ok: true, branches: ["Online", "Branch A", ...] }`
+1. Request akses baru disimpan sebagai `pending` dan mencatat waktu request.
+2. Selama dua menit pertama, `login_dashboard` menolak login dengan pesan bahwa akses sedang ditinjau HQ; frontend tidak menampilkan countdown.
+3. HQ dapat approve atau reject selama masa review. Jika tidak ditolak, login pertama setelah dua menit mengaktifkan request secara otomatis pada cell B/C cabang yang sama.
+4. Login menggunakan email terdaftar tanpa mengirim OTP atau email keluar. Backend menerapkan rate limit sebelum menerbitkan opaque session token dan hanya menyimpan hash token.
+5. `logout_dashboard` mengisi `revoked_at`; token kedaluwarsa, revoked, atau tidak lagi terdapat pada allowlist ditolak.
 
-#### B. Request Access (`POST /doPost` with `action: 'request_dashboard_access'`)
+Email yang ditemukan pada lebih dari satu cabang ditolak sebagai konfigurasi ambigu. HQ selalu diprioritaskan jika email memang terdaftar manual pada kolom E.
 
-- **Payload:** `{ action: 'request_dashboard_access', branch, name, email, role }`
-- **Behavior:** Appends user credentials to Column B (BM) or Column C (SA Kids) in `DROPDOWNS` if not already registered, and logs entry in `AccessRequests`. Enforces a 5-minute review window for newly registered users.
+### 21.4 API contract
 
-#### C. Branch Login (`POST /doPost` with `action: 'login_dashboard'`)
+- GET `get_branches`: seluruh branch, termasuk Online.
+- GET `get_offline_branches`: branch offline bersih dan terdeduplikasi.
+- POST `request_dashboard_access`: `{branch,name,email,role}` → pending only.
+- POST `login_dashboard`: `{email,clientId}` → review response atau scoped session setelah masa review.
+- POST `approve_dashboard_access`: token HQ + request ID + decision.
+- POST `get_access_requests`: pending queue, HQ-only.
+- POST `get_branch_results`: scoped, filtered, server-paginated raw records.
+- POST `get_hq_overview`: aggregate KPI/funnel/top branches/trend/recap/alerts, HQ-only.
+- POST `update_email_status`: submission harus berada dalam scope token.
+- POST `logout_dashboard`: revoke session.
 
-- **Payload:** `{ action: 'login_dashboard', branch, email }`
-- **Behavior:** Validates email against `DROPDOWNS` for the specified branch. Creates a unique session token in `DashboardSessions` (valid for 24 hours).
-- **Output:** `{ ok: true, authenticated: true, token, branch, userEmail, role }`
+### 21.5 PDF isolation
 
-#### D. Fetch Branch Results (`POST /doPost` or `GET /doGet` with `action: 'get_branch_results'`)
+PDF baru disimpan pada subfolder `Placement Test - <branch>` yang ditentukan dari `Sessions.branch`, bukan input bebas browser. BM/SA/Online hanya diberi viewer pada folder branch-nya; HQ dapat memiliki akses root. URL PDF non-HQ hanya dikirim jika backend dapat membuktikan file berada pada folder branch sesuai token.
 
-- **Payload:** `{ action: 'get_branch_results', token }`
-- **Behavior:** Validates `token` against `DashboardSessions`. Reads `Sessions` tab and returns ONLY records matching the authorized branch.
+PDF existing dimigrasikan dengan fungsi manual `migratePlacementPdfsToBranchFolders()`. Sebelum permission root user lama dicabut dan migrasi selesai, akses dashboard branch tidak boleh dirilis production.
 
-#### E. Logout (`POST /doPost` with `action: 'logout_dashboard'`)
+### 21.6 HQ analytics
 
-- **Payload:** `{ action: 'logout_dashboard', token }`
-- **Behavior:** Invalidates and deletes the session token from `DashboardSessions`.
+Overview HQ hanya mengirim agregat: total/completion/stalled, Online vs Offline, periode hari/minggu/bulan, funnel dan drop-off, Top 3 cabang berdasarkan volume/completed/rate, tren 30 hari, rekap cabang, dan operational alerts. Raw records baru dimuat saat tab Semua Hasil dibuka dan menggunakan filter serta pagination server-side.
