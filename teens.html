@@ -4528,6 +4528,7 @@ body > #app.glass-panel {
     let ptTimer2Min = null;
     let ptOnSkipCallback = null;
     let ptTimerQuestionKey = '';
+    const PT_TIMER_DEADLINE_KEY = 'pt_question_timer_deadline_v1';
 
     function stopQuestionTimer() {
       cancelTeensAutoAdvance();
@@ -4536,6 +4537,7 @@ body > #app.glass-panel {
       ptTimer1Min = null;
       ptTimer2Min = null;
       ptTimerQuestionKey = '';
+      localStorage.removeItem(PT_TIMER_DEADLINE_KEY);
 
       const skipBtn = document.getElementById('skipQuestionBtn');
       if (skipBtn) skipBtn.style.display = 'none';
@@ -4552,16 +4554,31 @@ body > #app.glass-panel {
 
     function startQuestionTimer(questionKey, onAutoAdvance, onManualSkip) {
       if (ptTimerQuestionKey === questionKey) return;
+      let savedDeadline = null;
+      try { savedDeadline = JSON.parse(localStorage.getItem(PT_TIMER_DEADLINE_KEY) || 'null'); } catch (error) {}
       stopQuestionTimer();
 
       ptTimerQuestionKey = questionKey;
       ptOnSkipCallback = onManualSkip || onAutoAdvance;
+      const now = Date.now();
+      const deadline = savedDeadline?.questionKey === questionKey && Number(savedDeadline.autoAt) > now
+        ? savedDeadline
+        : {
+            questionKey,
+            skipAt: now + placementQuestionDelay(60000, 'qcSkipMs'),
+            autoAt: now + placementQuestionDelay(120000, 'qcAutoMs')
+          };
+      localStorage.setItem(PT_TIMER_DEADLINE_KEY, JSON.stringify(deadline));
+      const skipRemaining = Math.max(0, Number(deadline.skipAt) - now);
+      const autoRemaining = Math.max(0, Number(deadline.autoAt) - now);
 
       // 1. After 1 Minute (60 seconds) -> Show "Lewati Soal" Button
-      ptTimer1Min = setTimeout(() => {
+      const revealSkip = () => {
         const skipBtn = document.getElementById('skipQuestionBtn');
         if (skipBtn) skipBtn.style.display = 'inline-flex';
-      }, placementQuestionDelay(60000, 'qcSkipMs'));
+      };
+      if (skipRemaining === 0) revealSkip();
+      else ptTimer1Min = setTimeout(revealSkip, skipRemaining);
 
       // 2. After 2 Minutes (120 seconds) -> Auto advance WITHOUT warning!
       ptTimer2Min = setTimeout(() => {
@@ -4569,7 +4586,7 @@ body > #app.glass-panel {
         if (typeof onAutoAdvance === 'function') {
           onAutoAdvance();
         }
-      }, placementQuestionDelay(120000, 'qcAutoMs'));
+      }, autoRemaining);
     }
 
     function showSkipConfirmModal() {
@@ -4646,7 +4663,8 @@ body > #app.glass-panel {
             cabang: '',
             ageGroup: 'teens',
             exactAge: 16,
-            currentStage: 0, // 0: intro, 1: stage1 tahap 1, 2: stage1 tahap 2 penguat, 3: reserved, 4: result
+            currentStage: 0, // 0: intro, 1: Stage 1A/1B, 2: Stage 2, 3: Stage 3, 4: result
+            stage1Phase: '1a',
             currentQuestionIndex: 0,
             showingPillarIntro: false,
             failedReadingTest: false,
@@ -5065,7 +5083,8 @@ try {
                 renderIntro(container);
             } 
             else if (state.currentStage === 1) {
-                renderStage1(container);
+                if (state.stage1Phase === '1b') renderStage1Advanced(container);
+                else renderStage1(container);
             }
             else if (state.currentStage === 2) {
                 renderPythonStage2(container);
@@ -5084,15 +5103,24 @@ try {
                 status: stage2State.status,
                 started: stage2State.started,
                 resets: stage2State.resets,
-                allFirst: stage2State.allFirst
+                allFirst: stage2State.allFirst,
+                drafts: stage2State.drafts,
+                highestConfirmationPending: stage2State.highestConfirmationPending,
+                highestConfirmationPassed: stage2State.highestConfirmationPassed
             };
             localStorage.setItem(PT_STORAGE_KEY, JSON.stringify(state));
             if (state.currentStage === 1) {
                 if (!state.showingPillarIntro) {
-                    startQuestionTimer(`stage1:${state.currentQuestionIndex}`, () => answerStage1(-999));
+                    if (state.stage1Phase === '1b') {
+                        startQuestionTimer(`stage1b:${state.currentQuestionIndex}`, () => answerStage1Advanced(-999));
+                    } else {
+                        startQuestionTimer(`stage1a:${state.currentQuestionIndex}`, () => answerStage1(-999));
+                    }
                 } else {
                     stopQuestionTimer();
                 }
+            } else if (state.currentStage === 2) {
+                startQuestionTimer(`stage2:${stage2State.current}`, timeoutPythonChallenge);
             } else {
                 stopQuestionTimer();
             }
@@ -5764,28 +5792,10 @@ try {
         }
 
         function prepareStage1Advanced() {
-            const s = state.scores;
             state.stage1AdvancedQueue = [];
-            let pillarsToTest = [];
-
-            // Teens 16-18: Jika Spatial Sempurna, tes Spatial untuk opsi Roblox Studio
-            if (s.spatial === 5) {
-                pillarsToTest.push('spatial');
-            }
-
-            // Lengkapi dengan top 2 pilar tertinggi (tanpa digital) untuk melihat potensi
-            if (pillarsToTest.length < 2) {
-                const top2 = ['logic', 'creativity', 'spatial']
-                    .sort((a, b) => {
-                        if (s[b] !== s[a]) return s[b] - s[a];
-                        return ['spatial', 'logic', 'creativity'].indexOf(a) - ['spatial', 'logic', 'creativity'].indexOf(b);
-                    })
-                    .slice(0, 2);
-                
-                top2.forEach(p => {
-                    if (!pillarsToTest.includes(p)) pillarsToTest.push(p);
-                });
-            }
+            // V1 uses a deterministic 5 Logic + 5 Spatial validator. Digital
+            // Literacy remains Stage 1A evidence and is not repeated here.
+            const pillarsToTest = ['logic', 'spatial'];
 
             state.stage1AdvancedPillars = pillarsToTest;
             state.stage1AdvancedQueue = pillarsToTest.flatMap(pillar => stage1AdvancedQuestions[pillar] || []);
@@ -5803,10 +5813,14 @@ try {
             const questions = useAdvancedBank ? state.stage1AdvancedQueue : (legacyModuleQuestions[state.recommendedModule] || legacyModuleQuestions['Scratch']);
             const q = questions[state.currentQuestionIndex];
             const progress = ((state.currentQuestionIndex) / questions.length) * 100;
-            const questionText = useAdvancedBank ? q.text.teens : q.text;
+            const questionText = useAdvancedBank
+                ? (typeof q.text === 'string' ? q.text : (q.text?.[state.ageGroup] || q.text?.teens || ''))
+                : q.text;
             
             let optionsHtml = '';
-            const options = useAdvancedBank ? q.options.teens : q.options;
+            const options = Array.isArray(q.options)
+                ? q.options
+                : (q.options?.[state.ageGroup] || q.options?.teens || []);
             options.forEach((opt, idx) => {
                 let iconHtml = '';
                 let textHtml = opt;
@@ -5823,7 +5837,9 @@ try {
 
             let contentHtml = '';
             if (useAdvancedBank && q.interactiveHtml) {
-                const iHtml = q.interactiveHtml.teens;
+                const iHtml = typeof q.interactiveHtml === 'string'
+                    ? q.interactiveHtml
+                    : (q.interactiveHtml?.[state.ageGroup] || q.interactiveHtml?.teens || '');
                 contentHtml = `<div class="interactive-container" style="margin-bottom:20px; padding:20px; background:rgba(255,255,255,0.02); border-radius:15px; border:1px solid rgba(148,163,184,0.1);">${iHtml}</div>`;
             }
 
@@ -6009,6 +6025,7 @@ try {
             document.body.classList.add('pro-mode');
             
             state.currentStage = 1;
+            state.stage1Phase = '1a';
             state.currentQuestionIndex = 0;
             state.showingPillarIntro = true;
             state.scores = { logic: 0, creativity: 0, spatial: 0, digital: 0 };
@@ -6111,7 +6128,9 @@ try {
             const prevPillar = q.pillar;
             state.currentQuestionIndex++;
             if (state.currentQuestionIndex >= stage1Questions.length) {
-                state.currentStage = 2;
+                prepareStage1Advanced();
+                state.stage1Phase = '1b';
+                state.showingPillarIntro = false;
                 state.currentQuestionIndex = 0;
             } else {
                 const nextPillar = stage1Questions[state.currentQuestionIndex].pillar;
@@ -6175,12 +6194,9 @@ try {
             state.currentQuestionIndex++;
             
             if (state.currentQuestionIndex >= stage1Questions.length) {
-                determineModule();
-                window.PlacementSync?.saveStage(1, {
-                    ...state,
-                    completedAt: new Date().toISOString()
-                });
-                state.currentStage = 2;
+                prepareStage1Advanced();
+                state.stage1Phase = '1b';
+                state.showingPillarIntro = false;
                 state.currentQuestionIndex = 0;
             } else {
                 const nextPillar = stage1Questions[state.currentQuestionIndex].pillar;
@@ -8482,19 +8498,14 @@ try {
                 'Scratch': s.logic + s.creativity + s.spatial + s.digital
             };
 
-            // Default untuk Teens adalah Python
+            // V1 Teens (16–18) always starts in Python. Strong Spatial
+            // evidence may remain visible as Roblox potential/project context,
+            // but it never replaces the Assigned Module.
             state.recommendedModule = 'Python';
-            state.potentialModule = 'Python';
-
-            // Jika Spatial 1A = 5 dan Spatial 1B = 5 (sempurna), tawarkan Roblox Studio
-            if (s.spatial === 5 && validator.spatial === 5) {
-                state.recommendedModule = 'Roblox Studio';
-                state.potentialModule = 'Roblox Studio';
-            }
-
-            state.stage2AssessmentId = state.recommendedModule === 'Python' ? 'python-stage2-v1' : 
-                                      state.recommendedModule === 'Roblox Studio' ? 'roblox-stage2-v1' : 
-                                      'scratch-stage2-v1';
+            state.potentialModule = s.spatial === 5 && validator.spatial === 5
+                ? 'Roblox Studio'
+                : 'Python';
+            state.stage2AssessmentId = 'python-stage2-v1';
         }
 
         function determineModule() {
@@ -8526,6 +8537,7 @@ try {
                         completedAt: new Date().toISOString()
                     });
                     state.currentStage = 2;
+                    state.stage1Phase = 'done';
                     state.currentQuestionIndex = 0;
                 } else {
                     state.currentStage = 3;
@@ -8845,7 +8857,10 @@ try {
             status: {},
             started: Date.now(),
             resets: 0,
-            allFirst: true
+            allFirst: true,
+            drafts: {},
+            highestConfirmationPending: false,
+            highestConfirmationPassed: false
         };
 
         function resetTeensStage2State() {
@@ -8856,13 +8871,34 @@ try {
                 status: {},
                 started: Date.now(),
                 resets: 0,
-                allFirst: true
+                allFirst: true,
+                drafts: {},
+                highestConfirmationPending: false,
+                highestConfirmationPassed: false
             });
+        }
+
+        function persistTeensStage2Progress() {
+            state.stage2SessionState = {
+                current: stage2State.current,
+                attempts: { ...stage2State.attempts },
+                trail: [...stage2State.trail],
+                status: { ...stage2State.status },
+                started: stage2State.started,
+                resets: stage2State.resets,
+                allFirst: stage2State.allFirst,
+                drafts: { ...stage2State.drafts },
+                highestConfirmationPending: stage2State.highestConfirmationPending,
+                highestConfirmationPassed: stage2State.highestConfirmationPassed
+            };
+            localStorage.setItem(PT_STORAGE_KEY, JSON.stringify(state));
         }
 
         function renderPythonStage2(container) {
             const challenge = pythonChallenges[stage2State.current];
             const isPseudo = challenge.mode === 'pseudocode';
+            const draftKey = `${stage2State.current}-${stage2State.highestConfirmationPending ? 'confirmation' : 'primary'}`;
+            const draftCode = stage2State.drafts[draftKey] ?? challenge.starter;
             const track = Array.from({length:7}, (_, index) => {
                 const number = index + 1;
                 const status = stage2State.status[number] || '';
@@ -8883,7 +8919,7 @@ try {
                     <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr)" class="python-workspace">
                         <section style="background:#0f1f33;color:#dbeafe;min-width:0">
                             <div style="padding:11px 16px;background:#172b43;font:700 .78rem 'JetBrains Mono',monospace">${isPseudo ? 'logic.pseudo' : 'main.py'}</div>
-                            <textarea id="pythonCode" spellcheck="false" style="width:100%;height:360px;resize:vertical;border:0;outline:0;padding:20px;background:#0f1f33;color:#e2e8f0;font:500 14px/1.65 'JetBrains Mono',monospace;box-sizing:border-box">${challenge.starter}</textarea>
+                            <textarea id="pythonCode" spellcheck="false" style="width:100%;height:360px;resize:vertical;border:0;outline:0;padding:20px;background:#0f1f33;color:#e2e8f0;font:500 14px/1.65 'JetBrains Mono',monospace;box-sizing:border-box">${escapeResultText(draftCode)}</textarea>
                             <div style="display:flex;gap:10px;padding:14px;border-top:1px solid #334155">
                                 <button class="btn-main" id="pythonRun" style="margin:0;width:auto">${isPseudo ? '✓ CHECK LOGIC' : '▶ RUN & CHECK'}</button>
                                 <button class="flowchart-reset" id="pythonReset" style="width:auto;margin:0">↺ Reset</button>
@@ -8899,9 +8935,14 @@ try {
                 </div>`;
 
             document.getElementById('pythonRun').addEventListener('click', runPythonChallenge);
+            document.getElementById('pythonCode').addEventListener('input', event => {
+                stage2State.drafts[draftKey] = event.target.value;
+                persistTeensStage2Progress();
+            });
             document.getElementById('pythonReset').addEventListener('click', () => {
                 stage2State.resets++;
                 document.getElementById('pythonCode').value = challenge.starter;
+                stage2State.drafts[draftKey] = challenge.starter;
                 document.getElementById('pythonConsole').textContent = 'Workspace dikembalikan ke versi awal. Reset tidak mengurangi kesempatan.';
             });
         }
@@ -8909,6 +8950,8 @@ try {
         function runPythonChallenge() {
             const challenge = pythonChallenges[stage2State.current];
             const code = document.getElementById('pythonCode').value;
+            const draftKey = `${stage2State.current}-${stage2State.highestConfirmationPending ? 'confirmation' : 'primary'}`;
+            stage2State.drafts[draftKey] = code;
             const checks = challenge.validate(code);
             const passed = checks.every(Boolean);
             const isPseudo = challenge.mode === 'pseudocode';
@@ -8916,6 +8959,7 @@ try {
             const attempt = (stage2State.attempts[stage2State.current] || 0) + 1;
             const remaining = maxAttempts - attempt;
             stage2State.attempts[stage2State.current] = attempt;
+            persistTeensStage2Progress();
             document.querySelectorAll('[data-test-index]').forEach((element, index) => {
                 element.textContent = `${checks[index] ? '●' : '○'} ${challenge.tests[index]}`;
                 element.style.color = checks[index] ? '#15803d' : '#b91c1c';
@@ -8926,6 +8970,7 @@ try {
             const feedback = document.getElementById('pythonFeedback');
             feedback.style.display = 'block';
             if (passed) {
+                stopQuestionTimer();
                 recordPythonChallenge(true, attempt);
                 feedback.textContent = 'Semua pemeriksaan lolos. Tingkat berikutnya dinaikkan.';
                 setTimeout(() => advancePythonChallenge(true), 500);
@@ -8933,6 +8978,7 @@ try {
                 stage2State.allFirst = false;
                 feedback.textContent = `Belum lolos. Kamu masih punya ${remaining} kesempatan.`;
             } else {
+                stopQuestionTimer();
                 stage2State.allFirst = false;
                 recordPythonChallenge(false, attempt);
                 feedback.textContent = 'Kesempatan habis. Sistem menurunkan tingkat untuk mencari batas kemampuan.';
@@ -8940,11 +8986,21 @@ try {
             }
         }
 
-        function recordPythonChallenge(passed, attempt) {
+        function timeoutPythonChallenge() {
+            if (state.currentStage !== 2 || state.stage2Result) return;
+            stage2State.allFirst = false;
+            const attempt = Math.max(1, Number(stage2State.attempts[stage2State.current] || 0) + 1);
+            stage2State.attempts[stage2State.current] = attempt;
+            recordPythonChallenge(false, attempt, 'timeout');
+            persistTeensStage2Progress();
+            advancePythonChallenge(false);
+        }
+
+        function recordPythonChallenge(passed, attempt, outcomeReason = 'submission') {
             const challenge = pythonChallenges[stage2State.current];
             stage2State.status[stage2State.current] = passed ? 'pass' : 'fail';
             stage2State.trail.push({
-                challengeId: `python-${stage2State.current}-a`,
+                challengeId: `python-${stage2State.current}-${stage2State.highestConfirmationPending ? 'confirmation' : 'primary'}`,
                 module: 'Python',
                 focus: challenge.title,
                 prompt: challenge.mission,
@@ -8957,11 +9013,25 @@ try {
                 hintUsed: attempt > 1,
                 durationSeconds: Math.round((Date.now() - stage2State.started) / 1000),
                 validationChecks: { passed },
-                technicalError: false
+                technicalError: false,
+                outcomeReason
             });
         }
 
         function advancePythonChallenge(passed) {
+            if (passed && stage2State.current === 7) {
+                if (!stage2State.highestConfirmationPending) {
+                    stage2State.highestConfirmationPending = true;
+                    stage2State.attempts[7] = 0;
+                    stage2State.started = Date.now();
+                    stage2State.resets = 0;
+                    render();
+                    return;
+                }
+                stage2State.highestConfirmationPassed = true;
+                finishPythonStage2();
+                return;
+            }
             const next = passed ? stage2State.current + 1 : stage2State.current - 1;
             if (next > 7 || next < 1 || stage2State.trail.length >= 5) {
                 finishPythonStage2();
@@ -8976,14 +9046,36 @@ try {
         function finishPythonStage2() {
             const passedLevels = stage2State.trail.filter(item => item.finalSubmissionCorrect).map(item => item.difficulty);
             const mastery = passedLevels.length ? Math.max(...passedLevels) : 1;
-            const level = mastery <= 3 ? 'Level 1' : 'Level 2';
+            const pythonLevel = mastery <= 3 ? 'Level 1' : 'Level 2';
+            const assignedModule = state.recommendedModule || 'Python';
+            const stage2ModuleChangedAfterAssessment = assignedModule !== 'Python';
+            const level = stage2ModuleChangedAfterAssessment ? 'Level 1' : pythonLevel;
+            const stage1APerfect = ['logic', 'creativity', 'spatial', 'digital']
+                .every(pillar => Number(state.scores?.[pillar] || 0) === 5);
+            const stage1BPerfect = state.stage1AdvancedPillars?.length === 2
+                && state.stage1AdvancedPillars.includes('logic')
+                && state.stage1AdvancedPillars.includes('spatial')
+                && Number(state.stage1AdvancedPillarScores?.logic || 0) === 5
+                && Number(state.stage1AdvancedPillarScores?.spatial || 0) === 5;
+            const lv3Candidate = stage1APerfect
+                && stage1BPerfect
+                && mastery === 7
+                && stage2State.highestConfirmationPassed === true
+                && stage2State.allFirst === true
+                && assignedModule === 'Python';
             state.stage2Result = {
-                assignedModule: state.recommendedModule || 'Python',
+                assignedModule,
+                assessmentModule: 'Python',
+                stage2ModuleChangedAfterAssessment,
                 level,
+                assessedPythonLevel: pythonLevel,
                 masteryHighest: mastery,
                 challengeCount: stage2State.trail.length,
                 submissionCount: stage2State.trail.reduce((total,item) => total + item.submissionAttemptCount, 0),
-                lv3Candidate: mastery === 7 && stage2State.allFirst,
+                lv3Candidate,
+                stage1APerfect,
+                stage1BPerfect,
+                highestConfirmationPassed: stage2State.highestConfirmationPassed === true,
                 trail: [...stage2State.trail]
             };
             state.currentStage = 3;
@@ -9201,22 +9293,24 @@ try {
             const strongest=pillarInfo[sortedPillars[0]?.[0]||'logic'].label;
             const development=pillarInfo[sortedPillars.at(-1)?.[0]||'digital'].label;
             const assignedModule=result.assignedModule||state.recommendedModule||'Python';
-            const whyLevel=result.level.startsWith('FOUNDATIONAL')
+            const whyLevel=result.assessmentModule==='Python'&&assignedModule!=='Python'
+                ? `Stage 2 V1 menguji Python. Karena rekomendasi akhir ${escapeResultText(assignedModule)} tidak dinilai dengan assessment modul yang sama, titik mulai ditetapkan pada Level 1 agar penempatan tetap aman.`
+                : result.level.startsWith('FOUNDATIONAL')
                 ? `${studentName} direkomendasikan memulai dari Level 1 agar konsep algoritma, struktur program, penggunaan variabel, kondisi, dan debugging dasar dapat dibangun secara bertahap. Fondasi ini penting sebelum mengerjakan proyek ${escapeResultText(assignedModule)} yang lebih kompleks.`
                 : `${studentName} telah menunjukkan kesiapan untuk Level 2 melalui challenge praktis. Fokus berikutnya adalah membuat solusi yang reusable, menguji beberapa kemungkinan input, membaca error, dan memperbaiki kode secara mandiri.`;
             const teenMainCopy=result.lv3Candidate
                 ? `${studentName} menunjukkan performa yang kuat dan konsisten pada assessment Teens. Penempatan yang telah dikonfirmasi saat ini adalah ${result.level} pada ${escapeResultText(assignedModule)}.`
                 : `${studentName} direkomendasikan memulai ${escapeResultText(assignedModule)} pada ${result.level}. Kekuatan paling terlihat berada pada ${strongest}, sementara ${development} menjadi fokus perkembangan berikutnya.`;
             const interestGoals={'Scratch':'membuat cerita, animasi, dan karya interaktif','Roblox Studio':'membuat game dan dunia 3D','Python':'membuat aplikasi, tools, dan solusi digital'};
-            const robloxReadiness=assignedModule==='Roblox Studio';
+            const robloxPotential=state.potentialModule==='Roblox Studio';
             const interestAlignment=confirmedInterest==='Belum ditentukan'
                 ? `Arah proyek ${studentName} belum terkonfirmasi. Berdasarkan usia dan hasil placement, perjalanan belajar sementara diarahkan melalui <strong>App Creator Path</strong> menuju Python.`
                 : confirmedInterest==='Python'
                     ? `<strong>App Creator Path</strong> menjadi jalur belajar ${studentName}. Jalur ini selaras dengan ketertarikannya pada aplikasi, tools, dan solusi digital serta mengarah ke Python.`
                     : confirmedInterest==='Roblox Studio'
-                        ? robloxReadiness
-                            ? `<strong>Game Creator Path</strong> menjadi jalur belajar ${studentName}. Validasi Spasial sempurna pada Stage 1A dan Stage 1B mendukung <strong>Roblox Studio sebagai modul yang dipelajari sekarang</strong>, lalu perjalanan teknis dapat dilanjutkan menuju Python.`
-                            : `<strong>Game Creator Path</strong> mencerminkan tujuan proyek ${studentName}. Namun, validator Spasial sempurna belum terpenuhi pada kedua tahap, sehingga <strong>Python tetap menjadi modul yang dipelajari sekarang</strong>. Tema game dapat digunakan sebagai konteks proyek selama perjalanan teknis menuju Python.`
+                        ? robloxPotential
+                            ? `<strong>Game Creator Path</strong> menjadi jalur belajar ${studentName}. Bukti Spasial yang kuat mendukung penggunaan tema game dan dunia 3D sebagai konteks proyek, sementara <strong>Python tetap menjadi modul yang dipelajari sekarang</strong> untuk jalur Teens V1.`
+                            : `<strong>Game Creator Path</strong> mencerminkan tujuan proyek ${studentName}. <strong>Python tetap menjadi modul yang dipelajari sekarang</strong>, sementara latihan visual-spasial dan tema game dapat digunakan sebagai konteks proyek dalam perjalanan teknis menuju Python.`
                         : `<strong>Interactive Creator Path</strong> menjadi jalur belajar ${studentName}. Karya interaktif dapat digunakan sebagai konteks awal, tetapi untuk usia Teens perjalanan teknisnya tetap diarahkan menuju Python.`;
 
             const normLogic = pillarRatios.logic;
@@ -9332,6 +9426,7 @@ try {
                     pathName: state.learning_path_name || 'Interactive Creator Path',
                     learningModules: state.learning_path_modules || ['Scratch', 'Roblox Studio', 'Python'],
                     confirmedInterest: state.interestConfirmation || '',
+                    stage2AssessmentModule: 'Python',
                     studentReason: state.stage3Reason || 'Belum diisi.',
                     scoreScale: 'raw5',
                     scores: state.scores || {},
@@ -9368,6 +9463,14 @@ try {
         }
 
         function initializeTeensAudience() {
+            const startupParams = new URLSearchParams(window.location.search);
+            const rawRegistrationAtStartup = localStorage.getItem('pt_student_registration')
+                || localStorage.getItem('pt_student_profile');
+            const teensQcMode = startupParams.get('dummyReport') === '1' || startupParams.get('dev') === '1';
+            if (!rawRegistrationAtStartup && !teensQcMode) {
+                location.replace('index.html');
+                return false;
+            }
             let savedState=null;
             try { savedState=JSON.parse(localStorage.getItem(PT_STORAGE_KEY)||'null'); } catch(error) {}
             if (savedState?.flowVersion===3 && [0,1,2,3,4].includes(savedState.currentStage)) {
@@ -9376,7 +9479,7 @@ try {
                 if (state.exactAge < 16 || state.exactAge > 18) state.exactAge = 16;
                 if (savedState.stage2SessionState) Object.assign(stage2State,savedState.stage2SessionState);
                 document.body.classList.add('pro-mode');
-                return;
+                return true;
             }
 
             let registeredStudent = null;
@@ -9401,6 +9504,7 @@ try {
                 state.submissionId = registration?.submissionId || state.submissionId || '';
             } catch (error) {}
             state.currentStage = registeredStudent?.name ? 1 : 0;
+            state.stage1Phase = '1a';
             state.currentQuestionIndex = 0;
             state.showingPillarIntro = Boolean(registeredStudent?.name);
             state.scores = { logic: 0, creativity: 0, spatial: 0, digital: 0 };
@@ -9432,11 +9536,11 @@ try {
             }
 
             document.body.classList.add('pro-mode');
+            return true;
         }
 
         // Initialize App
-        initializeTeensAudience();
-        render();
+        if (initializeTeensAudience() !== false) render();
     
         function devPrev() {
             if (typeof state !== 'undefined' && state.currentStage > 0) openStage(state.currentStage - 1);

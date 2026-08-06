@@ -6,7 +6,8 @@ const PLACEMENT_CONFIG = Object.freeze({
   logSheet: 'SyncLog',
   dashboardSessionHours: 24,
   accessReviewMinutes: 2,
-  stalledHours: 24
+  stalledHours: 24,
+  academicReplyToProperty: 'PLACEMENT_ACADEMIC_REPLY_TO'
 });
 
 const DASHBOARD_SESSION_HEADERS = [
@@ -43,7 +44,9 @@ const SESSION_HEADERS = [
   'stage1_completed_at', 'stage2_status', 'stage2_completed_at', 'stage3_status',
   'stage3_completed_at', 'assigned_module', 'potential_module', 'assigned_level',
   'lv3_candidate', 'final_status', 'final_completed_at', 'pdf_file_id',
-  'pdf_file_url', 'email_status', 'email_sent_at', 'last_error', 'updated_at'
+  'pdf_file_url', 'email_status', 'email_sent_at', 'last_error', 'updated_at',
+  'assessment_version', 'can_read_independently', 'routing_reason',
+  'placement_review_status', 'placement_reviewed_at', 'placement_reviewed_by'
 ];
 
 const PAYLOAD_HEADERS = [
@@ -162,6 +165,12 @@ function doPost(event) {
     } else if (action === 'update_email_status') {
       const result = updateEmailStatus_(operation);
       return json_({ ok: true, ...result });
+    } else if (action === 'approve_and_send_result') {
+      const result = approveAndSendResult_(operation);
+      return json_({ ok: true, ...result });
+    } else if (action === 'update_result_review') {
+      const result = updateResultReview_(operation);
+      return json_({ ok: true, ...result });
     } else if (action === 'logout_dashboard') {
       const result = logoutDashboard_(operation);
       return json_({ ok: true, ...result });
@@ -183,7 +192,8 @@ function doPost(event) {
     const dashboardActions = [
       'request_dashboard_access', 'login_dashboard',
       'approve_dashboard_access', 'get_access_requests', 'get_branch_results',
-      'get_hq_overview', 'update_email_status', 'logout_dashboard'
+      'get_hq_overview', 'update_email_status', 'approve_and_send_result',
+      'update_result_review', 'logout_dashboard'
     ];
     if (dashboardActions.includes(operation?.action)) {
       try {
@@ -221,6 +231,12 @@ function register_(operation) {
     guardian_confirmed: consent.guardianConfirmed === true ? 'TRUE' : 'FALSE',
     consent_accepted_at: consent.acceptedAt || now,
     terms_version: consent.termsVersion || 'placement-tnc-v1',
+    assessment_version: registration.assessmentVersion || 'placement-v1',
+    can_read_independently: Number(student.exactAge) === 7
+      ? (student.canReadIndependently === true ? 'TRUE' : 'FALSE')
+      : '',
+    routing_reason: student.routingReason || '',
+    placement_review_status: 'submitted',
     current_stage: 1,
     current_question: 0,
     last_activity_at: now,
@@ -319,6 +335,9 @@ function finalize_(operation) {
     pdf_file_id: pdf.fileId,
     pdf_file_url: pdf.url,
     email_status: emailStatus,
+    placement_review_status: row.lv3_candidate === true || String(row.lv3_candidate).toLowerCase() === 'true'
+      ? 'lv3_candidate'
+      : 'submitted',
     email_sent_at: emailSentAt,
     last_error: emailError,
     updated_at: new Date().toISOString()
@@ -335,6 +354,14 @@ function finalize_(operation) {
 
 function sendParentEmail_(sheet, rowNumber) {
   const row = sessionObject_(sheet, rowNumber);
+  if (String(row.email_status || '').trim().toLowerCase() === 'sent') {
+    return {
+      sent: true,
+      alreadySent: true,
+      emailStatus: 'sent',
+      emailSentAt: row.email_sent_at || ''
+    };
+  }
   const parentEmail = String(row.parent_email || '').trim();
   if (!parentEmail) {
     upsertSession_(sheet, { row: rowNumber, exists: true }, {
@@ -343,6 +370,18 @@ function sendParentEmail_(sheet, rowNumber) {
       updated_at: new Date().toISOString()
     });
     throw new Error('missing_parent_email');
+  }
+
+  const spreadsheet = sheet.getParent();
+  const branchRecipients = getBranchNotificationRecipients_(spreadsheet, row.branch);
+  if (!branchRecipients.length) {
+    const now = new Date().toISOString();
+    upsertSession_(sheet, { row: rowNumber, exists: true }, {
+      email_status: 'waiting_branch_recipient',
+      last_error: 'missing_branch_bm_sa_recipient',
+      updated_at: now
+    });
+    return { sent: false, held: true, emailStatus: 'waiting_branch_recipient' };
   }
 
   let pdfBlob = null;
@@ -359,13 +398,17 @@ function sendParentEmail_(sheet, rowNumber) {
   const attachments = pdfBlob ? [pdfBlob] : [];
 
   try {
-    MailApp.sendEmail({
+    const mailOptions = {
       to: parentEmail,
+      bcc: branchRecipients.join(','),
       subject: `Hasil Placement Test Kalananti - ${row.student_name || 'Siswa'}`,
       htmlBody: emailBody,
       attachments: attachments,
       name: 'Kalananti Placement Test'
-    });
+    };
+    const replyTo = getAcademicReplyTo_();
+    if (replyTo) mailOptions.replyTo = replyTo;
+    MailApp.sendEmail(mailOptions);
 
     const now = new Date().toISOString();
     upsertSession_(sheet, { row: rowNumber, exists: true }, {
@@ -374,7 +417,7 @@ function sendParentEmail_(sheet, rowNumber) {
       last_error: '',
       updated_at: now
     });
-    return { sent: true, emailSentAt: now };
+    return { sent: true, emailSentAt: now, bccCount: branchRecipients.length };
   } catch (error) {
     const errorMsg = String(error.message || error);
     upsertSession_(sheet, { row: rowNumber, exists: true }, {
@@ -417,24 +460,10 @@ function onEdit(e) {
 
     if (sheet.getName() !== PLACEMENT_CONFIG.sessionsSheet) return;
 
-    // Column 32 is 'email_status' (Column AF)
-    const colIndex = SESSION_HEADERS.indexOf('email_status') + 1; // 32
-    if (e.range.getColumn() !== colIndex) return;
-
-    const rowNumber = e.range.getRow();
-    if (rowNumber <= 1) return; // Skip header
-
-    const val = String(e.value || e.range.getValue() || '').trim().toLowerCase();
-    if (val === 'sent' || val === 'send') {
-      sendParentEmail_(sheet, rowNumber);
-    } else if (val === 'not sent' || val === 'not_sent') {
-      upsertSession_(sheet, { row: rowNumber, exists: true }, {
-        email_status: 'not sent',
-        email_sent_at: '',
-        last_error: '',
-        updated_at: new Date().toISOString()
-      });
-    }
+    // Result email is intentionally not triggered by editing a spreadsheet
+    // status cell. V1 requires an authenticated, scoped dashboard session and
+    // the explicit approve_and_send_result action so reviewer identity is kept.
+    return;
   } catch (err) {
     console.error('onEdit trigger error: ' + err);
   }
@@ -547,7 +576,7 @@ function buildEmailBody_(row, pdfUrl, payload) {
       ? 'STATUS: SIAP MEMBANGUN FONDASI'
       : 'STATUS: SIAP MENGEMBANGKAN KEMAMPUAN MELALUI PROYEK');
 
-  const displayLevel = isCandidate ? 'Level 3 (Kandidat Review)' : assignedLevel;
+  const displayLevel = isCandidate ? 'Level 2' : assignedLevel;
 
   const lv3InstructionSection = isCandidate ? `
     <!-- SPECIAL INSTRUCTION CARD FOR LEVEL 3 CANDIDATES -->
@@ -566,8 +595,9 @@ function buildEmailBody_(row, pdfUrl, payload) {
                       Instruksi Khusus Kandidat Level 3 (Review Portofolio)
                     </strong>
                     <span style="font-size: 14px; color: #4c1d95; line-height: 1.6; display: block;">
-                      Selamat Ayah / Bunda! Ananda <strong>${studentName}</strong> terpilih sebagai kandidat untuk langsung masuk ke <strong>Level 3</strong> pada modul <strong>${assignedModule}</strong>.<br><br>
-                      Untuk menuntaskan proses evaluasi dan verifikasi Level 3, mohon Ayah / Bunda dapat <strong>membalas (reply) email ini</strong> dengan melampirkan <strong>portofolio atau hasil karya terbaik Ananda</strong> pada modul <strong>${assignedModule}</strong> (seperti foto/video proyek, tangkapan layar karya, file kodingan, atau karya digital yang pernah dibuat Ananda). Tim Akademik Kalananti akan segera melakukan peninjauan.
+                      Selamat Ayah / Bunda! Ananda <strong>${studentName}</strong> terpilih sebagai <strong>kandidat review Level 3</strong> pada modul <strong>${assignedModule}</strong>. Penempatan yang berlaku saat ini tetap <strong>Level 2</strong> sampai Academic Team menyelesaikan review dan memberikan persetujuan eksplisit.<br><br>
+                      Untuk menuntaskan verifikasi Level 3, mohon Ayah / Bunda <strong>membalas (reply) email ini</strong> dengan portofolio terbaik Ananda. <strong>Source code atau file proyek yang dapat diedit wajib disertakan</strong> agar Tim Akademik dapat meninjau cara kerja proyek.<br><br>
+                      Format yang dapat dikirim: Scratch berupa file <strong>.sb3</strong> atau shared link; Roblox Studio berupa file <strong>.rbxl/.rbxlx</strong>, project link, dan source <strong>.lua</strong>; Python berupa file <strong>.py</strong> atau repository beserta README. Screenshot atau video boleh ditambahkan sebagai pendukung, tetapi tidak menggantikan source code/file proyek.
                     </span>
                   </td>
                 </tr>
@@ -807,7 +837,17 @@ function ensureSheet_(spreadsheet, name, headers) {
 }
 
 function getSheet_(name) {
-  const sheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId).getSheetByName(name);
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const expectedHeaders = name === PLACEMENT_CONFIG.sessionsSheet
+    ? SESSION_HEADERS
+    : name === PLACEMENT_CONFIG.payloadsSheet
+      ? PAYLOAD_HEADERS
+      : name === PLACEMENT_CONFIG.logSheet
+        ? LOG_HEADERS
+        : null;
+  const sheet = expectedHeaders
+    ? ensureSheet_(spreadsheet, name, expectedHeaders)
+    : spreadsheet.getSheetByName(name);
   if (!sheet) throw new Error(`missing_sheet_${name}`);
   return sheet;
 }
@@ -914,6 +954,33 @@ function parseBranchCellEntries_(cellText) {
       email: normalizeEmail_(match[0])
     };
   }).filter(Boolean);
+}
+
+function getBranchNotificationRecipients_(spreadsheet, branch) {
+  const sheet = spreadsheet.getSheetByName('DROPDOWNS');
+  if (!sheet) return [];
+  const branchMatch = getBranchRows_(spreadsheet)
+    .find(item => normalizeBranch_(item.branch) === normalizeBranch_(branch));
+  if (!branchMatch) return [];
+
+  // V1 notification policy is intentionally strict: BM in column B and
+  // SA in column C for the exact branch row (including the Online row).
+  const values = sheet.getRange(branchMatch.row, 2, 1, 2).getValues()[0];
+  const recipients = values
+    .flatMap(value => parseBranchCellEntries_(value))
+    .map(entry => normalizeEmail_(entry.email))
+    .filter(isValidEmail_);
+  return [...new Set(recipients)];
+}
+
+function getAcademicReplyTo_() {
+  const configured = String(
+    PropertiesService.getScriptProperties().getProperty(PLACEMENT_CONFIG.academicReplyToProperty)
+    || ''
+  ).trim();
+  if (isValidEmail_(configured)) return configured;
+  const ownerEmail = String(Session.getEffectiveUser().getEmail() || '').trim();
+  return isValidEmail_(ownerEmail) ? ownerEmail : '';
 }
 
 function getBranchRows_(spreadsheet) {
@@ -1341,6 +1408,7 @@ function fullDashboardResult_(row, session) {
     guardian_confirmed: row.guardian_confirmed === 'TRUE' || row.guardian_confirmed === true,
     assigned_module: row.assigned_module || '-', potential_module: row.potential_module || '-', assigned_level: row.assigned_level || '-',
     final_status: row.final_status || 'in_progress', pdf_file_url: safePdfUrlForSession_(row, session),
+    placement_review_status: row.placement_review_status || 'submitted',
     email_status: row.email_status || 'not sent', current_stage: row.current_stage || 1, last_activity_at: row.last_activity_at || '',
     last_error: row.last_error || ''
   };
@@ -1350,6 +1418,7 @@ function restrictedDashboardResult_(row, session) {
   return {
     placement_id: row.submission_id || '-', student_name: row.student_name || '-', parent_email: row.parent_email || '-',
     final_status: row.final_status || 'in_progress', pdf_file_url: safePdfUrlForSession_(row, session),
+    placement_review_status: row.placement_review_status || 'submitted',
     email_status: row.email_status || 'not sent'
   };
 }
@@ -1456,14 +1525,80 @@ function updateEmailStatus_(operation) {
   requireRowScope_(session, row);
   let response;
   if (requestedStatus === 'sent' || requestedStatus === 'send') {
-    const result = sendParentEmail_(sheet, found.row);
-    response = { submissionId, emailStatus: 'sent', emailSentAt: result.emailSentAt };
+    throw new Error('Gunakan action approve_and_send_result setelah review hasil.');
   } else {
+    if (String(row.email_status || '').trim().toLowerCase() === 'sent') {
+      throw new Error('Email yang sudah terkirim tidak dapat di-reset melalui endpoint status lama.');
+    }
     upsertSession_(sheet, found, { email_status: 'not sent', email_sent_at: '', last_error: '', updated_at: new Date().toISOString() });
     response = { submissionId, emailStatus: 'not sent' };
   }
   auditDashboard_(spreadsheet, 'email_status_update', session.email, session.branch, submissionId, 'success', response.emailStatus);
   return response;
+}
+
+function approveAndSendResult_(operation) {
+  const submissionId = String(operation.submissionId || '').trim();
+  if (!submissionId) throw new Error('submissionId wajib diisi.');
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const session = requireDashboardSession_(spreadsheet, operation.token);
+  const sheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
+  const found = findSession_(sheet, submissionId);
+  if (!found.exists) throw new Error(`Submission ID ${submissionId} tidak ditemukan.`);
+  const row = sessionObject_(sheet, found.row);
+  requireRowScope_(session, row);
+  if (!row.pdf_file_id || !row.pdf_file_url) throw new Error('PDF hasil belum siap.');
+
+  const isLv3Candidate = row.lv3_candidate === true || String(row.lv3_candidate).toLowerCase() === 'true';
+  const now = new Date().toISOString();
+  upsertSession_(sheet, found, {
+    placement_review_status: isLv3Candidate ? 'lv3_candidate' : 'approved',
+    placement_reviewed_at: now,
+    placement_reviewed_by: session.email,
+    updated_at: now
+  });
+
+  const sendResult = sendParentEmail_(sheet, found.row);
+  const emailStatus = sendResult.held ? 'waiting_branch_recipient' : 'sent';
+  auditDashboard_(spreadsheet, 'approve_and_send_result', session.email, session.branch, submissionId, emailStatus, `review=${isLv3Candidate ? 'lv3_candidate' : 'approved'}`);
+  return {
+    submissionId,
+    approved: true,
+    reviewStatus: isLv3Candidate ? 'lv3_candidate' : 'approved',
+    held: sendResult.held === true,
+    emailStatus,
+    emailSentAt: sendResult.emailSentAt || '',
+    alreadySent: sendResult.alreadySent === true
+  };
+}
+
+function updateResultReview_(operation) {
+  const allowed = [
+    'submitted', 'under_review', 'approved', 'needs_manual_review',
+    'lv3_candidate', 'lv3_approved', 'lv3_not_approved'
+  ];
+  const submissionId = String(operation.submissionId || '').trim();
+  const status = String(operation.reviewStatus || operation.status || '').trim().toLowerCase();
+  if (!submissionId) throw new Error('submissionId wajib diisi.');
+  if (!allowed.includes(status)) throw new Error('Status review placement tidak valid.');
+
+  const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
+  const session = requireDashboardSession_(spreadsheet, operation.token);
+  const sheet = spreadsheet.getSheetByName(PLACEMENT_CONFIG.sessionsSheet);
+  const found = findSession_(sheet, submissionId);
+  if (!found.exists) throw new Error(`Submission ID ${submissionId} tidak ditemukan.`);
+  const row = sessionObject_(sheet, found.row);
+  requireRowScope_(session, row);
+
+  const now = new Date().toISOString();
+  upsertSession_(sheet, found, {
+    placement_review_status: status,
+    placement_reviewed_at: now,
+    placement_reviewed_by: session.email,
+    updated_at: now
+  });
+  auditDashboard_(spreadsheet, 'result_review_update', session.email, session.branch, submissionId, status, '');
+  return { submissionId, reviewStatus: status, reviewedAt: now, reviewedBy: session.email };
 }
 
 function getOrCreateBranchFolder_(branch) {

@@ -1508,6 +1508,9 @@
     const level = String(customData.level || 'Level 1');
     const lv3Candidate = Boolean(customData.lv3Candidate);
     const pathName = String(customData.pathName || 'Interactive Creator Path');
+    const confirmedInterest = String(customData.confirmedInterest || evidence.stage3?.confirmedInterest || '');
+    const stage2AssessmentModule = String(customData.stage2AssessmentModule || evidence.stage2?.assessmentModule || '');
+    const robloxReadiness = customData.robloxReadiness || evidence.stage3?.robloxReadiness || null;
     const learningModules = safeArray(customData.learningModules).length
       ? safeArray(customData.learningModules)
       : [assignedModule];
@@ -1648,11 +1651,19 @@
         </article>`;
     }).join('');
 
-    const whyLevelText = level.startsWith('FOUNDATIONAL')
+    const whyLevelText = stage2AssessmentModule && assignedModule !== stage2AssessmentModule
+      ? `Stage 2 V1 menguji ${escapeHtml(stage2AssessmentModule)}. Karena modul akhir adalah ${escapeHtml(assignedModule)}, titik mulainya ditetapkan di Level 1 agar penempatan tetap aman.`
+      : level.startsWith('FOUNDATIONAL')
       ? `Rekomendasi ini bertujuan memperkuat fondasi logika &amp; algoritma dasar pilar ${escapeHtml(bottomName)} sebelum masuk ke proyek ${escapeHtml(assignedModule)} yang lebih kompleks.`
       : `Siswa telah siap untuk level BASIC. Fokus berikutnya adalah mengembangkan solusi mandiri pada proyek ${escapeHtml(assignedModule)}.`;
 
     const studentReason = String(evidence.stage3?.reason || customData.studentReason || 'Belum diisi.');
+    const robloxGaps = safeArray(robloxReadiness?.gaps).join(' dan ');
+    const interestAlignmentText = confirmedInterest === 'Roblox Studio' && robloxReadiness?.passed === true
+      ? `${name} memilih Roblox Studio dan memenuhi ambang kesiapan V1: Logika ${Number(robloxReadiness.logicScore || 0)}/5 serta Spasial ${Number(robloxReadiness.spatialScore || 0)}/5. Rekomendasi Roblox Studio dimulai dari Level 1 karena Stage 2 V1 menilai Scratch.`
+      : confirmedInterest === 'Roblox Studio' && robloxReadiness && robloxReadiness.passed !== true
+        ? `${name} memilih Roblox Studio, tetapi ${robloxGaps || 'Logika dan Spasial'} masih perlu diperkuat hingga minimal 3/5. ${assignedModule} menjadi titik mulai yang aman dan Roblox Studio tetap menjadi tujuan berikutnya.`
+        : `Jalur belajar ${pathName} disesuaikan dengan minat siswa pada proyek interaktif.`;
 
     const learningTrackHtml = learningModules.map((module, index) => {
       const isAssigned = module === assignedModule;
@@ -1700,7 +1711,7 @@
       </section>
       <section class="teen-section" style="background:#eef8f5;border-color:#8bcfc5">
         <h2>Arah Belajar Berdasarkan Minat</h2>
-        <p>Jalur belajar ${escapeHtml(pathName)} disesuaikan dengan minat siswa pada proyek interaktif.</p>
+        <p>${escapeHtml(interestAlignmentText)}</p>
         <p style="margin-top:6px"><strong>Alasan siswa:</strong> ${escapeHtml(studentReason)}</p>
         <p class="teen-report-note">Hasil placement ini digunakan sebagai rekomendasi titik mulai belajar. Perkembangan siswa tetap dipantau melalui proses belajar dan umpan balik mentor.</p>
       </section>

@@ -35,7 +35,7 @@ The product evaluates four core pillars:
 - **Spatial:** direction, coordinates, rotation, scale, grouping, perspective, and 3D reasoning;
 - **Digital Literacy:** input-device usage, interface conventions, navigation, files, troubleshooting, and operational readiness.
 
-Logic and Digital Literacy act as readiness and support indicators. Spatial readiness determines how much initial support a Roblox Studio learner needs; it is not an absolute barrier for ages 10–15 who explicitly confirm Roblox Studio as their interest. A post-Stage-2 module change always starts at Level 1 because no module-specific Stage 2 evidence exists for the new module.
+Logic and Spatial are the V1 readiness gates for a Roblox Studio interest override. For an eligible learner who explicitly chooses Roblox Studio in the final Stage 3 module-choice question, Stage 1A Logic and Spatial must each be at least **3/5**. Digital Literacy 0–2 creates support evidence but does not by itself block Roblox. A post-Stage-2 module change always starts at Level 1 because no module-specific Stage 2 evidence exists for the new module.
 
 ---
 
@@ -50,7 +50,7 @@ Logic and Digital Literacy act as readiness and support indicators. Spatial read
 - Give every student a named Stage 3 Learning Path that turns the student's preferred project outcome into a clear multi-module journey.
 - Keep placement evidence and the aspirational Learning Path distinct: Assigned Module and level remain in the placement result, while the path chart contains only its name and ordered modules.
 - Explain every locked module using age, Digital Literacy, Logic/readiness, and missing-pillar evidence.
-- Route exceptional Lv3 candidates to a separate portfolio and Academic Team review without hiding the regular Stage 3 result from other students.
+- Route exceptional Lv3 candidates to an Academic Team review initiated through a reply to the result email, without adding a V1 portfolio web form or hiding the regular Stage 3 result from other students.
 - Give administrators enough evidence to approve or manually adjust the recommendation.
 - Produce a clear result that can later be sent to the parent.
 
@@ -58,8 +58,8 @@ Logic and Digital Literacy act as readiness and support indicators. Spatial read
 
 - Students can complete the assessment on desktop, tablet, and supported mobile devices.
 - Junior students can complete Stage 1 without requiring strong drag-and-drop skills.
-- Kids and Teens demonstrate answers through interaction rather than conventional ABC selection.
-- Stage 2 opens only the assessment belonging to the Assigned Module.
+- V1 may use conventional A–D multiple-choice for Junior, Kids, and Teens when it is the safest readable interaction; practical interaction remains required where the question is intended to measure tool use.
+- In V1, Kids Stage 2 always opens Scratch and Teens Stage 2 always opens Python; Junior opens its Scratch Jr scaffold. The report preserves the actual assessment module and any cross-module final recommendation starts at Level 1.
 - Stage 2 never assigns EMERGING — Lv3 automatically.
 - Every student enters Stage 3 after Stage 2.
 - Stage 3 normally preserves the Stage 1 Assigned Module and Stage 2 level. The sole controlled exception is the ages 10–15 final-module policy in Section 4: a confirmed Roblox Studio interest may change the final module, and a module changed after Stage 2 always starts at Level 1.
@@ -75,14 +75,14 @@ The application uses three official audience groups. The registration form may d
 
 | Form range   | Policy segment | Audience application | User experience                                                           |
 | ------------ | -------------- | -------------------- | ------------------------------------------------------------------------- |
-| 5–7 years   | Junior | Junior | Large visuals, audio support, short instructions, simple visual selection |
-| 8–9 years   | Kids Lower | Kids | Interactive visual assessment and Scratch foundation |
+| 5–6 years (and 7 if cannot read) | Junior | Junior | Large visuals, audio support, short instructions, simple visual selection |
+| 7 (if can read) & 8–9 years   | Kids Lower | Kids | Interactive visual assessment and Scratch foundation |
 | 10–11 years | Kids Upper | Kids | Interactive assessment with Scratch/Roblox routing |
 | 12 years | Transition | Kids | Scratch, Python, or Roblox routing based on readiness and final interest |
 | 13–15 years | Teens pathway | Kids | Advanced visual assessment with Python/Roblox routing |
 | 16–18 years | Teens | Teens | Technical language, debugging, code reasoning, and direct input |
 
-Age 7 belongs to Junior. Age 8 belongs to Kids. The existing application-file routing remains 5–7 to Junior, 8–15 to Kids, and 16–18 to Teens; policy segments inside the Kids application use exact age.
+Age 5-6 belongs to Junior. Age 7 is routed dynamically based on reading ability (can read = Kids, cannot read = Junior). Age 8 belongs to Kids. The application-file routing directs 5–6 (and 7 non-reading) to Junior, 7 (reading)–15 to Kids, and 16–18 to Teens; policy segments inside the Kids application use exact age.
 
 ---
 
@@ -93,25 +93,25 @@ Stage 1 produces two module outputs:
 - **Potential Module:** the highest long-term potential suggested by the student's cognitive profile;
 - **Assigned Module:** the age-appropriate module the student should study now.
 
-Only the Assigned Module controls Stage 2.
+The general product model uses Assigned Module to select Stage 2. V1 intentionally freezes the available environments to Junior Scratch Jr, Kids Scratch, and Teens Python; the final report must preserve this actual assessment-module evidence.
 
 | Age | Stage 1 safe route | Final interest-aware rule |
 | --- | --- | --- |
-| 5–7 | **Scratch Jr** | No module override. |
-| 8–9 | **Scratch** | No module override. |
-| 10–11 | Scratch, or Roblox when Spatial is already the stronger ready profile | Confirmed Roblox interest assigns **Roblox Studio**. If Stage 2 assessed another module, start Roblox at **Level 1**. Without Roblox interest, recommend **Scratch**. |
-| 12 | Scratch or Python according to Logic/text readiness; Roblox may be indicated by Spatial readiness | Confirmed Roblox interest assigns **Roblox Studio Level 1** when it changes the Stage 2 module. Without Roblox interest, strong Logic assigns **Python**; otherwise **Scratch**. |
-| 13–15 | **Python** by default, or Roblox when Spatial/Digital readiness already supports it | Confirmed Roblox interest assigns **Roblox Studio**. If the module changes after Stage 2, start at **Level 1**. Without Roblox interest, recommend **Python**. |
-| 16–18 | **Python** | Existing Teens ability policy remains in effect; Stage 3 supplies path context and does not apply the ages 10–15 override. |
+| 5–6 (and 7 non-reading) | **Scratch Jr** | No module override. |
+| 7 (reading) & 8–9 | **Scratch** | No module override. |
+| 10–11 | Scratch, or Roblox when Spatial is already the stronger ready profile | Confirmed Roblox interest assigns **Roblox Studio Level 1** only when Stage 1A Logic and Spatial are each at least 3/5. Otherwise keep **Scratch** and show Scratch → Roblox Studio as the learning path. |
+| 12 | Scratch or Python according to Logic/text readiness; Roblox may be indicated by Spatial readiness | Confirmed Roblox interest assigns **Roblox Studio Level 1** only when Stage 1A Logic and Spatial are each at least 3/5. Otherwise retain the safe age/readiness route and explain the Roblox readiness gap. |
+| 13–15 | **Python** by default, or Roblox when readiness supports it | Confirmed Roblox interest assigns **Roblox Studio Level 1** only when Stage 1A Logic and Spatial are each at least 3/5. Otherwise retain **Python** and show Roblox as the next goal in the Game Creator Path. |
+| 16–18 | **Python** | Python remains the fixed V1 Assigned Module. Stage 3 supplies path/project context and does not apply the ages 10–15 Roblox override. |
 
 Important rules for Module Routing:
 
-- **Junior (5–7):** Assigned Module remains **Scratch Jr**. Stronger evidence may be reported as potential, but does not skip the foundation module.
+- **Junior (5–6, and 7 non-reading):** Assigned Module remains **Scratch Jr**. Stronger evidence may be reported as potential, but does not skip the foundation module.
 - **Kids Lower (8–9):** Assigned Module remains **Scratch**.
-- **Kids Upper (10–11):** Stage 1 may assign Roblox when Spatial is the stronger ready profile. Stage 3 confirmed Roblox interest can override Scratch to **Roblox Studio Level 1**. Without Roblox interest, final recommendation is **Scratch**.
-- **Age 12 transition:** Confirmed Roblox interest assigns Roblox. Without it, strong Logic assigns Python; insufficient text readiness falls back to Scratch.
-- **Ages 13–15:** Python is the default non-Roblox route. Confirmed Roblox interest assigns Roblox; low Spatial sends the learner to Roblox Level 1 with foundational spatial support rather than blocking the module.
-- **Teens (16–18):** Python is the age-default Assigned Module. Stage 1B always contains five Logic questions to retain Python-readiness evidence plus five questions from the stronger of Spatial or Creativity. Spatial replaces the second slot when Stage 1A Spatial is perfect. Perfect Spatial validation across both stages assigns **Roblox Studio**; high Creativity alone may support Roblox Studio as Potential Module but never changes the assignment. Low Logic or Spatial does not remove Python; it produces support evidence for Stage 2 and the final report.
+- **Kids Upper (10–11):** Stage 3 confirmed Roblox interest can override Scratch to **Roblox Studio Level 1** only with Logic ≥3/5 and Spatial ≥3/5. Otherwise Scratch remains the first step toward Roblox.
+- **Age 12 transition:** The same Logic/Spatial threshold controls the Roblox override. Without an eligible override, strong Logic assigns Python; insufficient text readiness falls back to Scratch.
+- **Ages 13–15:** Python is the default non-Roblox route. The Roblox override requires Logic ≥3/5 and Spatial ≥3/5; below that threshold Python remains the safe starting module and the report identifies the evidence to strengthen.
+- **Teens (16–18):** Python is the fixed V1 Assigned Module. V1 Stage 1B always contains five Logic and five Spatial questions. Strong Spatial evidence may preserve Roblox Studio as Potential Module or project context, but cannot replace Python. Low Logic or Spatial does not remove Python; it produces support evidence for Stage 2 and the final report.
 
 ```
 
@@ -123,8 +123,8 @@ Important rules for Module Routing:
 Central Registration Landing Page (index.html)
     ├── Input Name, Age Range, Parent Email, Branch
     └── Dynamic Age Routing:
-            ├── 5–7 years  → junior-final-placement-test.html
-            ├── 8–15 years → kids-final-placement-test.html
+            ├── 5–6 years (and 7 non-reading)  → junior-final-placement-test.html
+            ├── 7 (reading) & 8–15 years → kids-final-placement-test.html
             └── 16–18 years → teens.html
     ↓
 Stage 1A — Foundation Assessment (Direct start in assigned file)
@@ -146,16 +146,16 @@ Stage 3 — Universal Learning Track Result
             ↓
 Exceptional Lv3 candidate?
     ├── No → regular academic review
-    └── Yes → optional Portfolio + Academic Team Lv3 review
+    └── Yes → parent replies to the result email with a portfolio for Academic Team Lv3 review
     ↓
 Submit result to Google Sheets through Apps Script
     ↓
 Academic review and approval
     ↓
-Email parent, with BCC to administrator
+Email parent, with BCC to the exact-branch BM/SA
 ```
 
-Stage 3 is mandatory for every audience and age group. Portfolio submission and Lv3 approval are optional exceptional-review branches shown only when the eligibility rules are satisfied.
+Stage 3 is mandatory for every audience and age group. In V1 there is no portfolio upload form or portfolio-submit button in the web app. For an eligible Lv3 candidate, the result email tells the parent to reply with the source/editable project or its accessible link. Screenshots or video may be attached only as supporting evidence. Lv3 approval remains an optional Academic Team review branch.
 
 ---
 
@@ -168,7 +168,7 @@ All assessment registration is centralized in `index.html`. Individual assessmen
 Required registration inputs in `index.html`:
 
 - Student nickname or name;
-- detailed age range (`5–7 years`, `8–11 years`, `12–15 years`, `16–18 years`);
+- detailed age range (`5–6 years`, `7 years`, `8–11 years`, `12–15 years`, `16–18 years`);
 - parent's email;
 - branch;
 - submission identifier;
@@ -180,7 +180,10 @@ Required registration inputs in `index.html`:
   - `localStorage.setItem('pt_student_registration', JSON.stringify(profileData))`
   - `localStorage.setItem('pt_student_profile', JSON.stringify(profileData))`
 - `index.html` redirects to the target assessment file according to age policy:
-  - Age 5–7 → `junior-final-placement-test.html`
+  - Age 5–6 → `junior-final-placement-test.html`
+  - Age 7 → Shows a popup asking "Apakah kamu sudah bisa membaca?" (Can you read already?)
+    - If Yes → `kids-final-placement-test.html`
+    - If No → `junior-final-placement-test.html` (which defaults to Scratch track)
   - Age 8–15 → `kids-final-placement-test.html`
   - Age 16–18 → `teens.html`
 
@@ -223,7 +226,7 @@ Each pillar should have an equivalent scoring range so no pillar wins merely bec
 
 ### 7.2 Question interaction policy
 
-#### Junior, ages 5–7
+#### Junior, ages 5–6 (and 7 non-reading)
 
 Junior may use multiple-choice mechanics because the assessment must not assume mature digital operation.
 
@@ -239,9 +242,9 @@ Requirements:
 
 The underlying scoring may be multiple choice, but visible letter labels are not required.
 
-#### Kids, ages 9–15
+#### Kids, age 7 reading independently and ages 8–15
 
-Kids must not receive conventional ABC questions.
+V1 may show conventional A–D questions. The options must still be visual, age-appropriate, and usable without interpreting the letter as part of the answer.
 
 Allowed interactions include:
 
@@ -256,7 +259,7 @@ Allowed interactions include:
 
 #### Teens, ages 16–18
 
-Teens must not receive conventional ABC questions.
+V1 may show conventional A–D questions for concept validation. Practical questions continue to use direct input, code, simulation, or builder interactions when those mechanics are part of the skill being measured.
 
 Allowed interactions include:
 
@@ -287,10 +290,10 @@ Top-2 selection must be deterministic. Sort by Stage 1A score, then apply the ag
 
 | Audience / age     | Standard Stage 1B selection                                                                                                                                                                                 |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Junior, 5–7       | Top two of Logic, Creativity, and Spatial; 10 questions                                                                                                                                                     |
+| Junior, 5–6 (and 7 non-reading)       | Top two of Logic, Creativity, and Spatial; 10 questions                                                                                                                                                     |
 | Kids, 8–11        | Top two of Logic, Creativity, and Spatial; 10 questions                                                                                                                                                     |
 | Kids Upper, 12–15 | Top two of Logic, Creativity, and Spatial; Logic must be included when Stage 1A Logic is 5/5, and Spatial must be included when Stage 1A Spatial is 5/5                                                     |
-| Teens, 16–18      | Logic is always included for Python-readiness evidence. The second pillar is the higher of Spatial or Creativity; Spatial is locked into the second slot when Stage 1A Spatial is 5/5. Total: 10 questions. |
+| Teens, 16–18      | Five Logic questions plus five Spatial questions. Total: 10 questions. |
 
 If both Logic and Spatial are perfect for ages 12–15, those two pillars occupy the two Stage 1B slots. If only one is perfect, that pillar is locked and the remaining slot is filled by the highest other ability pillar.
 
@@ -300,21 +303,21 @@ The strict **Sempurna** rule applies when the student is attempting to jump beyo
 
 | Target module                              | Exceptional trigger from Stage 1A                            | Stage 1B shown                                                   | Condition to pass                                                                                                                                  |
 | ------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Scratch potential**, Junior 5–7   | Logic, Creativity, and Digital Literacy are all 5/5          | Logic, Creativity, Digital Literacy; 15 questions                | Records advanced Scratch potential only. Assigned Module remains Scratch Jr under the current age policy.                                           |
-| **Roblox Studio**, Kids 8–11        | Logic, Creativity, Spatial, and Digital Literacy are all 5/5 | All four pillars; 20 questions                                   | 20/20. Any mistake preserves Scratch as Assigned Module.                                                                                           |
-| **Roblox Studio**, Kids Upper 12–15 | Spatial is 5/5 and Digital Literacy is high                  | Standard 10-question Top-2 set with Spatial locked into one slot | Spatial validator evidence must remain high/perfect; Logic and Digital Literacy determine whether Roblox or the safer Python pathway is assigned. |
-| **Roblox Studio**, Teens 16–18      | Stage 1A Spatial is 5/5                                      | Ten questions: five Logic plus five Spatial                      | Stage 1B Spatial must also be 5/5. Only this complete Spatial validation may change Assigned Module from Python to Roblox Studio.                  |
+| **Scratch potential**, Junior 5–6 (and 7 non-reading)   | Logic, Creativity, and Digital Literacy are all 5/5          | Logic, Creativity, Digital Literacy; 15 questions                | Records advanced Scratch potential only. Assigned Module remains Scratch Jr under the current age policy.                                           |
+| **Roblox readiness evidence**, Kids 8–11        | Logic, Creativity, Spatial, and Digital Literacy are all 5/5 | All four pillars; 20 questions                                   | Records exceptional evidence only. Final Roblox assignment still requires eligible age 10–15, explicit Stage 3 Roblox choice, and Logic plus Spatial each at least 3/5. |
+| **Roblox readiness evidence**, Kids Upper 12–15 | Logic and/or Spatial is 5/5                                  | Standard 10-question Top-2 set with perfect Logic/Spatial locked | Records validator evidence. Final Roblox assignment uses the separate Stage 3 V1 threshold: explicit Roblox choice, Logic ≥3/5, and Spatial ≥3/5. |
+| **Roblox potential evidence**, Teens 16–18 | Stage 1A Spatial is 5/5                               | Ten questions: five Logic plus five Spatial                      | Stage 1B Spatial 5/5 may preserve Roblox Studio as Potential Module or project context; Assigned Module remains Python.                            |
 
-#### 7.3.3 Digital Literacy gatekeeper
+#### 7.3.3 Digital Literacy support indicator
 
-Digital Literacy is evaluated in Stage 1A before module routing. A low Digital Literacy score, defined as **0–2 out of 5**, blocks an automatic jump to a tool-heavier module even when another cognitive pillar is high.
+Digital Literacy is evaluated in Stage 1A before module routing. A low Digital Literacy score, defined as **0–2 out of 5**, creates `digital_readiness_support_required`. For the controlled ages 10–15 Roblox interest override, it does not block Roblox when Logic and Spatial each reach 3/5.
 
-- Junior 5–7 with low Digital Literacy remains assigned to Scratch Jr.
+- Junior 5–6 (and 7 non-reading) with low Digital Literacy remains assigned to Scratch Jr.
 - Kids 8–11 with low Digital Literacy remains assigned to Scratch.
-- Kids Upper 12–15 with low Digital Literacy cannot be assigned directly to Roblox Studio. If Logic is also low, Python is the safe assignment even when Spatial is high.
+- Kids Upper 12–15 with low Digital Literacy may still receive Roblox Studio Level 1 when the explicit Stage 3 choice and Logic/Spatial thresholds pass; the report must retain the support flag.
 - Teens 16–18 remains on the age-default Python pathway when Logic, Spatial, or Digital Literacy is low. Low scores create support and review evidence; they do not route the student to Scratch or remove the age-default Python assignment.
 
-Stage 1B still runs in standard Top-2 mode when an exceptional jump is not available. Its purpose in that case is to preserve evidence about the student's strongest potential, not to override the Digital Literacy gate.
+Stage 1B still runs in standard Top-2 mode when an exceptional validator is not active. Its purpose is to preserve evidence about the student's strongest potential; Digital Literacy support evidence remains visible regardless of the final module.
 
 #### 7.3.4 Teens 16–18 routing contract
 
@@ -323,51 +326,47 @@ The Teens route uses age policy differently from the younger routes. Python is n
 Stage 1B selection for Teens is deterministic:
 
 1. include Logic as the first required pillar;
-2. if Stage 1A Spatial is 5/5, include Spatial as the second pillar;
+2. include Spatial as the second required pillar;
+3. show five questions for each pillar, for ten questions total.
 
 ### 7.4 Question Attempt Limit, Question Timer, and Skip Policy
 
 Across all assessment applications (`junior-final-placement-test.html`, `kids-final-placement-test.html`, `teens.html`), question navigation and attempt state enforce the following rules:
 
-1. **Stage 1A & Stage 1B Multiple Choice Policy (1 Attempt / Single-Click Advance):**
-   - Questions in Stage 1A and Stage 1B are standard multiple-choice selections (Opsi A, B, C, D).
-   - Selecting any option immediately records the answer (correct = full score, incorrect = score 0) and advances to the next question.
-   - This ensures rapid, seamless progression (~3-5 minutes total) and prevents artificial score inflation via process of elimination.
+1. **Stage 1A & Stage 1B Answer Policy:**
+   - V1 may use standard multiple-choice selections (Opsi A, B, C, D). Each MCQ is recorded once (correct = full score, incorrect = score 0) and advances without a retry.
+   - Questions intended to measure practical tool use retain their interactive workspace and explicit submit action.
 
 2. **Stage 2 Practical & Interactive Lab Policy (Max 2 Attempts / 1x Retry):**
    - Practical challenges (Scratch Jr block sequences, maze routes, visual hierarchy builder, inspector lab, contrast lab, 3D rotation lab, Python code debugging) allow up to **2 submission attempts**.
    - **First Attempt Incorrect:** Displays feedback/hints ("Belum tepat. Kesempatan tersisa: 1. Silakan coba lagi.") allowing the student to adjust parameters/blocks.
-   - **Second Attempt Incorrect:** Displays final feedback ("Kesempatan habis.") and automatically advances to the next question with **score 0**.
+   - **Second Attempt Incorrect:** Displays final feedback ("Kesempatan habis."), records the challenge as failed, and moves downward in the adaptive difficulty path.
    - **Correct Submission (1st or 2nd attempt):** Records full/earned credit and advances to the next question.
 
 3. **Per-Question Timer (2-Minute Hard Limit):**
    - Each question has a hard duration limit of **2 minutes (120 seconds)**.
    - A question timer controller tracks elapsed time for each question key.
-   - If 120 seconds elapse without a final submission, the system auto-submits a timeout response and advances to the next question with **score 0**.
+   - If 120 seconds elapse without a final submission, Stage 1 records score 0 and advances; Stage 2 records a failed challenge and moves downward in the adaptive difficulty path.
 
 4. **Inactivity Skip Policy (1-Minute Lock):**
    - The "Lewati Soal" (Skip Question) action is **disabled / hidden for the first 60 seconds (1 minute)** of each question.
    - Once 60 seconds elapse, the "Lewati Soal" button becomes enabled and available for the student.
-   - If the student clicks "Lewati Soal", the system confirms the skip, records **score 0** for that question, and advances to the next question.
-
-3. otherwise compare Spatial and Creativity and include the higher-scoring pillar;
-4. if Spatial and Creativity tie, prefer Spatial because it provides evidence for the only alternate Teens module;
-5. show five questions for each selected pillar, for ten questions total.
+   - If the student clicks "Lewati Soal", the system confirms the skip. Stage 1 records score 0 and advances; Stage 2 records a failed challenge and moves downward.
 
 Teens module routing:
 
 | Evidence                                                       | Assigned Module | Potential Module                                                                                                 | Required explanation                                                                                                                     |
 | -------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Stage 1A Spatial 5/5 and Stage 1B Spatial 5/5                  | Roblox Studio   | Roblox Studio                                                                                                    | Strong and consistently validated spatial reasoning supports 3D environment building and Lua-based scripting.                            |
-| Spatial is high but not perfect across both stages             | Python          | Roblox Studio                                                                                                    | Roblox potential is visible, but the strict Spatial validator for changing the current assignment is not complete.                       |
-| Creativity is high but Spatial validation is not perfect       | Python          | Roblox Studio only when Creativity reaches at least 4/5 in Stage 1A and, when selected, at least 4/5 in Stage 1B | Creativity supports game and environment design potential but cannot independently assign Roblox Studio.                                 |
-| Logic is high and Spatial is not perfectly validated           | Python          | Python                                                                                                           | The profile supports the age-default text-based programming pathway.                                                                     |
+| Stage 1A Spatial 5/5 and Stage 1B Spatial 5/5                  | Python          | Roblox Studio                                                                                                    | Strong and consistently validated spatial reasoning supports Roblox as potential/project context; the V1 Teens starting module remains Python. |
+| Spatial is high but not perfect across both stages             | Python          | Roblox Studio may remain a future interest context                                                              | Roblox potential may be visible, while Python remains the fixed V1 current assignment.                                                    |
+| Creativity is high but Spatial validation is not perfect       | Python          | Roblox Studio may remain a future interest context                                                              | Creativity supports game and environment design potential but cannot change the current Python assignment.                               |
+| Logic is high and Spatial is not perfectly validated           | Python          | Python                                                                                                           | The profile supports the fixed V1 text-based programming pathway.                                                                        |
 | Logic and Spatial are low                                      | Python          | Python, unless other evidence supports a future Roblox pathway                                                   | Python remains the age-default module; Stage 2 determines FOUNDATIONAL or BASIC and the report explains required support.                |
 | Digital Literacy is low and Spatial is not perfectly validated | Python          | Preserve evidence-driven potential                                                                               | Record a`digital_readiness_support_required` flag; do not reroute the student to Scratch solely because of age-default tool readiness. |
 
-For Teens, low Digital Literacy never routes the student down to Scratch. If Spatial is perfect in both stages, Roblox Studio may still be assigned under the explicit alternate-path rule, while `digital_readiness_support_required` remains attached so Stage 2 and the final report can address tool-operation support.
+For Teens, low Digital Literacy never routes the student down to Scratch. Even when Spatial is perfect in both stages, Python remains assigned; Roblox Studio may be retained as Potential Module or project context. The `digital_readiness_support_required` flag remains attached so Stage 2 and the final report can address tool-operation support.
 
-The Teens Stage 1 result must never assign a course level. It outputs Assigned Module and Potential Module only. Stage 2 must load the assessment belonging to the resulting Assigned Module: Python by default or Roblox Studio after complete Spatial validation.
+The Teens Stage 1 result must never assign a course level. It outputs Assigned Module and Potential Module only. In V1, both the Teens Assigned Module and Stage 2 environment remain Python; strong Roblox-related evidence is reported only as potential or project context.
 
 ### 7.4 Tie handling
 
@@ -399,6 +398,12 @@ Stage 1 must produce:
 ## 8. Stage 2 — Adaptive Practical Level Placement
 
 Stage 2 determines whether the student's automatic starting placement inside the Assigned Module is Level 1 or Level 2. Stage 2 may identify an exceptional **Lv3 candidate**, but it must never assign EMERGING — Lv3 automatically.
+
+V1 has two explicit assessment-environment exceptions:
+
+- every Kids learner completes the Scratch Stage 2 environment, even when Roblox or Python later appears as a potential/interest direction;
+- every Teens learner completes the Python Stage 2 environment;
+- any final module changed after that V1 Stage 2 starts at Level 1, and the report states which environment was actually assessed.
 
 Official Kalananti level labels:
 
@@ -692,7 +697,7 @@ For an exceptional candidate, the UI must not state that the student has already
 ```text
 Current Placement: Level 2
 Special Status: Candidate for EMERGING — Lv3
-Next Step: Choose a module and submit a project portfolio for Academic Team review.
+Next Step: Reply to the result email with the source/editable project for Academic Team review.
 ```
 
 Example:
@@ -930,7 +935,7 @@ This scenario applies only to assessment routes that can produce `lv3_candidate`
 Current Placement: Level 2
 Special Status: Candidate for EMERGING — Lv3
 Confirmation: Belum dikonfirmasi
-Next Step: Portfolio dan peninjauan Academic Team
+Next Step: Balas email hasil dengan source/editable project untuk peninjauan Academic Team
 ```
 
 #### Main parent-facing copy
@@ -951,17 +956,18 @@ Mengapa perlu portfolio?
 Placement test menunjukkan cara [Student Name] menyelesaikan tantangan terarah. Portfolio membantu Academic Team melihat bagaimana [Student Name] merencanakan, membuat, menjelaskan, dan memperbaiki proyek secara lebih mandiri. Langkah ini memastikan bahwa penempatan Lv3 benar-benar sesuai dan tidak membuat proses belajar menjadi terlalu mudah atau terlalu berat.
 ```
 
-#### CTA
+#### Email follow-up
 
-Primary:
+The web result does not provide a portfolio-upload form or submission button. The result email instructs the parent to reply with:
+
+- the source/editable project file or an accessible editable-project link, which is mandatory;
+- a short project explanation;
+- screenshots or video only as optional supporting evidence.
+
+The regular result CTAs remain available:
 
 ```text
-Kirim Portfolio untuk Review Lv3
-```
-
-Secondary:
-
-```text
+Konsultasikan Hasil dengan Academic Team
 Lihat Rekomendasi Level 2
 ```
 
@@ -1135,7 +1141,7 @@ Berdasarkan hasil placement, [Assigned Module] menjadi modul yang sebaiknya dipe
 
 The UI heading for this explanation is **Arah Belajar Berdasarkan Minat**, not the technical label `Konfirmasi Minat Stage 3`.
 
-A general `Status Placement dan Review Lv3` section must not appear in ordinary results. Lv3 portfolio/review information is shown only to a student who is actually marked `lv3_candidate`, adjacent to the optional review action.
+A general `Status Placement dan Review Lv3` section must not appear in ordinary results. Lv3 portfolio/review information is shown only to a student who is actually marked `lv3_candidate`, together with instructions to reply to the result email. V1 has no web upload action.
 
 Placement information remains available elsewhere in the report through Assigned Module, assigned level, Potential Module, and the parent-facing explanation. The path represents an ordered learning journey and may support a multi-module program offer, but purchasing language must not imply guaranteed outcomes or artificial urgency.
 
@@ -1161,7 +1167,7 @@ The result should provide:
 - primary CTA: `Konsultasikan Hasil dengan Academic Team`;
 - secondary CTA: `Unduh Laporan Lengkap`;
 - optional program CTA after approval: `Lihat Program yang Direkomendasikan`;
-- Lv3 candidate CTA: `Kirim Portfolio untuk Review Lv3`.
+- Lv3 candidate guidance: `Balas email hasil dengan source/editable project untuk Review Lv3` (informational copy, not a web submission CTA).
 
 `Mulai Assessment Baru` must not be the primary parent-facing CTA.
 
@@ -1195,7 +1201,7 @@ Browser
 → academic review
 → approval
 → parent email
-→ BCC administrator
+→ BCC all registered BM/SA recipients from columns B/C on the exact branch row
 ```
 
 ### 11.2 Required statuses
@@ -1210,7 +1216,7 @@ Browser
 - `lv3_approved`
 - `lv3_not_approved`
 - `needs_manual_review`
-- `rejected`
+- `waiting_branch_recipient`
 - `email_sent`
 - `email_failed`
 
@@ -1218,7 +1224,12 @@ Browser
 
 - Parent email must not be sent before academic approval.
 - Approved results are sent to the registered parent email.
-- The configured administrator receives a BCC.
+- All valid BM and SA emails in `DROPDOWNS` columns B and C on the exact branch row receive BCC. The exact `Online` row is used for Online registrations.
+- If neither a BM nor SA recipient exists, the PDF/result remains stored and the send is held as `waiting_branch_recipient`.
+- Adding or approving dashboard access never automatically sends a held result. An authorized BM/SA must review it and click **Approve & Send**.
+- The **Approve & Send** backend action is idempotent. A retry after refresh, temporary Wi-Fi loss, or a lost response must return the existing `sent` state without sending a duplicate email.
+- Lv3 candidates do not use a V1 web portfolio form. The parent replies to the result email with the portfolio; source code or an editable project file is mandatory.
+- Candidate artifact guidance: Scratch `.sb3`/shared link; Roblox `.rbxl`/`.rbxlx`, project link and `.lua`; Python `.py`/repository plus README.
 - Email failure must update status without deleting the approved result.
 - Retrying email must not create a duplicate assessment row.
 
@@ -1295,7 +1306,7 @@ The Stage 3 interest result is stored as **Interest Confirmation**. It normally 
 
 The final report selects one official Learning Path from the Stage 3 Interest Confirmation. The same official naming is used across audiences, while module order may follow the explicit audience rules below.
 
-| Interest Confirmation | Official path ID        | Official path name                 | Junior, 5–7                           | Kids, 8–15                            | Teens, 16–18                               |
+| Interest Confirmation | Official path ID        | Official path name                 | Junior, 5–6 (and 7 non-reading)                           | Kids, 7 (reading) & 8–15                            | Teens, 16–18                               |
 | --------------------- | ----------------------- | ---------------------------------- | -------------------------------------- | -------------------------------------- | ------------------------------------------- |
 | Scratch               | `interactive_creator` | **Interactive Creator Path** | Scratch Jr → Scratch                  | Scratch Jr → Scratch → Roblox Studio | Scratch → Roblox Studio →**Python** |
 | Roblox Studio         | `game_creator`        | **Game Creator Path**        | Scratch Jr → Scratch → Roblox Studio | Scratch → Roblox Studio               | Roblox Studio →**Python**            |
@@ -1326,8 +1337,8 @@ The Teens rules are:
 6. A Python or app-development interest produces `App Creator Path`: Scratch → **Python**.
 7. The selected interest changes the Learning Path and its explanation under **Arah Belajar Berdasarkan Minat**, but it does not change the Teens Assigned Module or assigned level.
 8. Scratch is not presented as the primary recommendation for a Teens student. It may be described only as a short visual introduction or project context.
-9. Roblox Studio must not be presented as the recommended starting module when Creativity or Spatial readiness is below the required threshold. The report records the game/3D interest as a possible project theme, explains the readiness gap in parent-facing language, and keeps Python as the main learning direction.
-10. Even when Creativity and Spatial readiness are adequate, a Roblox Studio interest remains an interest context unless the separate Teens Stage 1A and Stage 1B alternate-assignment requirements have actually assigned Roblox Studio.
+9. Roblox Studio must not replace Python as the recommended Teens starting module in V1. The report records game/3D interest as a possible project theme, may explain relevant readiness evidence in parent-facing language, and keeps Python as the main learning direction.
+10. Even when the learner is interested in Roblox Studio and has strong Spatial evidence, it remains interest and project context for ages 16–18; the ages 10–15 Roblox override does not apply to this Teens flow.
 
 Required parent-facing outcomes:
 
@@ -1383,7 +1394,7 @@ The final result must show:
 
 ### 12.6 Optional exceptional Lv3 review after the result
 
-If Stage 2 records `lv3_candidate`, the universal Stage 3 and final learning-track result still run normally. After the result, the product may offer a separate portfolio submission for Academic Team review.
+If Stage 2 records `lv3_candidate`, the universal Stage 3 and final learning-track result still run normally. After the result, the product sends portfolio instructions by email. The parent replies to that result email with the mandatory source/editable project or an accessible editable-project link; screenshots or video are supporting evidence only. V1 does not offer a separate portfolio web form or submission button.
 
 Portfolio submission does not replace Stage 3. Only explicit `lv3_approved` may produce EMERGING — Lv3; otherwise the automatic placement remains Level 2.
 
@@ -1505,7 +1516,7 @@ Every question or challenge should have:
 
 - Every student completes all four pillars.
 - Junior receives simple visual-choice interactions.
-- Kids and Teens receive no conventional ABC question UI.
+- V1 permits conventional A–D question UI for all audiences; interaction complexity remains age-appropriate.
 - Scores are balanced by pillar.
 - Logic and Digital Literacy participate in module readiness.
 - Stage 1B always opens with at least 10 questions.
@@ -1514,22 +1525,21 @@ Every question or challenge should have:
 - Junior Stage 1B expands to 15 questions only when Logic, Creativity, and Digital Literacy are all perfect in Stage 1A.
 - Kids 8–11 Stage 1B expands to 20 questions only when all four Stage 1A pillars are perfect.
 - Kids Upper 12–15 Stage 1B remains 10 questions and locks perfect Logic and/or Spatial into its Top-2 selection.
-- Teens 16–18 Stage 1B always contains five Logic questions and five questions from Spatial or Creativity.
-- Teens 16–18 locks Spatial as the second Stage 1B pillar when Stage 1A Spatial is 5/5; otherwise the higher of Spatial and Creativity is selected, with Spatial winning a tie.
+- Teens 16–18 Stage 1B always contains five Logic questions and five Spatial questions.
 - The system outputs both Potential Module and Assigned Module.
 - Age 8–9 remains assigned to Scratch.
-- Age 10–11 may be assigned Roblox Studio from a stronger ready Spatial profile; without confirmed Roblox interest, its final fallback is Scratch.
-- Age 12 uses Roblox when interest is confirmed, Python when Logic/text readiness is strong without Roblox interest, and Scratch otherwise.
-- Age 13–15 uses Roblox when interest is confirmed and Python as the non-Roblox fallback.
+- Age 10–11 records Roblox potential from stronger Spatial evidence, but final Roblox Studio Level 1 requires explicit Roblox interest plus Logic ≥3/5 and Spatial ≥3/5; otherwise the final module is Scratch.
+- Age 12 uses Roblox Studio Level 1 only when interest is explicitly confirmed and both thresholds pass; otherwise it retains the safe Logic/readiness route.
+- Age 13–15 uses Roblox Studio Level 1 only when interest is explicitly confirmed and both thresholds pass; otherwise Python is the fallback.
 - Age 16–18 remains assigned to Python by default.
-- Age 16–18 is assigned Roblox Studio only when Spatial is 5/5 in both Stage 1A and its five Stage 1B Spatial questions.
-- High Teens Creativity may support Roblox Studio as Potential Module but cannot independently change Assigned Module.
+- Age 16–18 remains assigned to Python even when Roblox Studio is selected as an interest or Spatial evidence is perfect.
+- High Teens Creativity or Spatial may support Roblox Studio as Potential Module or project context but cannot change Assigned Module.
 - Low Teens Logic, Spatial, or Digital Literacy records support evidence without routing the student down to Scratch.
-- Teens Stage 2 loads Python unless complete Spatial validation changed Assigned Module to Roblox Studio.
+- V1 Teens Stage 2 and final Assigned Module remain Python; Roblox Studio may appear only as interest or project context in the ages 16–18 Teens flow.
 
 ### Stage 2
 
-- Stage 2 loads only the Assigned Module assessment.
+- V1 Kids Stage 2 always loads Scratch and V1 Teens Stage 2 always loads Python. This is a documented temporary exception to module-specific Stage 2 routing.
 - If Stage 3 later changes the module under the ages 10–15 controlled policy, the Stage 2 evidence remains attached to the module actually assessed and must not be reused to award Level 2 in the new module.
 - Every post-Stage-2 module change starts at Level 1.
 - The general challenge bank provides seven ordered difficulties.
@@ -1568,12 +1578,12 @@ Every question or challenge should have:
 - Every Teens path ends at Python, while the official Learning Path name is the visually highlighted element.
 - Teens ages 16–18 Stage 3 choices change the Learning Path and the **Arah Belajar Berdasarkan Minat** explanation; they do not use the ages 10–15 module override.
 - Parent-facing copy leads with Interactive Creator Path, Game Creator Path, or App Creator Path rather than raw `minat [module]` wording.
-- A low Creativity or Spatial result prevents Roblox Studio from being described as the recommended Teens starting point, even when Roblox Studio is the confirmed interest.
+- Roblox Studio is never described as the recommended Teens starting module in V1, even when Spatial is perfect or Roblox Studio is the confirmed interest; it may be described as Potential Module or project context.
 - The Learning Path chart contains only the path name and ordered modules, with no level or placement-status labels.
 - Assigned Module, assigned level, Potential Module, and locked-module explanations remain separate report content.
 - Every locked module has at least one explicit age, readiness, pillar, or prerequisite reason.
 - The complete result is shown only after Stage 3.
-- Optional portfolio review is offered after the result only to `lv3_candidate` students.
+- Portfolio review instructions are included by email only for `lv3_candidate` students; V1 does not expose a web upload form.
 - Only explicit `lv3_approved` review assigns EMERGING — Lv3.
 
 ### Result and integration
@@ -1584,7 +1594,7 @@ Every question or challenge should have:
 - Completed results survive a temporary submission failure.
 - Apps Script submission does not create duplicate rows.
 - Parent email is sent only after approval.
-- Administrator receives a BCC.
+- BM/SA recipients registered in columns B/C for the exact branch receive BCC; missing recipients hold the email without deleting the result.
 - Production does not display developer controls.
 
 ### Quality assurance
@@ -1600,7 +1610,7 @@ Every question or challenge should have:
 ## 17. Out of Scope for Initial Release
 
 - Full recreation of Scratch or Roblox Studio;
-- automatic preference-based module switching;
+- preference-based module switching except the controlled Stage 3 Roblox override defined for V1;
 - transferring levels between modules;
 - automatic EMERGING — Lv3 placement without portfolio review;
 - parent self-service approval;
@@ -1726,7 +1736,7 @@ The function name is the stable search anchor. Line numbers below are a snapshot
 
 | Audience      | Active file                          | Final report renderer                  | Current template landmark                                                                                                                           | Report selector       |
 | ------------- | ------------------------------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| Junior, 5–7  | `junior-final-placement-test.html` | `wireStage3()`                       | Function starts near line 1547;`const appContent` starts near line 1817; `appEl.innerHTML = appContent` installs the report                     | `.placement-report` |
+| Junior, 5–6 (and 7 non-reading)  | `junior-final-placement-test.html` | `wireStage3()`                       | Function starts near line 1547;`const appContent` starts near line 1817; `appEl.innerHTML = appContent` installs the report                     | `.placement-report` |
 | Kids, 8–15   | `kids-final-placement-test.html`   | `finalResult()`                      | Function starts near line 14071;`shell(...)` starts near line 14228; `<article class="placement-report kids-report...">` starts near line 14281 | `.placement-report` |
 | Teens, 16–18 | `teens.html`                       | `renderTeensResultReport(container)` | Function starts near line 8319;`container.innerHTML` starts near line 8417; `<article class="teen-report...">` starts near line 8447            | `.teen-report`      |
 

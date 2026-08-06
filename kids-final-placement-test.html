@@ -8094,6 +8094,7 @@ window.PlacementSync?.configure();
               let ptTimer2Min = null;
               let ptTimerQuestionKey = '';
               let ptOnSkipCallback = null;
+              const PT_TIMER_DEADLINE_KEY = 'pt_question_timer_deadline_v1';
               let ptLastCheckpointKey = '';
               let ptModalReturnFocus = null;
 
@@ -8117,6 +8118,7 @@ window.PlacementSync?.configure();
                   ptTimer1Min = null;
                   ptTimer2Min = null;
                   ptTimerQuestionKey = '';
+                  localStorage.removeItem(PT_TIMER_DEADLINE_KEY);
                   const skipButton = document.getElementById('ptSkipQuestionBtn');
                   if (skipButton) skipButton.style.display = 'none';
                   closeSkipConfirmModal();
@@ -8124,25 +8126,34 @@ window.PlacementSync?.configure();
 
               function startQuestionTimer(questionKey, onAutoAdvance, onManualSkip) {
                   if (ptTimerQuestionKey === questionKey) return;
+                  let savedDeadline = null;
+                  try { savedDeadline = JSON.parse(localStorage.getItem(PT_TIMER_DEADLINE_KEY) || 'null'); } catch (error) {}
                   stopQuestionTimer();
                   ptTimerQuestionKey = questionKey;
                   ptOnSkipCallback = onManualSkip || onAutoAdvance;
 
                   const skipDelayMs = placementQuestionDelay(60000, 'qcSkipMs');
                   const autoDelayMs = placementQuestionDelay(120000, 'qcAutoMs');
+                  const now = Date.now();
+                  const deadline = savedDeadline?.questionKey === questionKey && Number(savedDeadline.autoAt) > now
+                      ? savedDeadline
+                      : { questionKey, skipAt: now + skipDelayMs, autoAt: now + autoDelayMs };
+                  localStorage.setItem(PT_TIMER_DEADLINE_KEY, JSON.stringify(deadline));
+                  const skipRemaining = Math.max(0, Number(deadline.skipAt) - now);
+                  const autoRemaining = Math.max(0, Number(deadline.autoAt) - now);
 
                   const skipButton = document.getElementById('ptSkipQuestionBtn');
-                  if (skipButton) skipButton.style.display = (skipDelayMs === 0 ? 'inline-flex' : 'none');
+                  if (skipButton) skipButton.style.display = (skipRemaining === 0 ? 'inline-flex' : 'none');
 
                   ptTimer1Min = setTimeout(() => {
                       const skipBtn = document.getElementById('ptSkipQuestionBtn');
                       if (skipBtn) skipBtn.style.display = 'inline-flex';
-                  }, skipDelayMs);
+                  }, skipRemaining);
 
                   ptTimer2Min = setTimeout(() => {
                       stopQuestionTimer();
                       if (typeof onAutoAdvance === 'function') onAutoAdvance();
-                  }, autoDelayMs);
+                  }, autoRemaining);
               }
 
               window.showSkipConfirmModal = function() {
@@ -11381,6 +11392,57 @@ window.PlacementSync?.configure();
             profile:null,answerTrail:[],attempts:[],startedAt:new Date().toISOString()
           };
           const app=document.getElementById('app');
+          const STAGE1B_TIMER_KEY='pt_stage1b_question_deadline_v1';
+          let stage1bTimerKey='';
+          let stage1bSkipTimer=null;
+          let stage1bAutoTimer=null;
+          function timerDelay(defaultMs,queryName){
+            let search=location.search;
+            try{search=window.parent.location.search}catch(error){}
+            const value=Number(new URLSearchParams(search).get(queryName));
+            return value>0?value:defaultMs;
+          }
+          function ensureTimedSkipButton(){
+            let button=document.getElementById('stage1bTimedSkip');
+            if(button)return button;
+            button=document.createElement('button');
+            button.id='stage1bTimedSkip';button.type='button';button.textContent='Lewati Soal';
+            button.style.cssText='display:none;position:fixed;right:22px;bottom:22px;z-index:12000;border:0;border-radius:999px;padding:12px 18px;background:#ef4444;color:#fff;font:800 14px Inter,sans-serif;box-shadow:0 10px 24px rgba(127,29,29,.28);cursor:pointer';
+            button.onclick=()=>{if(confirm('Lewati soal ini? Nilainya akan 0 dan tes lanjut ke soal berikutnya.'))skipCurrentQuestion('manual_skip')};
+            document.body.appendChild(button);return button;
+          }
+          function clearQuestionTimer(removeDeadline=true){
+            clearTimeout(stage1bSkipTimer);clearTimeout(stage1bAutoTimer);
+            stage1bSkipTimer=null;stage1bAutoTimer=null;stage1bTimerKey='';
+            const button=document.getElementById('stage1bTimedSkip');if(button)button.style.display='none';
+            if(removeDeadline)localStorage.removeItem(STAGE1B_TIMER_KEY);
+          }
+          function skipCurrentQuestion(outcomeReason){
+            if(state.index>=missions.length)return;
+            const m=missions[state.index];
+            clearQuestionTimer(true);
+            if(!state.submitted[m.id]){
+              const submittedAt=new Date().toISOString();
+              const evidence={questionId:m.id,pillar:m.pillar,focus:m.focus||m.title||m.id,prompt:m.mcq?.question||copy(m),difficulty:m.difficulty,interactionType:m.mcq?'multiple_choice':m.engine,submittedValue:null,responseText:'Soal dilewati',correct:false,firstSubmissionCorrect:false,submissionAttemptCount:1,submittedAt,technicalError:false,outcomeReason};
+              state.submitted[m.id]=true;state.answerTrail.push(evidence);state.attempts.push({...evidence,attemptedAt:submittedAt});
+            }
+            if(state.index<missions.length-1){state.index++;resetMission()}else{state.index=missions.length;render()}
+            notifyParent('kalananti-stage1b-progress',progressPayload());
+          }
+          function armQuestionTimer(m){
+            const key=`stage1b:${m.id}`;
+            if(stage1bTimerKey===key)return;
+            let saved=null;try{saved=JSON.parse(localStorage.getItem(STAGE1B_TIMER_KEY)||'null')}catch(error){}
+            clearQuestionTimer(false);stage1bTimerKey=key;
+            const now=Date.now();
+            const deadline=saved?.key===key&&Number(saved.autoAt)>now?saved:{key,skipAt:now+timerDelay(60000,'qcSkipMs'),autoAt:now+timerDelay(120000,'qcAutoMs')};
+            localStorage.setItem(STAGE1B_TIMER_KEY,JSON.stringify(deadline));
+            const button=ensureTimedSkipButton();
+            const reveal=()=>{if(stage1bTimerKey===key)button.style.display='block'};
+            const skipRemaining=Math.max(0,Number(deadline.skipAt)-now);
+            if(skipRemaining===0)reveal();else stage1bSkipTimer=setTimeout(reveal,skipRemaining);
+            stage1bAutoTimer=setTimeout(()=>{if(stage1bTimerKey===key)skipCurrentQuestion('timeout')},Math.max(0,Number(deadline.autoAt)-now));
+          }
           function copy(m){return state.age==='9-11'?m.young:m.old}
           function speakText(text){
             if(!('speechSynthesis' in window))return;
@@ -11464,6 +11526,7 @@ window.PlacementSync?.configure();
           }
           function submitMission(){
             const m=missions[state.index];if(!state.hasRun||!state.checks.every(x=>x.pass))return;
+            clearQuestionTimer(true);
             if(!state.submitted[m.id]){
               state.submitted[m.id]=true;state.scores[m.pillar]++;
               state.answerTrail.push({
@@ -11480,6 +11543,7 @@ window.PlacementSync?.configure();
           }
           function submitMcq(){
             const m=missions[state.index];if(!m.mcq||state.choice===null)return;
+            clearQuestionTimer(true);
             if(!state.submitted[m.id]){
               const correct=state.choice===m.mcq.correct;
               state.submitted[m.id]=true;if(correct)state.scores[m.pillar]++;
@@ -11502,20 +11566,10 @@ window.PlacementSync?.configure();
           function move(delta){const next=Math.max(0,Math.min(missions.length-1,state.index+delta));if(next!==state.index){state.index=next;resetMission()}}
           function toast(text){const old=document.querySelector('.toast');if(old)old.remove();const el=document.createElement('div');el.className='toast';el.textContent=text;document.body.appendChild(el);setTimeout(()=>el.remove(),2600)}
           function render(){
-            if (window._sortingTimer1B) {
-              clearTimeout(window._sortingTimer1B);
-              window._sortingTimer1B = null;
-            }
-            if(state.index>=missions.length){renderFinish();return}
+            if(state.index>=missions.length){clearQuestionTimer(true);renderFinish();return}
             const m=missions[state.index],p=PILLARS[m.pillar],progress=((state.index+1)/missions.length)*100;
             const isMcq=!!m.mcq;
-
-            if (!isMcq) {
-              window._sortingTimer1B = setTimeout(() => {
-                toast('Waktu habis. Lanjut ke soal berikutnya.');
-                if(state.index<missions.length-1){state.index++;resetMission()}else{state.index=missions.length;render()}
-              }, 120000);
-            }
+            armQuestionTimer(m);
 
             const stageProgress=`
               <div class="progress-container">
@@ -11613,6 +11667,7 @@ window.PlacementSync?.configure();
                     const savedProgress = JSON.parse(savedProgressStr);
                     state.index = savedProgress.index || 0;
                     state.scores = savedProgress.scores || {logic:0,creativity:0,spatial:0,digital:0};
+                    state.submitted = savedProgress.submitted || {};
                     state.answerTrail = savedProgress.answerTrail || [];
                     state.attempts = savedProgress.attempts || [];
                 } catch(e) {}
@@ -11621,7 +11676,7 @@ window.PlacementSync?.configure();
             state.submitted={};state.scores={logic:0,creativity:0,spatial:0,digital:0};
             state.answerTrail=[];state.attempts=[];state.startedAt=new Date().toISOString();
             }
-            state.selected=[];state.choice=null;state.hasRun=false;state.checks=[];state.submitted={};
+            state.selected=[];state.choice=null;state.hasRun=false;state.checks=[];
             if (!state.startedAt) state.startedAt=new Date().toISOString();
 
             render();
@@ -12425,6 +12480,11 @@ window.PlacementSync?.configure();
               let robotState = {x: 0, y: 0, dir: 0};
               let challengeSession = null;
               let submissionLocked = false;
+              const STAGE2_TIMER_KEY = 'pt_stage2_question_deadline_v1';
+              const STAGE2_PROGRESS_KEY = 'kalananti-stage2-progress-v1';
+              let stage2TimerQuestionKey = '';
+              let stage2SkipTimer = null;
+              let stage2AutoTimer = null;
 
               const adaptiveState = {
                   assessmentId: 'stage2-scratch-v1',
@@ -12442,6 +12502,15 @@ window.PlacementSync?.configure();
                   completed: false
               };
 
+              function persistStage2Progress() {
+                  localStorage.setItem(STAGE2_PROGRESS_KEY, JSON.stringify({
+                      currentLvl,
+                      adaptiveState,
+                      challengeSession,
+                      updatedAt: new Date().toISOString()
+                  }));
+              }
+
               function createChallengeSession(isConfirmation = false) {
                   challengeSession = {
                       challengeId: `scratch-d${currentLvl}-${isConfirmation ? 'confirmation' : 'primary'}`,
@@ -12454,6 +12523,77 @@ window.PlacementSync?.configure();
                       submissionAttemptCount: 0,
                       firstSubmissionCorrect: null
                   };
+              }
+
+              function stage2TimerDelay(defaultMs, queryName) {
+                  let search = location.search;
+                  try { search = window.parent.location.search; } catch (error) {}
+                  const value = Number(new URLSearchParams(search).get(queryName));
+                  return value > 0 ? value : defaultMs;
+              }
+
+              function ensureStage2SkipButton() {
+                  let button = document.getElementById('stage2TimedSkip');
+                  if (button) return button;
+                  button = document.createElement('button');
+                  button.id = 'stage2TimedSkip';
+                  button.type = 'button';
+                  button.textContent = 'Lewati Tantangan';
+                  button.style.cssText = 'display:none;position:fixed;right:22px;bottom:22px;z-index:12000;border:0;border-radius:999px;padding:12px 18px;background:#ef4444;color:#fff;font:800 14px Inter,sans-serif;box-shadow:0 10px 24px rgba(127,29,29,.28);cursor:pointer';
+                  button.onclick = () => {
+                      if (confirm('Lewati tantangan ini? Tantangan dianggap belum berhasil dan tingkat berikutnya akan diturunkan.')) {
+                          skipStage2Challenge('manual_skip');
+                      }
+                  };
+                  document.body.appendChild(button);
+                  return button;
+              }
+
+              function clearStage2QuestionTimer(removeDeadline = true) {
+                  clearTimeout(stage2SkipTimer);
+                  clearTimeout(stage2AutoTimer);
+                  stage2SkipTimer = null;
+                  stage2AutoTimer = null;
+                  stage2TimerQuestionKey = '';
+                  const button = document.getElementById('stage2TimedSkip');
+                  if (button) button.style.display = 'none';
+                  if (removeDeadline) localStorage.removeItem(STAGE2_TIMER_KEY);
+              }
+
+              function armStage2QuestionTimer() {
+                  const key = `stage2:${currentLvl}:${challengeSession?.isConfirmation ? 'confirmation' : 'primary'}`;
+                  if (stage2TimerQuestionKey === key) return;
+                  let saved = null;
+                  try { saved = JSON.parse(localStorage.getItem(STAGE2_TIMER_KEY) || 'null'); } catch (error) {}
+                  clearStage2QuestionTimer(false);
+                  stage2TimerQuestionKey = key;
+                  const now = Date.now();
+                  const deadline = saved?.key === key && Number(saved.autoAt) > now
+                      ? saved
+                      : {
+                          key,
+                          skipAt: now + stage2TimerDelay(60000, 'qcSkipMs'),
+                          autoAt: now + stage2TimerDelay(120000, 'qcAutoMs')
+                      };
+                  localStorage.setItem(STAGE2_TIMER_KEY, JSON.stringify(deadline));
+                  const button = ensureStage2SkipButton();
+                  const reveal = () => { if (stage2TimerQuestionKey === key) button.style.display = 'block'; };
+                  const skipRemaining = Math.max(0, Number(deadline.skipAt) - now);
+                  if (skipRemaining === 0) reveal();
+                  else stage2SkipTimer = setTimeout(reveal, skipRemaining);
+                  stage2AutoTimer = setTimeout(() => {
+                      if (stage2TimerQuestionKey === key) skipStage2Challenge('timeout');
+                  }, Math.max(0, Number(deadline.autoAt) - now));
+              }
+
+              function skipStage2Challenge(outcomeReason) {
+                  if (adaptiveState.completed || !challengeSession) return;
+                  submissionLocked = true;
+                  challengeSession.submissionAttemptCount = Math.max(1, challengeSession.submissionAttemptCount);
+                  challengeSession.firstSubmissionCorrect = false;
+                  clearStage2QuestionTimer(true);
+                  recordChallengeResult({ correct: false, validationChecks: {}, outcomeReason });
+                  routeAfterSubmission(false);
               }
 
               function updateProgress() {
@@ -12544,9 +12684,11 @@ window.PlacementSync?.configure();
                   initGrid();
                   resetCanvas();
                   createChallengeSession(adaptiveState.confirmationPending && num === 7);
+                  armStage2QuestionTimer();
                   submissionLocked = false;
                   document.getElementById('submit-btn').disabled = false;
                   document.getElementById('submit-btn').innerHTML = '<i class="fa-solid fa-play"></i> Jalankan &amp; Periksa';
+                  persistStage2Progress();
               }
 
               function clearWorkspace() {
@@ -12816,9 +12958,11 @@ window.PlacementSync?.configure();
                       hintUsed: challengeSession.hintUsed,
                       durationSeconds: Math.max(1, Math.round((Date.now() - challengeSession.startedAt) / 1000)),
                       validationChecks: outcome.validationChecks || {},
-                      technicalError: false
+                      technicalError: false,
+                      outcomeReason: outcome.outcomeReason || 'submission'
                   };
                   adaptiveState.challengeTrail.push(telemetry);
+                  persistStage2Progress();
                   return telemetry;
               }
 
@@ -12842,6 +12986,7 @@ window.PlacementSync?.configure();
                       technicalError: true,
                       technicalErrorMessage: outcome.error || 'unknown_error'
                   });
+                  persistStage2Progress();
               }
 
               function calculateLv3Candidate(stage1) {
@@ -12857,18 +13002,31 @@ window.PlacementSync?.configure();
                       item.confirmation === true &&
                       item.firstSubmissionCorrect === true
                   );
+                  const allScoredItemsFirstPass = adaptiveState.challengeTrail.length > 0
+                      && adaptiveState.challengeTrail.every(item =>
+                          item.technicalError === false
+                          && item.firstSubmissionCorrect === true
+                          && item.finalSubmissionCorrect === true
+                      );
                   const noTechnicalError = adaptiveState.challengeTrail.every(item => item.technicalError === false);
                   adaptiveState.lv3CandidateEvidence = {
                       stage1APerfect: stage1.stage1APerfect,
                       stage1BPerfect: stage1.stage1BPerfect,
                       upwardFirstPass,
                       highestConfirmationPassed: confirmationPassed,
+                      allScoredItemsFirstPass,
                       noTechnicalError
                   };
-                  return stage1.stage1APerfect && stage1.stage1BPerfect && upwardFirstPass && confirmationPassed && noTechnicalError;
+                  return stage1.stage1APerfect
+                      && stage1.stage1BPerfect
+                      && upwardFirstPass
+                      && confirmationPassed
+                      && allScoredItemsFirstPass
+                      && noTechnicalError;
               }
 
               function finishAssessment(highestMastery, extraFlag = '') {
+                  clearStage2QuestionTimer(true);
                   const stage1 = readStage1Prerequisites();
                   adaptiveState.highestConfirmedMastery = Math.max(1, highestMastery);
                   adaptiveState.automaticPlacement = highestMastery <= 3 ? 'Level 1' : 'Level 2';
@@ -12877,6 +13035,7 @@ window.PlacementSync?.configure();
                   if (stage1.assignedModule !== 'Scratch') addUnique(adaptiveState.reviewFlags, 'assessment_module_mismatch');
                   adaptiveState.lv3Candidate = highestMastery === 7 && stage1.assignedModule === 'Scratch' && calculateLv3Candidate(stage1);
                   adaptiveState.completed = true;
+                  localStorage.removeItem(STAGE2_PROGRESS_KEY);
                   updateProgress();
 
                   const result = {
@@ -12954,14 +13113,35 @@ window.PlacementSync?.configure();
                           'warning',
                           '<i class="fa-solid fa-rotate-right"></i> Belum tepat. Kamu punya satu kesempatan terakhir sebelum berpindah tantangan.'
                       );
+                      persistStage2Progress();
                       return;
                   }
 
                   recordChallengeResult(outcome);
+                  clearStage2QuestionTimer(true);
                   routeAfterSubmission(outcome.correct);
               }
 
-              loadLevel(4);
+              function restoreOrStartStage2() {
+                  let saved = null;
+                  try { saved = JSON.parse(localStorage.getItem(STAGE2_PROGRESS_KEY) || 'null'); } catch (error) {}
+                  if (saved?.adaptiveState && saved.adaptiveState.completed !== true) {
+                      Object.assign(adaptiveState, saved.adaptiveState);
+                      const restoredLevel = Number(saved.currentLvl || saved.adaptiveState.currentDifficulty || 4);
+                      loadLevel(Math.max(1, Math.min(7, restoredLevel)));
+                      if (saved.challengeSession && Number(saved.challengeSession.difficulty) === currentLvl) {
+                          Object.assign(challengeSession, saved.challengeSession);
+                          if (challengeSession.submissionAttemptCount === 1 && challengeSession.firstSubmissionCorrect === false) {
+                              document.getElementById('submit-btn').innerHTML = '<i class="fa-solid fa-play"></i> Kesempatan 2 dari 2';
+                          }
+                          persistStage2Progress();
+                      }
+                      return;
+                  }
+                  loadLevel(4);
+              }
+
+              restoreOrStartStage2();
           <\/script>
 
       <script>
@@ -14283,7 +14463,7 @@ window.PlacementSync?.configure();
       if (__stageMatch) {
         let __stageDocument = (
           document.getElementById(__stageMatch[1])?.textContent || ""
-        ).replaceAll("<\/script", "</script");
+        ).replaceAll("<\\/script", "</script");
         try { history.replaceState(null, "", location.href.split("#")[0]); } catch(e) {}
         renderStageDocumentSafely(__stageDocument);
       } else {
@@ -14383,13 +14563,18 @@ window.PlacementSync?.configure();
             ? qcInterest
             : randomItem(validModules);
           const scorePool = [0.52, 0.64, 0.73, 0.81, 0.9];
-          const qcLogic = Number(params.get("qcLogic"));
+          const qcLogicRaw = params.get("qcLogic");
+          const qcSpatialRaw = params.get("qcSpatial");
+          const qcLogic = qcLogicRaw === null ? Number.NaN : Number(qcLogicRaw);
+          const qcSpatial = qcSpatialRaw === null ? Number.NaN : Number(qcSpatialRaw);
           const combinedPillarScores = {
             logic: Number.isFinite(qcLogic) && qcLogic >= 0 && qcLogic <= 1
               ? qcLogic
               : randomItem(scorePool),
             creativity: randomItem(scorePool),
-            spatial: randomItem(scorePool),
+            spatial: Number.isFinite(qcSpatial) && qcSpatial >= 0 && qcSpatial <= 1
+              ? qcSpatial
+              : randomItem(scorePool),
             digital: randomItem(scorePool),
           };
           const assignedLevel = randomItem([
@@ -14581,7 +14766,7 @@ window.PlacementSync?.configure();
             potentialModule = "Scratch",
             fallbackReason = "",
             reviewFlags = [];
-          if (age <= 7) {
+          if (age <= 6) {
             assignedModule = "Scratch Jr";
             const scratchEvidence =
               s.logic >= 4 &&
@@ -14681,21 +14866,22 @@ window.PlacementSync?.configure();
         }
         function startStage2() {
           state.screen = "stage2";
+          // V1 Kids always uses the Scratch practical assessment. The final
+          // interest policy may still recommend Roblox Studio Level 1 later,
+          // but the evidence collected here must remain labelled as Scratch.
+          state.stage1.stage2AssessmentId = "scratch-stage2-v1";
+          state.stage1.stage2AssessmentModule = "Scratch";
           save();
           localStorage.removeItem("kalananti-stage2-result-v1");
           localStorage.setItem(
             "pt_state",
             JSON.stringify({ ...state.stage1, student: state.student }),
           );
-          const mismatch =
-            state.stage1.assignedModule !== "Scratch"
-              ? `<div class="continue-dock note warning">Prototype praktis yang tersedia saat ini adalah builder Scratch. Hasil diberi flag module mismatch untuk Academic Team.</div>`
-              : "";
           frameScreen(
             2,
             "embedded-stage2",
-            `Stage 2 ${state.stage1.assignedModule}`,
-            mismatch,
+            "Stage 2 Scratch",
+            '<div class="continue-dock note">V1 Kids menggunakan assessment praktis Scratch untuk seluruh peserta.</div>',
           );
         }
         function stage2Result() {
@@ -14708,52 +14894,13 @@ window.PlacementSync?.configure();
           frameScreen(3, "embedded-stage3", "Stage 3 konfirmasi minat");
         }
         function portfolioForm() {
-          setStep(3);
-          state.screen = "stage3-portfolio";
+          // Kept only as a compatibility redirect for old saved sessions.
+          // V1 has no portfolio web form; Lv3 candidates reply to the result
+          // email with source/editable project files.
+          state.stage3.status = "reply_email_required";
+          state.stage3.portfolioItems = [];
           save();
-          shell(`<div class="hero"><span class="eyebrow">STAGE 3 · PORTFOLIO</span><h1>Bukti proyek ${esc(state.student.name)}</h1><p class="sub">Pilih modul yang ingin dinilai. Pilihan ini tidak otomatis mengubah Assigned Module atau menjamin Lv3.</p></div>
-      <form id="portfolioForm"><div class="form-grid">
-        <div class="field"><label for="module">Modul yang ingin dinilai</label><select id="module" required><option value="">Pilih modul</option><option>Scratch</option><option>Roblox Studio</option><option>Python</option></select></div>
-        <div class="field"><label for="projectTitle">Judul proyek</label><input id="projectTitle" required maxlength="120"></div>
-        <div class="field full"><label for="projectLink">Link proyek, repository, atau file</label><input id="projectLink" type="url" required placeholder="https://..."></div>
-        <div class="field full"><label for="description">Apa yang dilakukan proyek ini?</label><textarea id="description" required maxlength="1000"></textarea></div>
-        <div class="field full"><label for="independent">Bagian apa yang dibuat sendiri?</label><textarea id="independent" required maxlength="1000"></textarea></div>
-        <div class="field"><label for="demoLink">Demo/screenshot (opsional)</label><input id="demoLink" type="url" placeholder="https://..."></div>
-        <div class="field"><label for="sourceLink">Source/editable file (opsional)</label><input id="sourceLink" type="url" placeholder="https://..."></div>
-      </div><div class="note security" style="margin-top:16px">Jangan sertakan password, access token, atau informasi pribadi yang tidak diperlukan.</div>
-      <div class="actions"><button class="btn btn-secondary" type="button" id="skip">Belum punya portfolio</button><button class="btn btn-primary">Kirim untuk review</button></div></form>`);
-          document.getElementById("skip").onclick = () => {
-            state.stage3.status = "portfolio_pending";
-            state.stage3.portfolioItems = [];
-            save();
-            finalResult();
-          };
-          document.getElementById("portfolioForm").onsubmit = (e) => {
-            e.preventDefault();
-            const selectedModule = document.getElementById("module").value;
-            state.stage3.selectedModule = selectedModule;
-            state.stage3.portfolioItems = [
-              {
-                title: document.getElementById("projectTitle").value.trim(),
-                module: selectedModule,
-                projectLink: document
-                  .getElementById("projectLink")
-                  .value.trim(),
-                description: document
-                  .getElementById("description")
-                  .value.trim(),
-                independentWork: document
-                  .getElementById("independent")
-                  .value.trim(),
-                demoLink: document.getElementById("demoLink").value.trim(),
-                sourceLink: document.getElementById("sourceLink").value.trim(),
-              },
-            ];
-            state.stage3.status = "portfolio_submitted";
-            state.stage3.submittedAt = new Date().toISOString();
-            save();
-            finalResult();
-          };
+          finalResult();
         }
         function getBand(score) {
           const num = score * 100;
@@ -14860,47 +15007,64 @@ window.PlacementSync?.configure();
             potential = state.stage1.potentialModule || assigned,
             interest = state.stage3?.confirmedInterest || "Belum ditentukan";
           const exactAge = Number(state.student?.exactAge || 8);
-          const logicScore = Number(
+          const logicRatio = Number(
             state.stage1.combinedPillarScores?.logic ??
             ((state.stage1.scores?.logic || 0) / 5),
           );
-          const moduleBeforeInterest = assigned;
-          let interestOverrideApplied = false;
+          const rawStage1Logic = Number(state.stage1.scores?.logic || 0);
+          const rawStage1Spatial = Number(state.stage1.scores?.spatial || 0);
+          const robloxInterestEligible = exactAge >= 10 && exactAge <= 15 && interest === "Roblox Studio";
+          const robloxLogicReady = rawStage1Logic >= 3;
+          const robloxSpatialReady = rawStage1Spatial >= 3;
+          const robloxThresholdPassed = robloxInterestEligible && robloxLogicReady && robloxSpatialReady;
+          const robloxReadinessGaps = [
+            !robloxLogicReady ? "Logika" : "",
+            !robloxSpatialReady ? "Spasial" : "",
+          ].filter(Boolean);
+          const safeAgeModule = exactAge <= 11
+            ? "Scratch"
+            : exactAge === 12
+              ? (logicRatio >= 0.6 ? "Python" : "Scratch")
+              : "Python";
 
-          // Stage 3 is intentionally last. For the commercially eligible 10–15
-          // audience, confirmed Roblox interest may change the final module. A
-          // module changed after Stage 2 always starts conservatively at Level 1.
-          if (exactAge >= 10 && exactAge <= 15 && interest === "Roblox Studio") {
-            assigned = "Roblox Studio";
-            potential = "Roblox Studio";
-            interestOverrideApplied = moduleBeforeInterest !== assigned;
-          } else if (exactAge >= 12 && exactAge <= 15 && interest !== "Roblox Studio" && logicScore >= 0.6) {
-            assigned = "Python";
-            potential = "Python";
-            interestOverrideApplied = moduleBeforeInterest !== assigned;
-          } else if (exactAge >= 10 && exactAge <= 12 && interest !== "Roblox Studio") {
-            assigned = "Scratch";
-            potential = potential === "Roblox Studio" ? "Scratch" : potential;
-            interestOverrideApplied = moduleBeforeInterest !== assigned;
-          }
-          if (interestOverrideApplied) {
-            state.stage1.assignedModule = assigned;
-            state.stage1.potentialModule = potential;
-            state.stage1.stage2AssessmentId = `stage2-${assigned.toLowerCase().replace(/\s+/g, "-")}-v1`;
-            state.stage1.reviewFlags = Array.from(new Set([
-              ...(state.stage1.reviewFlags || []),
-              "stage3_interest_override",
-              "stage2_module_changed_after_assessment",
-            ]));
-            state.stage1.fallbackReason = interest === "Roblox Studio"
-              ? "Minat Roblox terkonfirmasi pada Stage 3; rekomendasi dialihkan ke Roblox Studio Level 1 karena Stage 2 sebelumnya menguji modul lain."
-              : "Rekomendasi akhir diselaraskan dengan usia, kekuatan logika, dan tidak adanya minat Roblox; modul baru dimulai dari Level 1.";
-          }
+          // V1 Kids Stage 2 always assesses Scratch. Roblox is recommended
+          // only after an explicit final choice plus Logic and Spatial >= 3/5.
+          assigned = robloxThresholdPassed ? "Roblox Studio" : safeAgeModule;
+          potential = robloxInterestEligible ? "Roblox Studio" : assigned;
+          const interestOverrideApplied = robloxThresholdPassed;
+          const stage2ModuleChangedAfterAssessment = assigned !== "Scratch";
+          state.stage1.assignedModule = assigned;
+          state.stage1.potentialModule = potential;
+          state.stage1.stage2AssessmentId = "scratch-stage2-v1";
+          state.stage1.stage2AssessmentModule = "Scratch";
+          state.stage1.reviewFlags = Array.from(new Set([
+            ...(state.stage1.reviewFlags || []),
+            ...(interestOverrideApplied ? ["stage3_interest_override"] : []),
+            ...(stage2ModuleChangedAfterAssessment ? ["stage2_module_changed_after_assessment"] : []),
+            ...(robloxInterestEligible && !robloxThresholdPassed ? ["roblox_readiness_gap"] : []),
+            ...(!Number.isFinite(Number(state.stage1.scores?.digital)) || Number(state.stage1.scores?.digital) > 2
+              ? []
+              : ["digital_readiness_support_required"]),
+          ]));
+          state.stage1.fallbackReason = robloxThresholdPassed
+            ? "Minat Roblox terkonfirmasi dan nilai Stage 1A Logika serta Spasial masing-masing minimal 3/5. Rekomendasi menjadi Roblox Studio Level 1; Stage 2 V1 tetap menguji Scratch."
+            : robloxInterestEligible
+              ? `Minat Roblox terkonfirmasi, tetapi ${robloxReadinessGaps.join(" dan ")} belum mencapai 3/5. ${safeAgeModule} menjadi langkah awal yang aman dan Roblox Studio tetap menjadi tujuan belajar berikutnya.`
+              : `Rekomendasi mempertahankan jalur aman usia dan kesiapan: ${safeAgeModule}.`;
+          state.stage3.robloxReadiness = {
+            eligibleAge: exactAge >= 10 && exactAge <= 15,
+            explicitRobloxChoice: interest === "Roblox Studio",
+            logicScore: rawStage1Logic,
+            spatialScore: rawStage1Spatial,
+            threshold: 3,
+            passed: robloxThresholdPassed,
+            gaps: robloxReadinessGaps,
+          };
           const stage2Valid =
             state.stage2?.assessmentValidity === "valid" ||
-            (!state.stage2?.assessmentValidity && moduleBeforeInterest === "Scratch");
-          const candidate = !interestOverrideApplied && stage2Valid && state.stage2?.lv3Candidate === true;
-          const level = interestOverrideApplied
+            !state.stage2?.assessmentValidity;
+          const candidate = assigned === "Scratch" && stage2Valid && state.stage2?.lv3Candidate === true;
+          const level = stage2ModuleChangedAfterAssessment
             ? "Level 1"
             : stage2Valid
             ? state.stage2?.automaticPlacement || "Level 1"
@@ -15009,6 +15173,11 @@ window.PlacementSync?.configure();
             interest === "Belum ditentukan"
               ? `Minat belajar ${esc(name)} belum terkonfirmasi. Untuk sementara, ${esc(assigned)} menjadi langkah awal yang paling sesuai berdasarkan hasil placement.`
               : `${esc(name)} ingin ${interestGoals[interest]}. Karena itu, perjalanan belajarnya diarahkan melalui <strong>${esc(learningPath.name)}</strong>. ${interest === assigned ? `Berdasarkan hasil placement, ${esc(assigned)} menjadi modul yang sebaiknya dipelajari sekarang.` : `Untuk menuju tujuan tersebut, ${esc(assigned)} sebaiknya dipelajari lebih dulu agar fondasi codingnya kuat sebelum melanjutkan ke ${esc(interest)}.`}`;
+          if (robloxThresholdPassed) {
+            interestStatement = `${esc(name)} memilih Roblox Studio dan sudah memenuhi ambang kesiapan V1: Logika ${rawStage1Logic}/5 serta Spasial ${rawStage1Spatial}/5. Karena Stage 2 V1 menguji Scratch, rekomendasi Roblox Studio dimulai dari <strong>Level 1</strong>.`;
+          } else if (robloxInterestEligible) {
+            interestStatement = `${esc(name)} memilih Roblox Studio, tetapi ${esc(robloxReadinessGaps.join(" dan "))} masih di bawah 3/5. Karena itu, <strong>${esc(assigned)}</strong> menjadi modul awal yang aman. Roblox Studio tetap menjadi tujuan berikutnya setelah kesiapan Logika dan Spasial diperkuat.`;
+          }
 
           let whyLearnNow = "",
             prioritiesHtml = "";
@@ -15260,6 +15429,8 @@ window.PlacementSync?.configure();
               potentialModule: potential,
               assignedLevel: level,
               lv3Candidate: candidate,
+              stage2AssessmentModule: "Scratch",
+              robloxReadiness: state.stage3?.robloxReadiness || null,
               learningPathName: learningPath.name,
               learningPathModules: learningPath.modules,
             },
@@ -15279,6 +15450,8 @@ window.PlacementSync?.configure();
               pathName: learningPath?.name || "Interactive Creator Path",
               learningModules: learningPath?.modules || ["Scratch", "Roblox Studio", "Python"],
               confirmedInterest: state.stage3?.confirmedInterest || "",
+              stage2AssessmentModule: "Scratch",
+              robloxReadiness: state.stage3?.robloxReadiness || null,
               studentReason: state.stage3?.reason || "Belum diisi.",
               scoreScale: "raw5",
               scores: state.stage1?.scores || {},
@@ -15357,12 +15530,14 @@ window.PlacementSync?.configure();
           }
         });
         function resume() {
+          let registrationAvailable = isQcResultMode;
           if (!isQcResultMode) {
             try {
               const r =
                 localStorage.getItem("pt_student_registration") ||
                 localStorage.getItem("pt_student_profile");
               if (r) {
+                registrationAvailable = true;
                 const registration = JSON.parse(r);
                 const p = registration.student || registration;
                 if (p && p.name) {
@@ -15379,6 +15554,10 @@ window.PlacementSync?.configure();
                 }
               }
             } catch (e) {}
+          }
+          if (!registrationAvailable) {
+            location.replace("index.html");
+            return;
           }
           if (!state.student) {
             state.student = {

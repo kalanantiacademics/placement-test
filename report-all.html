@@ -790,13 +790,19 @@
                 const studentName = custom.studentName || params.get('name') || DEFAULT_DATA.studentName;
                 const age = custom.age || params.get('age') || DEFAULT_DATA.age;
                 const reportDate = custom.reportDate || params.get('date') || DEFAULT_DATA.reportDate;
-                const assignedProgram = custom.assignedProgram || params.get('program') || DEFAULT_DATA.assignedProgram;
+                const assignedProgram = custom.assignedProgram || custom.assignedModule || params.get('program') || DEFAULT_DATA.assignedProgram;
                 const level = custom.level || params.get('level') || DEFAULT_DATA.level;
                 const pathName = custom.pathName || params.get('path') || DEFAULT_DATA.pathName;
                 const studentReason = custom.studentReason || params.get('reason') || DEFAULT_DATA.studentReason;
                 const lv3Candidate = Boolean(custom.lv3Candidate || params.get('lv3') === 'true');
+                const confirmedInterest = custom.confirmedInterest || custom.assessmentEvidence?.stage3?.confirmedInterest || '';
+                const stage2AssessmentModule = custom.stage2AssessmentModule || custom.assessmentEvidence?.stage2?.assessmentModule || '';
+                const robloxReadiness = custom.robloxReadiness || custom.assessmentEvidence?.stage3?.robloxReadiness || null;
 
-                let questionResults = custom.questionResults || DEFAULT_DATA.questionResults;
+                const hasCustomData = Object.keys(custom).length > 0;
+                let questionResults = Array.isArray(custom.questionResults)
+                    ? custom.questionResults
+                    : (hasCustomData ? [] : DEFAULT_DATA.questionResults);
                 let scores = {};
                 let pillarBreakdown = {};
 
@@ -855,7 +861,10 @@
                     pillarBreakdown,
                     pathName,
                     learningPrograms: custom.learningPrograms || DEFAULT_DATA.learningPrograms,
-                    studentReason
+                    studentReason,
+                    confirmedInterest,
+                    stage2AssessmentModule,
+                    robloxReadiness
                 };
             }
 
@@ -966,9 +975,11 @@
                 document.getElementById('continuationTitle').textContent = `Rekomendasi & Learning Path ${data.studentName}`;
 
                 // CONCISE WHY LEVEL
-                document.getElementById('whyLevelText').textContent = data.level.startsWith('FOUNDATIONAL')
-                    ? `Rekomendasi ini bertujuan memperkuat fondasi logika & algoritma dasar pilar ${bottomPillarName} sebelum masuk ke proyek ${data.assignedProgram} yang lebih kompleks.`
-                    : `Siswa telah siap untuk level BASIC. Fokus berikutnya adalah mengembangkan solusi mandiri pada proyek ${data.assignedProgram}.`;
+                document.getElementById('whyLevelText').textContent = data.stage2AssessmentModule && data.assignedProgram !== data.stage2AssessmentModule
+                    ? `Stage 2 V1 menguji ${data.stage2AssessmentModule}. Karena modul akhir adalah ${data.assignedProgram}, titik mulainya ditetapkan di Level 1 agar penempatan tetap aman.`
+                    : data.level.startsWith('FOUNDATIONAL')
+                        ? `Rekomendasi ini bertujuan memperkuat fondasi logika & algoritma dasar pilar ${bottomPillarName} sebelum masuk ke proyek ${data.assignedProgram} yang lebih kompleks.`
+                        : `Siswa telah siap untuk level BASIC. Fokus berikutnya adalah mengembangkan solusi mandiri pada proyek ${data.assignedProgram}.`;
 
                 // CONCISE FOCUS LIST
                 const focusList = document.getElementById('focusAreaList');
@@ -1009,8 +1020,15 @@
                 }).join('');
 
                 // CONCISE DIRECTION & INTEREST
-                document.getElementById('interestAlignmentText').textContent = 
-                    `Jalur belajar ${data.pathName} disesuaikan dengan minat siswa pada proyek interaktif.`;
+                const robloxGaps = Array.isArray(data.robloxReadiness?.gaps)
+                    ? data.robloxReadiness.gaps.join(' dan ')
+                    : 'Logika dan Spasial';
+                document.getElementById('interestAlignmentText').textContent =
+                    data.confirmedInterest === 'Roblox Studio' && data.robloxReadiness?.passed === true
+                        ? `${data.studentName} memilih Roblox Studio dan memenuhi ambang kesiapan V1: Logika ${Number(data.robloxReadiness.logicScore || 0)}/5 serta Spasial ${Number(data.robloxReadiness.spatialScore || 0)}/5. Rekomendasi Roblox Studio dimulai dari Level 1 karena Stage 2 V1 menilai Scratch.`
+                        : data.confirmedInterest === 'Roblox Studio' && data.robloxReadiness
+                            ? `${data.studentName} memilih Roblox Studio, tetapi ${robloxGaps} masih perlu diperkuat hingga minimal 3/5. ${data.assignedProgram} menjadi titik mulai yang aman dan Roblox Studio tetap menjadi tujuan berikutnya.`
+                            : `Jalur belajar ${data.pathName} disesuaikan dengan minat siswa pada proyek interaktif.`;
 
                 document.getElementById('studentReasonText').textContent = data.studentReason || 'Belum diisi.';
             }

@@ -686,6 +686,21 @@
       opacity: 0.6;
       cursor: wait;
     }
+    .result-delivery-control { display: grid; gap: 7px; min-width: 176px; }
+    .review-status-label { font-size: .74rem; font-weight: 800; color: #475569; text-transform: uppercase; }
+    .btn-approve-send {
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 11px;
+      background: #265e9b;
+      color: #fff;
+      font: inherit;
+      font-size: .78rem;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .btn-approve-send:disabled { opacity: .55; cursor: not-allowed; }
+    .delivery-state { font-size: .72rem; color: #64748b; font-weight: 700; }
 
     .empty-state {
       padding: 48px 24px;
@@ -1001,7 +1016,7 @@
               <th>Assigned Level</th>
               <th>Result Status</th>
               <th>Result Report</th>
-              <th>Email Status</th>
+              <th>Review &amp; Delivery</th>
             </tr>
           </thead>
           <tbody id="resultsTableBody">
@@ -1126,7 +1141,7 @@
             <th>Parent Email</th>
             <th>Result Status</th>
             <th>Result Report</th>
-            <th>Email Status</th>
+            <th>Review &amp; Delivery</th>
           </tr>
         `;
       } else {
@@ -1146,7 +1161,7 @@
             <th>Assigned Level</th>
             <th>Result Status</th>
             <th>Result Report</th>
-            <th>Email Status</th>
+            <th>Review &amp; Delivery</th>
           </tr>
         `;
       }
@@ -1601,6 +1616,34 @@
       return `${year}-${month}-${day}`;
     }
 
+    function reviewStatusText(value) {
+      const status = String(value || 'submitted').toLowerCase();
+      const labels = {
+        submitted: 'Menunggu review',
+        under_review: 'Sedang direview',
+        approved: 'Disetujui',
+        needs_manual_review: 'Perlu review manual',
+        lv3_candidate: 'Kandidat Lv3',
+        lv3_approved: 'Lv3 disetujui',
+        lv3_not_approved: 'Lv3 belum disetujui'
+      };
+      return labels[status] || status.replaceAll('_', ' ');
+    }
+
+    function renderDeliveryControl(result) {
+      const emailStatus = String(result.email_status || 'not sent').toLowerCase();
+      const reviewStatus = String(result.placement_review_status || 'submitted').toLowerCase();
+      const alreadySent = emailStatus === 'sent';
+      const pdfReady = Boolean(result.pdf_file_url);
+      const buttonLabel = alreadySent ? 'Sudah dikirim' : emailStatus === 'waiting_branch_recipient' ? 'Coba Approve & Send' : 'Approve & Send';
+      return `<div class="result-delivery-control">
+        <span class="review-status-label">${escapeHtml(reviewStatusText(reviewStatus))}</span>
+        <button type="button" class="btn-approve-send" ${alreadySent || !pdfReady ? 'disabled' : ''}
+          onclick="handleApproveAndSend('${escapeJs(result.placement_id)}', this, '${escapeJs(result.student_name)}')">${buttonLabel}</button>
+        <span class="delivery-state">Email: ${escapeHtml(emailStatus)}${!pdfReady ? ' · PDF belum siap' : ''}</span>
+      </div>`;
+    }
+
     function renderTable(data) {
       renderTableHeader();
       const tbody = document.getElementById('resultsTableBody');
@@ -1631,11 +1674,7 @@
                 `<span class="btn-pdf-view disabled"><i class="fa-solid fa-clock"></i> Belum Ready</span>`}
             </td>
             <td>
-              <select class="email-status-select ${String(r.email_status).toLowerCase() === 'sent' ? 'is-sent' : 'is-not-sent'}"
-                      onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this, '${escapeJs(r.student_name)}', '${escapeJs(r.parent_email)}')">
-                <option value="not sent" ${String(r.email_status).toLowerCase() !== 'sent' ? 'selected' : ''}>Not Sent</option>
-                <option value="sent" ${String(r.email_status).toLowerCase() === 'sent' ? 'selected' : ''}>Sent</option>
-              </select>
+              ${renderDeliveryControl(r)}
             </td>
           </tr>
         `).join('');
@@ -1673,72 +1712,55 @@
                 `<span class="btn-pdf-view disabled"><i class="fa-solid fa-clock"></i> Belum Ready</span>`}
             </td>
             <td>
-              <select class="email-status-select ${String(r.email_status).toLowerCase() === 'sent' ? 'is-sent' : 'is-not-sent'}"
-                      onchange="handleEmailStatusChange('${escapeJs(r.placement_id)}', this.value, this, '${escapeJs(r.student_name)}', '${escapeJs(r.parent_email)}')">
-                <option value="not sent" ${String(r.email_status).toLowerCase() !== 'sent' ? 'selected' : ''}>Not Sent</option>
-                <option value="sent" ${String(r.email_status).toLowerCase() === 'sent' ? 'selected' : ''}>Sent</option>
-              </select>
+              ${renderDeliveryControl(r)}
             </td>
           </tr>
         `).join('');
       }
     }
 
-    function handleEmailStatusChange(placementId, newStatus, selectEl, studentName, parentEmail) {
+    function handleApproveAndSend(placementId, button, studentName) {
       if (!currentSession || !currentSession.token) {
         alert('Sesi telah habis. Silakan login kembali.');
         return;
       }
+      if (!confirm(`Saya sudah meninjau hasil ${studentName || placementId}. Setujui hasil dan kirim email ke orang tua dengan BCC BM/SA cabang?`)) return;
 
-      const prevStatus = newStatus === 'sent' ? 'not sent' : 'sent';
-      const isSent = newStatus === 'sent';
-
-      if (isSent && !confirm(`Kirim email laporan placement test ke orang tua siswa (${placementId})?`)) {
-        selectEl.value = prevStatus;
-        return;
-      }
-
-      selectEl.disabled = true;
-      const originalText = selectEl.options[selectEl.selectedIndex].text;
-      selectEl.options[selectEl.selectedIndex].text = isSent ? 'Sending...' : 'Updating...';
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = 'Mengirim...';
 
       fetch(WEB_APP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
-          action: 'update_email_status',
+          action: 'approve_and_send_result',
           token: currentSession.token,
-          submissionId: placementId,
-          emailStatus: newStatus,
-          studentName: studentName,
-          parentEmail: parentEmail
+          submissionId: placementId
         })
       })
       .then(res => res.json())
       .then(data => {
-        selectEl.disabled = false;
-        selectEl.options[selectEl.selectedIndex].text = newStatus === 'sent' ? 'Sent' : 'Not Sent';
-
         if (data.ok) {
           const item = rawDashboardData.find(row => String(row.placement_id) === String(placementId));
-          if (item) item.email_status = data.emailStatus || newStatus;
-
-          selectEl.className = `email-status-select ${newStatus === 'sent' ? 'is-sent' : 'is-not-sent'}`;
-          if (newStatus === 'sent') {
-            alert(`Email laporan placement test (${placementId}) berhasil dikirim ke orang tua.`);
+          if (item) {
+            item.email_status = data.emailStatus || item.email_status;
+            item.placement_review_status = data.reviewStatus || 'approved';
           }
+          renderTable(rawDashboardData);
+          alert(data.held
+            ? `Hasil sudah direview, tetapi email ditahan karena BM/SA cabang belum memiliki alamat email. Lengkapi penerima cabang lalu klik Approve & Send lagi.`
+            : `Hasil ${placementId} disetujui dan email berhasil dikirim ke orang tua.`);
         } else {
-          selectEl.value = prevStatus;
-          selectEl.className = `email-status-select ${prevStatus === 'sent' ? 'is-sent' : 'is-not-sent'}`;
-          alert('Gagal mengupdate status email: ' + (data.error || 'Terjadi kesalahan.'));
+          button.disabled = false;
+          button.textContent = originalText;
+          alert('Approve & Send gagal: ' + (data.error || 'Terjadi kesalahan.'));
         }
       })
-      .catch(err => {
-        selectEl.disabled = false;
-        selectEl.value = prevStatus;
-        selectEl.options[selectEl.selectedIndex].text = prevStatus === 'sent' ? 'Sent' : 'Not Sent';
-        selectEl.className = `email-status-select ${prevStatus === 'sent' ? 'is-sent' : 'is-not-sent'}`;
-        alert('Terjadi kesalahan koneksi server saat memperbarui status email.');
+      .catch(() => {
+        button.disabled = false;
+        button.textContent = originalText;
+        alert('Terjadi kesalahan koneksi server saat Approve & Send.');
       });
     }
 
