@@ -15,7 +15,7 @@ Repository ini adalah source production yang ditampilkan melalui:
 - `hasil-placement-test-kalananti.html` — dashboard hasil HQ/BM/SA.
 - `placement-session.js` — session per submission/browser tab.
 - `placement-sync.js` — sinkronisasi Apps Script dan report PDF.
-- `device-guard.js` — aturan perangkat dan viewport.
+- `device-guard.js` — hanya mengizinkan desktop/laptop dan tablet landscape; HP serta tablet portrait diblokir sejak halaman registrasi.
 - `assets/` — aset lokal yang digunakan assessment.
 - `favicon.ico` — favicon dashboard hasil.
 

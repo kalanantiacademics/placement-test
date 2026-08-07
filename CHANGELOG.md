@@ -13,6 +13,7 @@ All notable changes, bug fixes, visual improvements, and architectural updates t
 - Changed dashboard access review to one minute and added backend deadline metadata for a refresh-safe frontend countdown.
 - Added a large waiting overlay with automatic approval polling and a locked approval overlay that survives refresh and only opens the dashboard after the user presses OK.
 - Corrected PDF export root alignment across shared sync, Junior, Kids, and Teens report runtimes.
+- Hardened the registration/runtime device guard so phones remain blocked in portrait, landscape, and “Request Desktop Site” modes, while real tablets remain available only in landscape; blocked content is hidden before the overlay finishes loading.
 
 ## [Unreleased] - 2026-08-05
 

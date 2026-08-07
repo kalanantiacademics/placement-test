@@ -56,7 +56,7 @@ Logic and Spatial are the V1 readiness gates for a Roblox Studio interest overri
 
 ### 2.2 Success indicators
 
-- Students can complete the assessment on desktop, tablet, and supported mobile devices.
+- Students can complete the assessment only on desktop/laptop or a tablet in landscape orientation. Smartphones in portrait or landscape and tablets in portrait are blocked from both registration and assessment runtime.
 - Junior students can complete Stage 1 without requiring strong drag-and-drop skills.
 - V1 may use conventional A–D multiple-choice for Junior, Kids, and Teens when it is the safest readable interaction; practical interaction remains required where the question is intended to measure tool use.
 - In V1, Kids Stage 2 always opens Scratch and Teens Stage 2 always opens Python; Junior opens its Scratch Jr scaffold. The report preserves the actual assessment module and any cross-module final recommendation starts at Level 1.
@@ -1601,8 +1601,8 @@ Every question or challenge should have:
 
 - No uncaught JavaScript error occurs in the complete flow.
 - All referenced local assets load.
-- No horizontal overflow occurs on supported desktop and mobile widths.
-- Touch-based interactions are tested on a mobile viewport.
+- No horizontal overflow occurs on supported desktop/laptop and tablet-landscape widths.
+- The device guard is tested against phone portrait, phone landscape, phone “Request Desktop Site”, tablet portrait, tablet landscape, and desktop profiles. Only tablet landscape and desktop/laptop may enter.
 - Every recommendation can be explained from stored scoring evidence.
 
 ---
