@@ -444,7 +444,7 @@
         min-height: 297mm !important;
         height: auto !important;
         max-height: none !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 16px 18px 18px 18px !important;
         box-shadow: none !important;
         border-radius: 0 !important;
@@ -1222,7 +1222,7 @@
       .placement-pdf-exporting .kids-report {
         width: 794px !important;
         max-width: 794px !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 14px 18px !important;
         box-sizing: border-box !important;
         border-radius: 0 !important;
@@ -2093,8 +2093,9 @@ window.PlacementSync?.configure();
       }
 
       function finishPlacementSession() {
+        const startUrl = window.KalanantiPlacementRoutes?.startUrl() || "https://www.kalananti.id/placement-test";
         clearCurrentPlacementSession();
-        location.replace("index.html");
+        location.replace(startUrl);
       }
 
       (function installPlacementRefreshPolicy() {
@@ -2166,7 +2167,7 @@ window.PlacementSync?.configure();
         // Missing registration cannot be resumed. A completed result remains visible
         // on the current page, then the next browser refresh clears the session.
         if (!rawReg) {
-          window.location.href = "index.html";
+          window.location.href = window.KalanantiPlacementRoutes?.startUrl() || "https://www.kalananti.id/placement-test";
           return;
         }
         try {
@@ -2175,12 +2176,13 @@ window.PlacementSync?.configure();
           const invalidKidsAgeSevenRoute = Number(student.exactAge) === 7
             && (student.canReadIndependently !== true || student.routingReason !== "age_7_can_read_kids");
           if (invalidKidsAgeSevenRoute) {
+            const startUrl = window.KalanantiPlacementRoutes?.startUrl(registration) || "https://www.kalananti.id/placement-test";
             window.PlacementSession?.destroyCurrent?.();
-            window.location.href = "index.html";
+            window.location.href = startUrl;
           }
         } catch (error) {
           window.PlacementSession?.destroyCurrent?.();
-          window.location.href = "index.html";
+          window.location.href = window.KalanantiPlacementRoutes?.startUrl() || "https://www.kalananti.id/placement-test";
         }
       })();
 
@@ -15569,7 +15571,7 @@ window.PlacementSync?.configure();
             } catch (e) {}
           }
           if (!registrationAvailable) {
-            location.replace("index.html");
+            location.replace(window.KalanantiPlacementRoutes?.startUrl() || "https://www.kalananti.id/placement-test");
             return;
           }
           if (!state.student) {

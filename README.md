@@ -29,7 +29,7 @@ Repository ini adalah source production yang ditampilkan melalui:
 - Request baru ditulis ke `DROPDOWNS!B:B` (BM) atau `DROPDOWNS!C:C` (SA Kids) pada exact row cabang yang dipilih. Akses existing di F/G tetap dibaca agar akun lama tidak terputus.
 - `DROPDOWNS!E:E` menyimpan HQ dan hanya dikelola manual.
 - Request publik masuk ke `AccessRequests` sebagai `pending`. Hanya HQ yang sudah login dapat approve/reject dari dashboard.
-- Login memakai email terdaftar setelah masa review backend 2 menit, tanpa mengirim OTP/email. Session token disimpan sebagai hash, berlaku 24 jam, dan dapat dicabut melalui logout.
+- Login memakai email terdaftar setelah masa review backend 1 menit, tanpa mengirim OTP/email. Frontend menampilkan countdown, memeriksa approval otomatis, lalu menahan akses dashboard sampai user menekan tombol OK pada overlay persetujuan. Session token disimpan sebagai hash, berlaku 24 jam, dan dapat dicabut melalui logout.
 - HQ memiliki `dataScope=all,columnAccess=full`; Online memiliki `dataScope=branch,columnAccess=full`; cabang offline memiliki `dataScope=branch,columnAccess=restricted`.
 
 ### Deployment dan migrasi
@@ -42,7 +42,7 @@ Repository ini adalah source production yang ditampilkan melalui:
 6. Jalankan `migratePlacementPdfsToBranchFolders()` dari Apps Script editor untuk memindahkan PDF existing ke subfolder `Placement Test - <branch>`.
 7. Periksa permission root PDF. Hapus akses BM/SA lama dari root secara manual; hanya HQ yang boleh tetap memiliki akses root.
 8. Uji dengan data non-production: satu user Online, dua cabang offline berbeda, dan satu HQ.
-9. Verifikasi masa review 2 menit, approval/rejection HQ, penolakan token lintas cabang, restricted response, pagination, analytics, dan PDF lintas cabang sebelum mengganti deployment production.
+9. Verifikasi masa review 1 menit, countdown/auto-login/overlay persetujuan, approval/rejection HQ, penolakan token lintas cabang, restricted response, pagination, analytics, dan PDF lintas cabang sebelum mengganti deployment production.
 
 Rollback dilakukan dengan mengaktifkan kembali deployment Apps Script sebelumnya dan source tag phase terkait. Jangan menghapus row registrasi yang sudah masuk. Jika migrasi PDF belum selesai, backend otomatis tidak mengirim URL PDF lama kepada user non-HQ.
 

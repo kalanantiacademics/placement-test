@@ -4,6 +4,16 @@ All notable changes, bug fixes, visual improvements, and architectural updates t
 
 ---
 
+## [Unreleased] - 2026-08-07
+
+### 36. Canonical Links, One-Minute Access Review, and Locked Approval Overlay
+
+- Standardized dashboard links for Offline, Online, internal Hasil, and the active parent placement-test guide; added distinct Offline/Online start buttons inside the portal card.
+- Replaced legacy `index.html` return redirects in Junior, Kids, and Teens with branch-aware canonical URLs while retaining relative routes for local QC.
+- Changed dashboard access review to one minute and added backend deadline metadata for a refresh-safe frontend countdown.
+- Added a large waiting overlay with automatic approval polling and a locked approval overlay that survives refresh and only opens the dashboard after the user presses OK.
+- Corrected PDF export root alignment across shared sync, Junior, Kids, and Teens report runtimes.
+
 ## [Unreleased] - 2026-08-05
 
 ### 35. Online/Offline Entry Separation, Secure Branch Authorization, and HQ Analytics

@@ -283,6 +283,16 @@
       border-color: var(--k-blue);
     }
 
+    .portal-test-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .portal-test-actions .btn-action { padding-inline: 14px; }
+    @media (max-width: 480px) {
+      .portal-test-actions { grid-template-columns: 1fr; }
+    }
+
     .request-access-note {
       margin-top: 18px;
       text-align: center;
@@ -417,6 +427,110 @@
       font-size: 0.9rem;
       color: var(--muted);
       margin-bottom: 20px;
+    }
+
+    /* Access review and approval overlays. These dialogs deliberately have no
+       backdrop/Escape close action so the status cannot be missed. */
+    .access-status-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1400;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: rgba(8, 30, 61, 0.82);
+      backdrop-filter: blur(14px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+    .access-status-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .access-status-card {
+      width: min(100%, 620px);
+      padding: clamp(30px, 6vw, 54px);
+      border: 2px solid rgba(255,255,255,.8);
+      border-radius: 30px;
+      background: linear-gradient(155deg, #ffffff 0%, #eef7ff 100%);
+      box-shadow: 0 35px 90px rgba(0,0,0,.38);
+      text-align: center;
+      transform: translateY(18px) scale(.96);
+      transition: transform .28s ease;
+    }
+    .access-status-overlay.active .access-status-card { transform: translateY(0) scale(1); }
+    .access-status-icon {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 24px;
+      border-radius: 28px;
+      display: grid;
+      place-items: center;
+      font-size: 2.5rem;
+      color: #fff;
+      box-shadow: 0 18px 36px -16px rgba(38,94,155,.65);
+    }
+    .access-status-icon.waiting {
+      background: linear-gradient(135deg, #397fc5, #1a4576);
+      animation: accessPulse 1.8s ease-in-out infinite;
+    }
+    .access-status-icon.approved { background: linear-gradient(135deg, #25a879, #147452); }
+    .access-status-title {
+      margin: 0 0 12px;
+      color: var(--k-blue-d);
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      line-height: 1.15;
+      font-weight: 900;
+    }
+    .access-status-copy {
+      max-width: 480px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: clamp(.96rem, 2vw, 1.08rem);
+      line-height: 1.65;
+    }
+    .access-countdown {
+      margin: 22px auto 12px;
+      color: var(--k-blue-d);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.5rem, 10vw, 4.5rem);
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    .access-progress {
+      width: min(100%, 430px);
+      height: 12px;
+      margin: 0 auto 12px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #d8e8f8;
+    }
+    .access-progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #397fc5, #f5bd18);
+      transition: width .5s linear;
+    }
+    .access-status-note {
+      display: block;
+      margin: 0 0 24px;
+      color: #577087;
+      font-size: .82rem;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+    .access-status-button {
+      width: min(100%, 360px);
+      margin-top: 26px;
+      font-size: 1.05rem;
+    }
+    @keyframes accessPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 18px 36px -16px rgba(38,94,155,.65); }
+      50% { transform: scale(1.07); box-shadow: 0 22px 44px -12px rgba(38,94,155,.8); }
     }
 
     .role-options {
@@ -745,7 +859,7 @@
     }
     .links-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
     }
     .link-box {
@@ -758,6 +872,7 @@
     .link-box-blue { background: #f0f7ff; border: 1.5px solid #cbe0f7; }
     .link-box-yellow { background: #fff8e5; border: 1.5px solid #ffe399; }
     .link-box-green { background: #e6f9f3; border: 1.5px solid #a4e9d1; }
+    .link-box-purple { background: #f5f0ff; border: 1.5px solid #d8c8f4; }
 
     .link-label {
       font-size: 0.88rem;
@@ -767,6 +882,7 @@
     .link-box-blue .link-label { color: var(--muted); }
     .link-box-yellow .link-label { color: #b27a00; }
     .link-box-green .link-label { color: #186448; }
+    .link-box-purple .link-label { color: #65459b; }
 
     .link-action {
       display: flex;
@@ -786,6 +902,8 @@
     .link-box-yellow a:hover { color: #b27a00; text-decoration: underline; }
     .link-box-green a { color: #1e7e5a; }
     .link-box-green a:hover { color: #186448; text-decoration: underline; }
+    .link-box-purple a { color: #65459b; }
+    .link-box-purple a:hover { color: #4d327b; text-decoration: underline; }
 
     .btn-copy {
       border: none;
@@ -803,6 +921,14 @@
     .link-box-blue .btn-copy:hover { background: var(--k-blue-d); }
     .link-box-yellow .btn-copy { background: #d99a00; color: white; }
     .link-box-yellow .btn-copy:hover { background: #b27a00; }
+    .link-box-green .btn-copy { background: #1e7e5a; color: white; }
+    .link-box-green .btn-copy:hover { background: #186448; }
+    .link-box-purple .btn-copy { background: #65459b; color: white; }
+    .link-box-purple .btn-copy:hover { background: #4d327b; }
+    @media (max-width: 720px) {
+      .important-links-card { padding: 20px; }
+      .links-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -838,33 +964,47 @@
       <h3 class="important-links-title"><i class="fa-solid fa-link"></i> Tautan Penting Placement Test</h3>
       <div class="links-grid">
 
-        <!-- Link 1: Pengerjaan Placement Test -->
+        <!-- Link 1: Placement Test Offline -->
         <div class="link-box link-box-blue">
-          <div class="link-label">Pengerjaan Placement Test (Untuk Anak/Ortu)</div>
+          <div class="link-label">Placement Test Kelas Offline</div>
           <div class="link-action">
-            <a href="https://kalananti.id/placement-test" target="_blank">kalananti.id/placement-test</a>
-            <button class="btn-copy" onclick="copyToClipboard('https://kalananti.id/placement-test', 'Tautan placement test berhasil disalin!')">
+            <a href="https://www.kalananti.id/placement-test" target="_blank" rel="noopener">kalananti.id/placement-test</a>
+            <button class="btn-copy" onclick="copyToClipboard('https://www.kalananti.id/placement-test', 'Tautan placement test Offline berhasil disalin!')">
               <i class="fa-regular fa-copy"></i> Copy
             </button>
           </div>
         </div>
 
-        <!-- Link 2: Hasil Placement Test -->
-        <div class="link-box link-box-yellow">
-          <div class="link-label">Dashboard Hasil (Halaman Ini)</div>
-          <div class="link-action">
-            <a href="https://kalananti.id/placement-test/hasil" target="_blank">kalananti.id/placement-test/hasil</a>
-            <button class="btn-copy" onclick="copyToClipboard('https://kalananti.id/placement-test/hasil', 'Tautan dashboard hasil berhasil disalin!')">
-              <i class="fa-regular fa-copy"></i> Copy
-            </button>
-          </div>
-        </div>
-
-        <!-- Link 3: Guidance -->
+        <!-- Link 2: Placement Test Online -->
         <div class="link-box link-box-green">
-          <div class="link-label">Panduan & Guidance Placement Test</div>
+          <div class="link-label">Placement Test Kelas Online</div>
           <div class="link-action">
-            <a href="pitch-deck-placement-test-stakeholder.html" target="_blank">Buka Panduan (Pitch Deck) <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem; margin-left:4px;"></i></a>
+            <a href="https://www.kalananti.id/placement-test/online" target="_blank" rel="noopener">kalananti.id/placement-test/online</a>
+            <button class="btn-copy" onclick="copyToClipboard('https://www.kalananti.id/placement-test/online', 'Tautan placement test Online berhasil disalin!')">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Link 3: Hasil Placement Test -->
+        <div class="link-box link-box-yellow">
+          <div class="link-label">Dashboard Hasil — Internal Only</div>
+          <div class="link-action">
+            <a href="https://www.kalananti.id/placement-test/hasil" target="_blank" rel="noopener">kalananti.id/placement-test/hasil</a>
+            <button class="btn-copy" onclick="copyToClipboard('https://www.kalananti.id/placement-test/hasil', 'Tautan dashboard hasil berhasil disalin!')">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Link 4: Panduan Placement Test -->
+        <div class="link-box link-box-purple">
+          <div class="link-label">Panduan Placement Test</div>
+          <div class="link-action">
+            <a href="https://kalanantiacademics.github.io/placement-test/panduan-placement-test-untuk-orang-tua.html" target="_blank" rel="noopener">Buka Panduan Placement Test <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem; margin-left:4px;"></i></a>
+            <button class="btn-copy" onclick="copyToClipboard('https://kalanantiacademics.github.io/placement-test/panduan-placement-test-untuk-orang-tua.html', 'Tautan panduan placement test berhasil disalin!')">
+              <i class="fa-regular fa-copy"></i> Copy
+            </button>
           </div>
         </div>
 
@@ -882,9 +1022,12 @@
             <h2 class="card-title">Kerjakan Placement Test</h2>
             <p class="card-subtitle">Untuk siswa yang ingin langsung mengikuti pengerjaan placement test evaluasi potensi dan rekomendasi level Kalananti.</p>
           </div>
-          <div>
+          <div class="portal-test-actions">
             <a href="https://www.kalananti.id/placement-test" class="btn-action btn-primary">
-              <i class="fa-solid fa-play"></i> Mulai Placement Test
+              <i class="fa-solid fa-building"></i> Kelas Offline
+            </a>
+            <a href="https://www.kalananti.id/placement-test/online" class="btn-action btn-secondary">
+              <i class="fa-solid fa-laptop"></i> Kelas Online
             </a>
           </div>
         </div>
@@ -1085,6 +1228,33 @@
     </div>
   </div>
 
+  <!-- WAITING FOR ACCESS REVIEW -->
+  <div class="access-status-overlay" id="accessWaitingOverlay" role="dialog" aria-modal="true" aria-labelledby="accessWaitingTitle" aria-describedby="accessWaitingCopy">
+    <div class="access-status-card">
+      <div class="access-status-icon waiting"><i class="fa-solid fa-hourglass-half"></i></div>
+      <h2 class="access-status-title" id="accessWaitingTitle">Permintaan Akses Sedang Ditinjau</h2>
+      <p class="access-status-copy" id="accessWaitingCopy">Mohon tunggu sekitar <strong>1 menit</strong>. Sistem akan memeriksa persetujuan secara otomatis.</p>
+      <div class="access-countdown" id="accessCountdown" aria-live="polite">01:00</div>
+      <div class="access-progress" aria-hidden="true"><div class="access-progress-fill" id="accessProgressFill"></div></div>
+      <small class="access-status-note" id="accessWaitingNote">Halaman ini boleh tetap dibuka. Setelah akses disetujui, pemberitahuan akan muncul otomatis.</small>
+      <button type="button" class="btn-action btn-primary access-status-button" onclick="acknowledgeWaitingOverlay()">
+        <i class="fa-solid fa-check"></i> Oke, Saya Tunggu
+      </button>
+    </div>
+  </div>
+
+  <!-- ACCESS APPROVED: intentionally only dismissible through the OK button -->
+  <div class="access-status-overlay" id="accessApprovedOverlay" role="dialog" aria-modal="true" aria-labelledby="accessApprovedTitle" aria-describedby="accessApprovedCopy">
+    <div class="access-status-card">
+      <div class="access-status-icon approved"><i class="fa-solid fa-check"></i></div>
+      <h2 class="access-status-title" id="accessApprovedTitle">Akses Kamu Sudah Disetujui!</h2>
+      <p class="access-status-copy" id="accessApprovedCopy">Kamu sudah bisa masuk dan melihat dashboard hasil placement test.</p>
+      <button type="button" id="accessApprovedOkBtn" class="btn-action btn-primary access-status-button" onclick="completeApprovedAccess()">
+        OK, Masuk ke Dashboard <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYga6HmAaTkAjVnwMX-AVJ7shYdg8JWeiLfcExhV0Lv1y6lxL0qr0oQIvYQkaLRznh/exec';
 
@@ -1096,6 +1266,12 @@
     let currentPage = 1;
     let totalPages = 1;
     let filterTimer = null;
+    const PENDING_ACCESS_KEY = 'kalananti_pending_dashboard_access';
+    const PROVISIONAL_SESSION_KEY = 'kalananti_pending_dashboard_session';
+    const ACCESS_REVIEW_FALLBACK_MS = 60 * 1000;
+    let pendingAccessTimer = null;
+    let pendingAccessLoginInFlight = false;
+    let provisionalSession = null;
 
     function copyToClipboard(text, successMessage) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1303,6 +1479,186 @@
       document.getElementById('roleBtnSA').classList.toggle('active', role === 'SA Kids');
     }
 
+    function normalizeDashboardEmail(value) {
+      return String(value || '').trim().toLowerCase();
+    }
+
+    function readStoredJson(key) {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(key) || 'null');
+        return parsed && typeof parsed === 'object' ? parsed : null;
+      } catch (error) {
+        localStorage.removeItem(key);
+        return null;
+      }
+    }
+
+    function getPendingAccess() {
+      return readStoredJson(PENDING_ACCESS_KEY);
+    }
+
+    function savePendingAccess(email, data = {}) {
+      const now = Date.now();
+      const serverAvailableAt = Date.parse(data.reviewAvailableAt || '');
+      const waitFromServer = Number(data.reviewWaitSeconds) * 1000;
+      const durationMs = Number.isFinite(waitFromServer) && waitFromServer >= 0
+        ? waitFromServer
+        : ACCESS_REVIEW_FALLBACK_MS;
+      const availableAt = Number.isFinite(serverAvailableAt)
+        ? serverAvailableAt
+        : now + durationMs;
+      const pending = {
+        email: normalizeDashboardEmail(email),
+        requestId: String(data.requestId || ''),
+        startedAt: now,
+        availableAt,
+        durationMs: Math.max(1, durationMs || 1),
+        retryCount: 0
+      };
+      localStorage.setItem(PENDING_ACCESS_KEY, JSON.stringify(pending));
+      return pending;
+    }
+
+    function updateStoredPendingAccess(pending) {
+      localStorage.setItem(PENDING_ACCESS_KEY, JSON.stringify(pending));
+    }
+
+    function clearPendingAccess() {
+      if (pendingAccessTimer) clearInterval(pendingAccessTimer);
+      pendingAccessTimer = null;
+      localStorage.removeItem(PENDING_ACCESS_KEY);
+    }
+
+    function setWaitingOverlayVisible(visible) {
+      const overlay = document.getElementById('accessWaitingOverlay');
+      if (!overlay) return;
+      overlay.classList.toggle('active', visible);
+      document.body.style.overflow = visible ? 'hidden' : '';
+    }
+
+    function acknowledgeWaitingOverlay() {
+      setWaitingOverlayVisible(false);
+      showAlert('loginAlertBox', 'Permintaan akses sedang ditinjau. Pemeriksaan berjalan otomatis sekitar 1 menit, jadi tidak perlu menekan tombol login berulang kali.', 'info');
+    }
+
+    function updateAccessCountdown(pending) {
+      const remainingMs = Math.max(0, Number(pending.availableAt) - Date.now());
+      const remainingSeconds = Math.ceil(remainingMs / 1000);
+      const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+      const seconds = String(remainingSeconds % 60).padStart(2, '0');
+      const countdown = document.getElementById('accessCountdown');
+      const progress = document.getElementById('accessProgressFill');
+      if (countdown) countdown.textContent = `${minutes}:${seconds}`;
+      if (progress) {
+        const elapsedRatio = 1 - (remainingMs / Math.max(1, Number(pending.durationMs) || ACCESS_REVIEW_FALLBACK_MS));
+        progress.style.width = `${Math.max(0, Math.min(100, elapsedRatio * 100))}%`;
+      }
+      return remainingMs;
+    }
+
+    function startPendingAccessReview(pending, showOverlay = true) {
+      if (!pending || !pending.email) return;
+      if (pendingAccessTimer) clearInterval(pendingAccessTimer);
+      document.getElementById('loginEmailInput').value = pending.email;
+      if (showOverlay) setWaitingOverlayVisible(true);
+
+      const tick = () => {
+        const remainingMs = updateAccessCountdown(pending);
+        if (remainingMs > 0 || pendingAccessLoginInFlight) return;
+        clearInterval(pendingAccessTimer);
+        pendingAccessTimer = null;
+        const title = document.getElementById('accessWaitingTitle');
+        const note = document.getElementById('accessWaitingNote');
+        if (title) title.textContent = 'Sedang Memeriksa Persetujuan…';
+        if (note) note.textContent = 'Mohon tunggu sebentar. Sistem sedang mengonfirmasi aksesmu ke server.';
+        attemptPendingAccessLogin();
+      };
+      tick();
+      if (Number(pending.availableAt) > Date.now()) pendingAccessTimer = setInterval(tick, 500);
+    }
+
+    function buildSessionFromLogin(data) {
+      return {
+        token: data.token,
+        branch: data.branch,
+        email: data.userEmail,
+        role: data.role,
+        dataScope: data.dataScope,
+        columnAccess: data.columnAccess,
+        accessLevel: data.accessLevel
+      };
+    }
+
+    function showApprovedAccessOverlay(session) {
+      provisionalSession = session;
+      localStorage.setItem(PROVISIONAL_SESSION_KEY, JSON.stringify(session));
+      setWaitingOverlayVisible(false);
+      const overlay = document.getElementById('accessApprovedOverlay');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => document.getElementById('accessApprovedOkBtn')?.focus(), 50);
+    }
+
+    function completeApprovedAccess() {
+      const session = provisionalSession || readStoredJson(PROVISIONAL_SESSION_KEY);
+      if (!session || !session.token) return;
+      currentSession = session;
+      localStorage.setItem('kalananti_branch_session', JSON.stringify(currentSession));
+      localStorage.removeItem(PROVISIONAL_SESSION_KEY);
+      provisionalSession = null;
+      document.getElementById('accessApprovedOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+      showDashboardView();
+    }
+
+    function reschedulePendingAccess(pending, delayMs, message) {
+      const retryCount = Number(pending.retryCount || 0) + 1;
+      if (retryCount > 4) {
+        showAlert('loginAlertBox', message || 'Pemeriksaan otomatis belum berhasil. Silakan tekan Masuk Dashboard untuk mencoba kembali.', 'error');
+        const note = document.getElementById('accessWaitingNote');
+        if (note) note.textContent = 'Pemeriksaan otomatis belum berhasil. Tutup pesan ini lalu coba tombol Masuk Dashboard.';
+        return;
+      }
+      pending.retryCount = retryCount;
+      pending.startedAt = Date.now();
+      pending.availableAt = Date.now() + delayMs;
+      pending.durationMs = delayMs;
+      updateStoredPendingAccess(pending);
+      showAlert('loginAlertBox', message || 'Persetujuan belum terbaca. Sistem akan memeriksa ulang otomatis.', 'info');
+      startPendingAccessReview(pending, document.getElementById('accessWaitingOverlay').classList.contains('active'));
+    }
+
+    function attemptPendingAccessLogin() {
+      const pending = getPendingAccess();
+      if (!pending || !pending.email || pendingAccessLoginInFlight) return;
+      pendingAccessLoginInFlight = true;
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'login_dashboard',
+          email: pending.email,
+          clientId: getClientId()
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        pendingAccessLoginInFlight = false;
+        if (data.ok && data.token) {
+          const session = buildSessionFromLogin(data);
+          clearPendingAccess();
+          showApprovedAccessOverlay(session);
+          return;
+        }
+        reschedulePendingAccess(pending, 5000, data.error || 'Akses masih ditinjau. Sistem akan memeriksa ulang otomatis.');
+      })
+      .catch(() => {
+        pendingAccessLoginInFlight = false;
+        reschedulePendingAccess(pending, 10000, 'Koneksi terputus. Sistem akan mencoba memeriksa persetujuan lagi secara otomatis.');
+      });
+    }
+
     function handleRequestSubmit(e) {
       e.preventDefault();
       const name = document.getElementById('reqName').value.trim();
@@ -1336,11 +1692,11 @@
         submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Request Akses`;
 
         if (data.ok) {
-          showAlert('modalAlertBox', data.message || 'Request menunggu approval HQ.', 'success');
-          setTimeout(() => {
-            closeRequestModal();
-            showAlert('loginAlertBox', 'Request tersimpan. Login dapat dilakukan setelah disetujui HQ.', 'info');
-          }, 3500);
+          const pending = savePendingAccess(email, data);
+          document.getElementById('loginEmailInput').value = email;
+          closeRequestModal();
+          showAlert('loginAlertBox', 'Request tersimpan. Tunggu sekitar 1 menit; sistem akan memeriksa dan memasukkan akun secara otomatis.', 'info');
+          startPendingAccessReview(pending, true);
         } else {
           showAlert('modalAlertBox', data.error || 'Gagal mengajukan request akses.', 'error');
         }
@@ -1381,12 +1737,18 @@
         loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Masuk Dashboard`;
 
         if (data.ok && data.token) {
-          currentSession = {
-            token: data.token, branch: data.branch, email: data.userEmail, role: data.role,
-            dataScope: data.dataScope, columnAccess: data.columnAccess, accessLevel: data.accessLevel
-          };
-          localStorage.setItem('kalananti_branch_session', JSON.stringify(currentSession));
-          showDashboardView();
+          const session = buildSessionFromLogin(data);
+          const pending = getPendingAccess();
+          const cameFromReview = Boolean(data.approvedFromPending)
+            || normalizeDashboardEmail(pending?.email) === normalizeDashboardEmail(email);
+          if (cameFromReview) {
+            clearPendingAccess();
+            showApprovedAccessOverlay(session);
+          } else {
+            currentSession = session;
+            localStorage.setItem('kalananti_branch_session', JSON.stringify(currentSession));
+            showDashboardView();
+          }
         } else {
           const message = data.error || 'Request akses sedang ditinjau tim HQ. Silakan coba login kembali beberapa saat lagi.';
           showAlert('loginAlertBox', message, message.toLowerCase().includes('ditinjau') ? 'info' : 'error');
@@ -1774,6 +2136,8 @@
       }
       currentSession = null;
       localStorage.removeItem('kalananti_branch_session');
+      localStorage.removeItem(PROVISIONAL_SESSION_KEY);
+      provisionalSession = null;
 
       document.body.classList.remove('dashboard-active');
       document.getElementById('branchDashboardView').classList.remove('active');
@@ -1809,12 +2173,27 @@
           currentSession = JSON.parse(saved);
           if (currentSession && currentSession.token && ['all', 'branch'].includes(currentSession.dataScope) && ['full', 'restricted'].includes(currentSession.columnAccess)) {
             showDashboardView();
+            clearPendingAccess();
+            localStorage.removeItem(PROVISIONAL_SESSION_KEY);
           } else {
             currentSession = null;
             localStorage.removeItem('kalananti_branch_session');
           }
         } catch (e) {
           localStorage.removeItem('kalananti_branch_session');
+        }
+      }
+
+      if (!currentSession) {
+        provisionalSession = readStoredJson(PROVISIONAL_SESSION_KEY);
+        if (provisionalSession?.token) {
+          showApprovedAccessOverlay(provisionalSession);
+        } else {
+          const pending = getPendingAccess();
+          if (pending?.email) {
+            showAlert('loginAlertBox', 'Permintaan akses sedang ditinjau. Sistem akan memeriksa persetujuan secara otomatis.', 'info');
+            startPendingAccessReview(pending, true);
+          }
         }
       }
     });

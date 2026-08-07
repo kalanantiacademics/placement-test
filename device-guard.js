@@ -6,6 +6,32 @@
 (function (global) {
   'use strict';
 
+  const OFFLINE_START_URL = 'https://www.kalananti.id/placement-test';
+  const ONLINE_START_URL = 'https://www.kalananti.id/placement-test/online';
+
+  function getPlacementRegistration(registrationInput) {
+    if (registrationInput && typeof registrationInput === 'object') return registrationInput;
+    try {
+      const raw = typeof registrationInput === 'string'
+        ? registrationInput
+        : global.localStorage.getItem('pt_student_registration')
+          || global.localStorage.getItem('pt_student_profile');
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function getPlacementStartUrl(registrationInput) {
+    const registration = getPlacementRegistration(registrationInput);
+    const student = registration?.student || registration || {};
+    const online = String(student.branch || '').trim().toLowerCase() === 'online';
+    const localPreview = global.location.protocol === 'file:'
+      || ['localhost', '127.0.0.1'].includes(global.location.hostname);
+    if (localPreview) return online ? 'index-online.html' : 'index.html';
+    return online ? ONLINE_START_URL : OFFLINE_START_URL;
+  }
+
   function detectDevice() {
     const ua = navigator.userAgent || navigator.vendor || global.opera || '';
     const width = global.innerWidth || document.documentElement.clientWidth || screen.width;
@@ -270,4 +296,9 @@
 
   init();
   global.KalanantiDeviceGuard = { detectDevice, updateGuard };
+  global.KalanantiPlacementRoutes = {
+    offline: OFFLINE_START_URL,
+    online: ONLINE_START_URL,
+    startUrl: getPlacementStartUrl
+  };
 })(typeof window !== 'undefined' ? window : this);

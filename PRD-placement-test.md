@@ -1995,10 +1995,11 @@ Request publik tidak pernah mengubah `DROPDOWNS`. Setelah HQ approve, backend me
 ### 21.3 Authentication
 
 1. Request akses baru disimpan sebagai `pending` dan mencatat waktu request.
-2. Selama dua menit pertama, `login_dashboard` menolak login dengan pesan bahwa akses sedang ditinjau HQ; frontend tidak menampilkan countdown.
-3. HQ dapat approve atau reject selama masa review. Jika tidak ditolak, login pertama setelah dua menit mengaktifkan request secara otomatis pada cell B/C cabang yang sama.
-4. Login menggunakan email terdaftar tanpa mengirim OTP atau email keluar. Backend menerapkan rate limit sebelum menerbitkan opaque session token dan hanya menyimpan hash token.
-5. `logout_dashboard` mengisi `revoked_at`; token kedaluwarsa, revoked, atau tidak lagi terdapat pada allowlist ditolak.
+2. Selama satu menit pertama, frontend menampilkan overlay countdown besar dan status inline bahwa akses sedang ditinjau. Status pending beserta deadline disimpan lokal supaya countdown dan pemeriksaan dapat dilanjutkan setelah refresh.
+3. HQ dapat approve atau reject selama masa review. Jika tidak ditolak, frontend memanggil `login_dashboard` otomatis setelah satu menit; backend mengaktifkan request pada cell B/C cabang yang sama dan menerbitkan scoped session token.
+4. Setelah backend benar-benar mengembalikan session token, frontend menampilkan overlay terkunci **“Akses Kamu Sudah Disetujui”**. Overlay tidak boleh ditutup melalui backdrop atau tombol Escape dan dashboard baru ditampilkan setelah user menekan tombol **OK, Masuk ke Dashboard**.
+5. Login menggunakan email terdaftar tanpa mengirim OTP atau email keluar. Backend menerapkan rate limit sebelum menerbitkan opaque session token dan hanya menyimpan hash token.
+6. `logout_dashboard` mengisi `revoked_at`; token kedaluwarsa, revoked, atau tidak lagi terdapat pada allowlist ditolak.
 
 Email yang ditemukan pada lebih dari satu cabang ditolak sebagai konfigurasi ambigu. HQ selalu diprioritaskan jika email memang terdaftar manual pada kolom E.
 
@@ -2006,7 +2007,7 @@ Email yang ditemukan pada lebih dari satu cabang ditolak sebagai konfigurasi amb
 
 - GET `get_branches`: seluruh branch, termasuk Online.
 - GET `get_offline_branches`: branch offline bersih dan terdeduplikasi.
-- POST `request_dashboard_access`: `{branch,name,email,role}` → pending only.
+- POST `request_dashboard_access`: `{branch,name,email,role}` → status request, `reviewWaitSeconds`, dan `reviewAvailableAt`.
 - POST `login_dashboard`: `{email,clientId}` → review response atau scoped session setelah masa review.
 - POST `approve_dashboard_access`: token HQ + request ID + decision.
 - POST `get_access_requests`: pending queue, HQ-only.

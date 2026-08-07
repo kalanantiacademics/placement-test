@@ -5,7 +5,7 @@ const PLACEMENT_CONFIG = Object.freeze({
   payloadsSheet: 'StagePayloads',
   logSheet: 'SyncLog',
   dashboardSessionHours: 24,
-  accessReviewMinutes: 2,
+  accessReviewMinutes: 1,
   stalledHours: 24,
   academicReplyToProperty: 'PLACEMENT_ACADEMIC_REPLY_TO'
 });
@@ -1145,7 +1145,14 @@ function requestDashboardAccess_(operation) {
   const duplicateIndex = data.findIndex(row => normalizeBranch_(row[2]) === normalizeBranch_(branchMatch.branch)
     && normalizeEmail_(row[4]) === email && String(row[5]) === role);
   if (duplicateIndex >= 0 && String(data[duplicateIndex][6]).toLowerCase() === 'approved') {
-    return { requested: false, requestId: String(data[duplicateIndex][0]), status: 'approved', message: 'Akses ini sudah aktif. Silakan login menggunakan email terdaftar.' };
+    return {
+      requested: false,
+      requestId: String(data[duplicateIndex][0]),
+      status: 'approved',
+      reviewWaitSeconds: 0,
+      reviewAvailableAt: new Date().toISOString(),
+      message: 'Akses ini sudah aktif. Silakan login menggunakan email terdaftar.'
+    };
   }
   const requestId = duplicateIndex >= 0 ? String(data[duplicateIndex][0]) : `access_${Utilities.getUuid()}`;
   const now = new Date().toISOString();
@@ -1153,7 +1160,15 @@ function requestDashboardAccess_(operation) {
   if (duplicateIndex >= 0) sheet.getRange(duplicateIndex + 2, 1, 1, values.length).setValues([values]);
   else sheet.appendRow(values);
   auditDashboard_(spreadsheet, 'access_request', email, branchMatch.branch, '', 'pending', role);
-  return { requested: true, requestId, status: 'pending', message: 'Request tersimpan dan menunggu approval HQ. Akses belum diberikan.' };
+  const reviewWaitSeconds = PLACEMENT_CONFIG.accessReviewMinutes * 60;
+  return {
+    requested: true,
+    requestId,
+    status: 'pending',
+    reviewWaitSeconds,
+    reviewAvailableAt: new Date(Date.now() + reviewWaitSeconds * 1000).toISOString(),
+    message: `Request tersimpan. Sistem akan memeriksa akses secara otomatis setelah sekitar ${PLACEMENT_CONFIG.accessReviewMinutes} menit.`
+  };
 }
 
 function findDashboardIdentity_(spreadsheet, email) {
@@ -1196,6 +1211,7 @@ function loginDashboard_(operation) {
   enforceRateLimit_('dashboard_login_client', operation.clientId || email, 20, 15 * 60);
   const spreadsheet = SpreadsheetApp.openById(PLACEMENT_CONFIG.spreadsheetId);
   let identity;
+  let approvedFromPending = false;
   try {
     identity = findDashboardIdentity_(spreadsheet, email);
   } catch (accessError) {
@@ -1204,9 +1220,10 @@ function loginDashboard_(operation) {
     const availableAt = new Date(pending.requestedAt).getTime() + PLACEMENT_CONFIG.accessReviewMinutes * 60 * 1000;
     if (!Number.isFinite(availableAt) || Date.now() < availableAt) {
       auditDashboard_(spreadsheet, 'login_waiting_review', email, pending.branch, '', 'pending', pending.requestId);
-      throw new Error('Request akses sedang ditinjau tim HQ. Silakan coba login kembali beberapa saat lagi.');
+      throw new Error('Permintaan akses sedang direview tim HQ. Silakan tunggu sekitar 1 menit sebelum mencoba login kembali.');
     }
-    activateAccessRequest_(spreadsheet, pending.row, 'system:auto-after-2-minutes');
+    activateAccessRequest_(spreadsheet, pending.row, 'system:auto-approved-after-1-min');
+    approvedFromPending = true;
     identity = findDashboardIdentity_(spreadsheet, email);
   }
   const token = `${Utilities.getUuid()}${Utilities.getUuid()}`.replace(/-/g, '');
@@ -1221,7 +1238,8 @@ function loginDashboard_(operation) {
     dataScope: identity.dataScope,
     columnAccess: identity.columnAccess,
     accessLevel: identity.columnAccess === 'restricted' ? 'restricted' : 'all',
-    reviewCompleted: true
+    reviewCompleted: true,
+    approvedFromPending
   };
 }
 

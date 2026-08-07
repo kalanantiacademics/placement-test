@@ -290,7 +290,7 @@
         min-height: 297mm !important;
         height: auto !important;
         max-height: none !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 16px 18px 18px 18px !important;
         box-shadow: none !important;
         border-radius: 0 !important;
@@ -1068,7 +1068,7 @@
       .placement-pdf-exporting .kids-report {
         width: 794px !important;
         max-width: 794px !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         padding: 14px 18px !important;
         box-sizing: border-box !important;
         border-radius: 0 !important;
