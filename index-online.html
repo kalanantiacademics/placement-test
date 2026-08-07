@@ -647,6 +647,43 @@
       color: var(--muted);
       font-weight: 600;
     }
+    .reading-check-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10050;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(9, 30, 66, 0.66);
+      backdrop-filter: blur(8px);
+    }
+    .reading-check-overlay.visible { display: grid; }
+    .reading-check-card {
+      width: min(520px, 100%);
+      padding: 28px;
+      border: 2px solid rgba(255,255,255,0.78);
+      border-radius: 24px;
+      background: #ffffff;
+      color: var(--k-blue-d);
+      box-shadow: 0 28px 70px rgba(9, 30, 66, 0.34);
+      text-align: center;
+    }
+    .reading-check-icon { font-size: 3rem; line-height: 1; margin-bottom: 12px; }
+    .reading-check-card h2 { margin: 0 0 10px; font-family: 'Orbitron', sans-serif; font-size: 1.35rem; }
+    .reading-check-card p { margin: 0; color: var(--muted); font-weight: 650; line-height: 1.55; }
+    .reading-check-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .reading-check-actions button {
+      min-height: 54px;
+      border: 0;
+      border-radius: 15px;
+      padding: 12px 14px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 850;
+    }
+    .reading-check-yes { background: var(--k-blue); color: #fff; }
+    .reading-check-no { background: #fff4bd; color: #704f00; }
+    @media (max-width: 520px) { .reading-check-actions { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -869,6 +906,18 @@
       </div>
     </div>
   </main>
+
+  <div class="reading-check-overlay" id="readingCheckModal" role="dialog" aria-modal="true" aria-labelledby="readingCheckTitle">
+    <div class="reading-check-card">
+      <div class="reading-check-icon" aria-hidden="true">📖</div>
+      <h2 id="readingCheckTitle">Apakah anak sudah bisa membaca?</h2>
+      <p>Pilih sesuai kemampuan anak membaca instruksi secara mandiri. Jawaban ini hanya menentukan bentuk soal yang paling sesuai.</p>
+      <div class="reading-check-actions">
+        <button type="button" class="reading-check-yes" onclick="confirmAgeSevenReading(true)">Sudah bisa membaca</button>
+        <button type="button" class="reading-check-no" onclick="confirmAgeSevenReading(false)">Belum bisa membaca</button>
+      </div>
+    </div>
+  </div>
 
   <script src="placement-session.js"></script>
   <script src="placement-sync.js"></script>
@@ -1263,6 +1312,7 @@
     }
 
     let draftData = null;
+    let pendingAgeSevenData = null;
 
     function switchTncTab(tabId, btn) {
       document.querySelectorAll('.tnc-tab-btn').forEach(b => b.classList.remove('active'));
@@ -1526,14 +1576,45 @@
 
       errorMsg.classList.remove('visible');
 
+      const registrationDraft = { name, exactAge, email, cabang };
+      if (exactAge === 7) {
+        pendingAgeSevenData = registrationDraft;
+        document.getElementById('readingCheckModal')?.classList.add('visible');
+        return;
+      }
+      finishRegistrationRouting(registrationDraft, null);
+    }
+
+    function confirmAgeSevenReading(canReadIndependently) {
+      if (!pendingAgeSevenData || pendingAgeSevenData.exactAge !== 7) return;
+      const registrationDraft = pendingAgeSevenData;
+      pendingAgeSevenData = null;
+      document.getElementById('readingCheckModal')?.classList.remove('visible');
+      finishRegistrationRouting(registrationDraft, canReadIndependently === true);
+    }
+
+    function finishRegistrationRouting(registrationDraft, canReadIndependently) {
+      const { name, exactAge, email, cabang } = registrationDraft;
       let audienceGroup = 'Kids';
       let ageRange = '8–11';
       let targetFile = 'kids-final-placement-test.html';
+      let routingReason = 'age_8_11_kids';
 
-      if (exactAge <= 7) {
+      if (exactAge <= 6) {
         audienceGroup = 'Junior';
-        ageRange = '5–7';
+        ageRange = '5–6';
         targetFile = 'junior-final-placement-test.html';
+        routingReason = 'age_5_6_junior';
+      } else if (exactAge === 7 && canReadIndependently === true) {
+        audienceGroup = 'Kids';
+        ageRange = '7';
+        targetFile = 'kids-final-placement-test.html';
+        routingReason = 'age_7_can_read_kids';
+      } else if (exactAge === 7) {
+        audienceGroup = 'Junior';
+        ageRange = '7';
+        targetFile = 'junior-final-placement-test.html';
+        routingReason = 'age_7_cannot_read_junior';
       } else if (exactAge <= 11) {
         audienceGroup = 'Kids';
         ageRange = '8–11';
@@ -1542,14 +1623,18 @@
         audienceGroup = 'Kids';
         ageRange = '12–15';
         targetFile = 'kids-final-placement-test.html';
+        routingReason = 'age_12_15_kids_application';
       } else {
         audienceGroup = 'Teens';
         ageRange = '16–18';
         targetFile = 'teens.html';
+        routingReason = 'age_16_18_teens';
       }
 
       draftData = {
-        name, exactAge, ageRange, audienceGroup, email, cabang, targetFile
+        name, exactAge, ageRange, audienceGroup, email, cabang, targetFile,
+        canReadIndependently: exactAge === 7 ? canReadIndependently === true : null,
+        routingReason
       };
 
       document.getElementById('summaryName').textContent = name;
@@ -1581,7 +1666,9 @@
           ageRange: draftData.ageRange,
           audienceGroup: draftData.audienceGroup,
           parentEmail: draftData.email,
-          branch: 'Online'
+          branch: 'Online',
+          canReadIndependently: draftData.canReadIndependently,
+          routingReason: draftData.routingReason
         },
         consent: {
           childConfirmed: true,
@@ -1589,6 +1676,7 @@
           acceptedAt: new Date().toISOString(),
           termsVersion: 'placement-tnc-v1'
         },
+        assessmentVersion: 'placement-v1',
         registeredAt: new Date().toISOString(),
         timestamp: Date.now(),
         isCompleted: false,
