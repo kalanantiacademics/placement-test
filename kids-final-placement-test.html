@@ -2169,6 +2169,19 @@ window.PlacementSync?.configure();
           window.location.href = "index.html";
           return;
         }
+        try {
+          const registration = JSON.parse(rawReg);
+          const student = registration?.student || registration || {};
+          const invalidKidsAgeSevenRoute = Number(student.exactAge) === 7
+            && (student.canReadIndependently !== true || student.routingReason !== "age_7_can_read_kids");
+          if (invalidKidsAgeSevenRoute) {
+            window.PlacementSession?.destroyCurrent?.();
+            window.location.href = "index.html";
+          }
+        } catch (error) {
+          window.PlacementSession?.destroyCurrent?.();
+          window.location.href = "index.html";
+        }
       })();
 
       window.addEventListener("beforeunload", (event) => {

@@ -3279,7 +3279,11 @@
     const params = new URLSearchParams(location.search);
     const directRegistration = readStorage("pt_student_registration") || readStorage("pt_student_profile");
     const juniorQcMode = params.get("qcStage3") === "1" || params.get("qcResult") === "1" || params.get("dev") === "1";
-    if (!directRegistration && !juniorQcMode) {
+    const directStudent = directRegistration?.student || directRegistration || {};
+    const invalidJuniorAgeSevenRoute = Number(directStudent.exactAge) === 7
+      && (directStudent.canReadIndependently !== false || directStudent.routingReason !== "age_7_cannot_read_junior");
+    if ((!directRegistration || invalidJuniorAgeSevenRoute) && !juniorQcMode) {
+      if (invalidJuniorAgeSevenRoute) window.PlacementSession?.destroyCurrent?.();
       location.replace("index.html");
     }
     renderStudentIdentity();

@@ -941,6 +941,13 @@
       if (!registration || registration.isCompleted) return;
 
       const student = registration.student || registration;
+      const exactAge = Number(student.exactAge);
+      const validAgeSevenDecision = typeof student.canReadIndependently === 'boolean'
+        && ['age_7_can_read_kids', 'age_7_cannot_read_junior'].includes(student.routingReason);
+      if (exactAge === 7 && !validAgeSevenDecision) {
+        window.PlacementSession?.destroyCurrent?.();
+        return;
+      }
       const audience = String(student.audienceGroup || '').toLowerCase();
       const target = audience === 'junior'
         ? 'junior-final-placement-test.html'
