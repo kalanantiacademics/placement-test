@@ -1651,7 +1651,7 @@
           showApprovedAccessOverlay(session);
           return;
         }
-        reschedulePendingAccess(pending, 5000, data.error || 'Akses masih ditinjau. Sistem akan memeriksa ulang otomatis.');
+        reschedulePendingAccess(pending, 15000, data.error || 'Akses masih ditinjau. Sistem akan memeriksa ulang otomatis.');
       })
       .catch(() => {
         pendingAccessLoginInFlight = false;
